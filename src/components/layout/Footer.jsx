@@ -1,5 +1,6 @@
 import { FaMapMarkerAlt, FaPhoneAlt, FaEnvelope, FaArrowRight, FaAt } from "react-icons/fa";
 import { getAboutPayload } from "@/app/api/about/about";
+import Image from "next/image";
 import Button from "@/components/ui/Button";
 
 export default async function MainFooter() {
@@ -15,7 +16,7 @@ export default async function MainFooter() {
           {/* Column 1: Logo & Description */}
           <div className="space-y-8">
             <div className="logo">
-              <img
+              <Image
                 src="/images/new/Prolixus-logo-white.webp"
                 alt="Prolixus Logo"
                 className="w-44 opacity-100"

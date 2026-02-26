@@ -21,7 +21,6 @@ export async function getShopMenus() {
     return menus;
 
   } catch (error) {
-    console.error("ShopMenus API Error:", error);
     return [];
   }
 }
