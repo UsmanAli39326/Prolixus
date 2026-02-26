@@ -1,0 +1,425 @@
+// import FaderInAnimation from "@/Hooks/FaderInAnimation";
+// import RevealInAnimation from "@/Hooks/RevealInAnimation";
+
+// export default function OurKeyPoints() {
+//   return (
+//     <section className="our-key-points py-24">
+//       <div className="container mx-auto px-4">
+//         {/* Top heading row */}
+//         <div className="section-row mb-12 flex flex-col gap-6 lg:flex-row lg:items-center">
+//           <div className="lg:w-1/2">
+//             <div className="section-title pl-5">
+//               <h3 className="wow fadeInUp text-sm font-thin capitalize tracking-[0.2em] text-(--primary-color)">
+//                 our key points
+//               </h3>
+//               <RevealInAnimation direction="left">
+//                 <h2
+//                   className="text-anime-style-2 text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight text-(--primary-color) font-default"
+//                   data-cursor="-opaque"
+//                 >
+//                   Superior design, precision{" "}
+//                   <span className="block text-(--dark-color) font-accent font-light italic">
+//                     drop lasting quality
+//                   </span>
+//                 </h2>
+//               </RevealInAnimation>
+//             </div>
+//           </div>
+
+//           <div className="lg:w-1/2">
+//             <div
+//               className="section-title-content wow fadeInUp"
+//               data-wow-delay="0.2s"
+//             >
+//               <p className="text-sm sm:text-base text-(--body-color,rgba(15,23,42,0.75))">
+//                 Crafted with superior design, engineered with precision, and
+//                 built to a commitment to excellence ensures every detail is
+//                 meticulously perfected, delivering unparalleled quality and
+//                 durability.
+//               </p>
+//             </div>
+//           </div>
+//         </div>
+
+//         {/* Main content row */}
+//         <div className="flex flex-col items-center lg:flex-row  lg:items-center lg:gap-8 font-default">
+//           {/* Left column - box 1 (reversed items via your CSS) */}
+//           <div className="w-full lg:w-1/3 order-1">
+//             <FaderInAnimation direction="up">
+//               <div className="key-points-item-box-1">
+//                 <div
+//                   className="key-points-item wow fadeInUp flex items-center mb-14"
+//                   data-wow-delay="0.4s"
+//                 >
+//                   <div className="key-points-item-content w-[calc(100%-100px)] text-right">
+//                     <h3 className="text-lg font-semibold mb-2 font-default text-(--primary-color)">
+//                       Preserves Purity
+//                     </h3>
+//                     <p className="m-0 text-sm">
+//                       Ensures natural essence, free and from toxins, additives
+//                     </p>
+//                   </div>
+//                   <div className="icon-box relative flex h-20 w-20 items-center justify-center rounded-full bg-(--accent-color) ml-5">
+//                     <span className="absolute inset-0 rounded-full bg-(--primary-color) scale-0 transition-transform duration-300" />
+//                     <img
+//                       src="/images/icon-key-points-1.svg"
+//                       alt="Preserves Purity"
+//                       className="relative z-1 max-w-[45px]"
+//                     />
+//                   </div>
+//                 </div>
+
+//                 <div
+//                   className="key-points-item wow fadeInUp flex items-center mb-14"
+//                   data-wow-delay="0.6s"
+//                 >
+//                   <div className="key-points-item-content w-[calc(100%-100px)] text-right">
+//                     <h3 className="text-lg font-semibold mb-2 font-default text-(--primary-color)">
+//                       Travel Friendly
+//                     </h3>
+//                     <p className="m-0 text-sm">
+//                       Ensures natural essence, free and from toxins, additives
+//                     </p>
+//                   </div>
+//                   <div className="icon-box relative flex h-20 w-20 items-center justify-center rounded-full bg-(--accent-color) ml-5">
+//                     <span className="absolute inset-0 rounded-full bg-(--primary-color) scale-0 transition-transform duration-300" />
+//                     <img
+//                       src="/images/icon-key-points-2.svg"
+//                       alt="Travel Friendly"
+//                       className="relative z-1 max-w-[45px]"
+//                     />
+//                   </div>
+//                 </div>
+
+//                 <div
+//                   className="key-points-item wow fadeInUp flex items-center mb-0"
+//                   data-wow-delay="0.8s"
+//                 >
+
+//                   <div className="key-points-item-content w-[calc(100%-100px)] text-right">
+//                     <h3 className="text-lg font-semibold mb-2 font-default text-(--primary-color)">
+//                       Preserves Purity
+//                     </h3>
+//                     <p className="m-0 text-sm">
+//                       Ensures natural essence, free and from toxins, additives
+//                     </p>
+//                   </div>
+//                   <div className="icon-box relative flex h-20 w-20 items-center justify-center rounded-full bg-(--accent-color) ml-5">
+//                     <span className="absolute inset-0 rounded-full bg-(--primary-color) scale-0 transition-transform duration-300" />
+//                     <img
+//                       src="/images/icon-key-points-3.svg"
+//                       alt="Preserves Purity"
+//                       className="relative z-1 max-w-[45px]"
+//                     />
+//                   </div>
+//                 </div>
+//               </div>
+//             </FaderInAnimation>
+//           </div>
+//           {/* Middle image */}
+//           <div className="w-full lg:w-1/3 order-3 lg:order-2 mt-10 lg:mt-0">
+//             <div className="key-points-image text-center mx-4">
+//               <figure>
+//                 <img
+//                   src="/images/key-points-image.png"
+//                   alt="Key points"
+//                   className="mx-auto w-full max-w-[340px]"
+//                 />
+//               </figure>
+//             </div>
+//           </div>
+
+//           {/* Right column - box 2 */}
+//           <div className="w-full lg:w-1/3 order-2 lg:order-3 mt-10 lg:mt-0">
+//             <FaderInAnimation direction="up">
+//               <div className="key-points-item-box-2">
+//                 <div
+//                   className="key-points-item wow fadeInUp flex items-center mb-14"
+//                   data-wow-delay="0.4s"
+//                 >
+//                   <div className="icon-box relative flex h-20 w-20 items-center justify-center rounded-full bg-(--accent-color) mr-5">
+//                     <span className="absolute inset-0 rounded-full bg-(--primary-color) scale-0 transition-transform duration-300" />
+//                     <img
+//                       src="/images/icon-key-points-4.svg"
+//                       alt="100% Pure Oils"
+//                       className="relative z-1 max-w-[45px]"
+//                     />
+//                   </div>
+//                   <div className="key-points-item-content w-[calc(100%-100px)]">
+//                     <h3 className="text-lg font-semibold mb-2 font-default text-(--primary-color)">
+//                       100% Pure Oils
+//                     </h3>
+//                     <p className="m-0 text-sm">
+//                       Ensures natural essence, free and from toxins, additives
+//                     </p>
+//                   </div>
+//                 </div>
+
+//                 <div
+//                   className="key-points-item wow fadeInUp flex items-center mb-14"
+//                   data-wow-delay="0.6s"
+//                 >
+//                   <div className="icon-box relative flex h-20 w-20 items-center justify-center rounded-full bg-(--accent-color) mr-5">
+//                     <span className="absolute inset-0 rounded-full bg-(--primary-color) scale-0 transition-transform duration-300" />
+//                     <img
+//                       src="/images/icon-key-points-5.svg"
+//                       alt="Eco Friendly"
+//                       className="relative z-[1] max-w-[45px]"
+//                     />
+//                   </div>
+//                   <div className="key-points-item-content w-[calc(100%-100px)]">
+//                     <h3 className="text-lg font-semibold mb-2 font-default text-(--primary-color)">
+//                       Eco Friendly
+//                     </h3>
+//                     <p className="m-0 text-sm">
+//                       Ensures natural essence, free and from toxins, additives
+//                     </p>
+//                   </div>
+//                 </div>
+
+//                 <div
+//                   className="key-points-item wow fadeInUp flex items-center mb-0"
+//                   data-wow-delay="0.8s"
+//                 >
+//                   <div className="icon-box relative flex h-20 w-20 items-center justify-center rounded-full bg-(--accent-color) mr-5">
+//                     <span className="absolute inset-0 rounded-full bg-(--primary-color) scale-0 transition-transform duration-300" />
+//                     <img
+//                       src="/images/icon-key-points-6.svg"
+//                       alt="Trusted by Experts"
+//                       className="relative z-[1] max-w-[45px]"
+//                     />
+//                   </div>
+//                   <div className="key-points-item-content w-[calc(100%-100px)]">
+//                     <h3 className="text-lg font-semibold mb-2 font-default text-(--primary-color)">
+//                       Trusted by Experts
+//                     </h3>
+//                     <p className="m-0 text-sm">
+//                       Ensures natural essence, free and from toxins, additives
+//                     </p>
+//                   </div>
+//                 </div>
+//               </div>
+//             </FaderInAnimation>
+//           </div>
+//         </div>
+
+//         {/* Footer text */}
+//         <div
+//           className="section-footer-text wow fadeInUp mt-16 text-center"
+//           data-wow-delay="0.8s"
+//         >
+//           <p className="m-0 text-sm sm:text-base">
+//             Let&apos;s make something great work together.{" "}
+//             <a
+//               href="/contact"
+//               className="italic underline text-[var(--accent-color)] transition-colors hover:text-[var(--primary-color)]"
+//             >
+//               Get Free Quote
+//             </a>
+//           </p>
+//         </div>
+//       </div>
+//     </section>
+//   );
+// }
+
+
+// =====================
+//    NEW CODE
+// =====================]
+
+import FaderInAnimation from "@/Hooks/FaderInAnimation";
+import RevealInAnimation from "@/Hooks/RevealInAnimation";
+
+export default function OurKeyPoints() {
+  return (
+    <section className="our-key-points py-24">
+      <div className="container mx-auto px-4">
+
+        {/* Top heading row */}
+        <div className="section-row mb-12 flex flex-col gap-6 lg:flex-row lg:items-center">
+          <div className="lg:w-1/2">
+            <div className="section-title pl-5">
+              <h3 className="text-sm font-thin capitalize tracking-[0.2em] text-(--primary-color)">
+                Unsere Schwerpunkte
+              </h3>
+
+              <RevealInAnimation direction="left">
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight text-(--primary-color) font-default">
+                  Essenzielle Nährstoffe,
+                  <span className="block text-(--accent-color) font-accent font-light italic">
+                    für Energie und Wohlbefinden
+                  </span>
+                </h2>
+              </RevealInAnimation>
+            </div>
+          </div>
+
+          <div className="lg:w-1/2">
+            <div>
+              <p className="text-sm sm:text-base text-(--primary-color)/75">
+                Prolixus vereint sorgfältig ausgewählte Vitamine und Mineralstoffe
+                in einer ausgewogenen Rezeptur – entwickelt zur täglichen
+                Unterstützung von Energie, Stoffwechsel und Vitalität.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Main content row */}
+        <div className="flex flex-col items-center lg:flex-row lg:items-center lg:gap-8 font-default">
+
+          {/* LEFT COLUMN */}
+          <div className="w-full lg:w-1/3 order-1">
+            <FaderInAnimation direction="up">
+              <div className="key-points-item-box-1">
+
+                {/* Item 1 */}
+                <div className="key-points-item flex items-center mb-14">
+                  <div className="key-points-item-content w-[calc(100%-100px)] text-right">
+                    <h3 className="text-lg font-semibold mb-2 text-(--primary-color)">
+                      Unterstützt den Energiestoffwechsel
+                    </h3>
+                    <p className="m-0 text-sm">
+                      Vitamin C und Eisen tragen zur Verringerung von Müdigkeit
+                      und Ermüdung bei.
+                    </p>
+                  </div>
+                  <div className="icon-box flex h-20 w-20 items-center justify-center rounded-full bg-(--accent-color) ml-5">
+                    <img
+                      src="/images/icon-key-points-1.svg"
+                      alt="Energie"
+                      className="max-w-[45px]"
+                    />
+                  </div>
+                </div>
+
+                {/* Item 2 */}
+                <div className="key-points-item flex items-center mb-14">
+                  <div className="key-points-item-content w-[calc(100%-100px)] text-right">
+                    <h3 className="text-lg font-semibold mb-2 text-(--primary-color)">
+                      Hohe Bioverfügbarkeit
+                    </h3>
+                    <p className="m-0 text-sm">
+                      Optimal abgestimmte Kombination für eine effiziente
+                      Aufnahme im Körper.
+                    </p>
+                  </div>
+                  <div className="icon-box flex h-20 w-20 items-center justify-center rounded-full bg-(--accent-color) ml-5">
+                    <img
+                      src="/images/icon-key-points-2.svg"
+                      alt="Bioverfügbarkeit"
+                      className="max-w-[45px]"
+                    />
+                  </div>
+                </div>
+
+                {/* Item 3 */}
+                <div className="key-points-item flex items-center mb-0">
+                  <div className="key-points-item-content w-[calc(100%-100px)] text-right">
+                    <h3 className="text-lg font-semibold mb-2 text-(--primary-color)">
+                      Geprüfte Qualität
+                    </h3>
+                    <p className="m-0 text-sm">
+                      Strenge Qualitätskontrollen sorgen für Reinheit
+                      und Sicherheit.
+                    </p>
+                  </div>
+                  <div className="icon-box flex h-20 w-20 items-center justify-center rounded-full bg-(--accent-color) ml-5">
+                    <img
+                      src="/images/icon-key-points-3.svg"
+                      alt="Qualität"
+                      className="max-w-[45px]"
+                    />
+                  </div>
+                </div>
+
+              </div>
+            </FaderInAnimation>
+          </div>
+
+          {/* CENTER IMAGE */}
+          <div className="w-full lg:w-1/3 order-3 lg:order-2 mt-10 lg:mt-0">
+            <div className="key-points-image text-center mx-4">
+              <figure>
+                <img
+                  src="/images/new/prolixus-why.jpeg"
+                  alt="Prolixus Produkt"
+                  className="mx-auto w-full max-w-[340px]"
+                />
+              </figure>
+            </div>
+          </div>
+
+          {/* RIGHT COLUMN */}
+          <div className="w-full lg:w-1/3 order-2 lg:order-3 mt-10 lg:mt-0">
+            <FaderInAnimation direction="up">
+              <div className="key-points-item-box-2">
+
+                {/* Item 4 */}
+                <div className="key-points-item flex items-center mb-14">
+                  <div className="icon-box flex h-20 w-20 items-center justify-center rounded-full bg-(--accent-color) mr-5">
+                    <img
+                      src="/images/icon-key-points-4.svg"
+                      alt="Vegan"
+                      className="max-w-[45px]"
+                    />
+                  </div>
+                  <div className="key-points-item-content w-[calc(100%-100px)]">
+                    <h3 className="text-lg font-semibold mb-2 text-(--primary-color)">
+                      Vegan & Glutenfrei
+                    </h3>
+                    <p className="m-0 text-sm">
+                      Frei von Farb-, Aroma- und Konservierungsstoffen.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Item 5 */}
+                <div className="key-points-item flex items-center mb-14">
+                  <div className="icon-box flex h-20 w-20 items-center justify-center rounded-full bg-(--accent-color) mr-5">
+                    <img
+                      src="/images/icon-key-points-5.svg"
+                      alt="Für jedes Alter"
+                      className="max-w-[45px]"
+                    />
+                  </div>
+                  <div className="key-points-item-content w-[calc(100%-100px)]">
+                    <h3 className="text-lg font-semibold mb-2 text-(--primary-color)">
+                      Für jedes Alter geeignet
+                    </h3>
+                    <p className="m-0 text-sm">
+                      Ideal für einen aktiven Lebensstil – auch für Generation 50+.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Item 6 */}
+                <div className="key-points-item flex items-center mb-0">
+                  <div className="icon-box flex h-20 w-20 items-center justify-center rounded-full bg-(--accent-color) mr-5">
+                    <img
+                      src="/images/icon-key-points-6.svg"
+                      alt="Transparenz"
+                      className="max-w-[45px]"
+                    />
+                  </div>
+                  <div className="key-points-item-content w-[calc(100%-100px)]">
+                    <h3 className="text-lg font-semibold mb-2 text-(--primary-color)">
+                      Transparente Rezeptur
+                    </h3>
+                    <p className="m-0 text-sm">
+                      Klare Deklaration aller Inhaltsstoffe für maximale
+                      Vertrauenswürdigkeit.
+                    </p>
+                  </div>
+                </div>
+
+              </div>
+            </FaderInAnimation>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  );
+}

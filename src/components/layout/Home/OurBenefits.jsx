@@ -1,0 +1,438 @@
+// import FaderInAnimation from "@/Hooks/FaderInAnimation";
+
+// export default function OurBenefits() {
+//   return (
+//     <section className="our-benefits py-24">
+//       <div className="container mx-auto px-4">
+//         {/* Top row */}
+//         <div className="flex flex-col items-center gap-10 lg:flex-row lg:items-center">
+//           {/* Left: Image */}
+//           <div className="w-full lg:w-5/12">
+//             <div className="benefit-image relative lg:mr-4">
+//               <div className="bemefit-img">
+//                 <figure>
+//                   <img
+//                     src="/images/benefit-img.png"
+//                     alt="Benefits of oil"
+//                     className="w-full aspect-[1/1.33] object-cover"
+//                   />
+//                 </figure>
+//               </div>
+
+//               <div className="benefit-quality-circle absolute right-0 top-0">
+//                 <figure>
+//                   <img
+//                     src="/images/premium-quality-circle-2.png"
+//                     alt="Premium quality"
+//                     className="w-full max-w-[120px] animate-spin"
+//                   />
+//                 </figure>
+//               </div>
+//             </div>
+//           </div>
+
+//           {/* Right: Content */}
+//           <div className="w-full lg:w-7/12">
+//             <div className="benefit-content">
+//               {/* Section Title */}
+//               <div className="section-title mb-8">
+//                 <h3 className="wow fadeInUp text-sm font-semibold tracking-[0.2em] text-(--primary-color)">
+//                   Benefits of Oil
+//                 </h3>
+//                 <h2
+//                   className="text-anime-style-2 font-default text-primary text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight"
+//                   data-cursor="-opaque"
+//                 >
+//                   Unlock nature&apos;s power amazing{" "}
+//                   <span className="block text-(--dark-color)  font-accent font-light italic">
+//                     benefits of essential oils
+//                   </span>
+//                 </h2>
+//               </div>
+
+//               {/* Benefit Body */}
+//               <div className="benefit-body">
+//                 {/* Row 1 */}
+//                 <FaderInAnimation direction="up" duration={0.4}>
+//                 <div className="benefit-item-box flex flex-wrap items-center gap-6 mb-8">
+//                   <div
+//                     className="benefit-item wow p-4 fadeInUp w-full md:w-[calc(50%-15px)] bg-(--white-color) rounded-2xl"
+//                     data-wow-delay="0s"
+//                   >
+//                     <div className="icon-box relative mb-7 flex h-15 w-15 items-center justify-center rounded-full bg-(--accent-color)">
+//                       <span className="absolute inset-0 rounded-full bg-(--primary-color) scale-0 transition-transform duration-300" />
+//                       <img
+//                         src="/images/icon-benefit-1.svg"
+//                         alt="natural healing & wellness"
+//                         className="relative z-1 w-full max-w-[35px]"
+//                       />
+//                     </div>
+//                     <div className="benefit-item-content">
+//                       <h3 className="text-[20px] capitalize mb-2 font-default text-primary font-bold">
+//                         natural healing &amp; wellness
+//                       </h3>
+//                       <p className="m-0 text-sm sm:text-base">
+//                         Supports overall health, immunity, and promotes
+//                         well-being.
+//                       </p>
+//                     </div>
+//                   </div>
+
+//                   <div
+//                     className="benefit-item wow fadeInUp w-full md:w-[calc(50%-15px)]"
+//                     data-wow-delay="0.2s"
+//                   >
+//                     <div className="icon-box relative mb-7 flex h-15 w-15 items-center justify-center rounded-full bg-(--accent-color)">
+//                       <span className="absolute inset-0 rounded-full bg-(--primary-color) scale-0 transition-transform duration-300" />
+//                       <img
+//                         src="/images/icon-benefit-2.svg"
+//                         alt="skin & beauty care"
+//                         className="relative z-1 w-full max-w-[35px]"
+//                       />
+//                     </div>
+//                     <div className="benefit-item-content">
+//                       <h3 className="text-[20px] capitalize mb-2 font-default text-primary font-bold">
+//                         skin &amp; beauty care
+//                       </h3>
+//                       <p className="m-0 text-sm sm:text-base">
+//                         Supports overall health, immunity, and promotes
+//                         well-being.
+//                       </p>
+//                     </div>
+//                   </div>
+//                 </div>
+//                 </FaderInAnimation>
+//                 {/* Row 2 */}
+//                 <FaderInAnimation direction="up" duration={0.6}>
+//                 <div className="benefit-item-box flex flex-wrap items-center gap-6">
+//                   <div
+//                     className="benefit-item wow fadeInUp w-full md:w-[calc(50%-15px)]"
+//                     data-wow-delay="0.4s"
+//                   >
+//                     <div className="icon-box relative mb-7 flex h-15 w-15 items-center justify-center rounded-full bg-(--accent-color)">
+//                       <span className="absolute inset-0 rounded-full bg-(--primary-color) scale-0 transition-transform duration-300" />
+//                       <img
+//                         src="/images/icon-benefit-3.svg"
+//                         alt="home purification"
+//                         className="relative z-1 w-full max-w-[35px]"
+//                       />
+//                     </div>
+//                     <div className="benefit-item-content">
+//                       <h3 className="text-[20px] capitalize mb-2 font-default text-primary font-bold">
+//                         home purification
+//                       </h3>
+//                       <p className="m-0 text-sm sm:text-base">
+//                         Supports overall health, immunity, and promotes
+//                         well-being.
+//                       </p>
+//                     </div>
+//                   </div>
+
+//                   <div
+//                     className="benefit-item wow p-4 fadeInUp w-full md:w-[calc(50%-15px)] bg-(--white-color) rounded-2xl"
+//                     data-wow-delay="0.6s"
+//                   >
+//                     <div className="icon-box relative mb-7 flex h-15 w-15 items-center justify-center rounded-full bg-(--accent-color)">
+//                       <span className="absolute inset-0 rounded-full bg-(--primary-color) scale-0 transition-transform duration-300" />
+//                       <img
+//                         src="/images/icon-benefit-4.svg"
+//                         alt="non-toxic & eco-friendly"
+//                         className="relative z-1 w-full max-w-[35px]"
+//                       />
+//                     </div>
+//                     <div className="benefit-item-content">
+//                       <h3 className="text-[20px] capitalize mb-2 font-default text-primary font-bold">
+//                         non-toxic &amp; eco-friendly
+//                       </h3>
+//                       <p className="m-0 text-sm sm:text-base">
+//                         Supports overall health, immunity, and promotes
+//                         well-being.
+//                       </p>
+//                     </div>
+//                   </div>
+//                 </div>
+//                 </FaderInAnimation>
+//               </div>
+//               {/* Benefit Body End */}
+//             </div>
+//           </div>
+//         </div>
+
+//         {/* Bottom stats / benefit list */}
+//         <div className="mt-20">
+//           <div className="benefits-list flex flex-wrap gap-y-8 gap-x-24 border-t border-(--divider-color) pt-20">
+//             <div className="benefit-list-item wow fadeInUp flex items-center w-full md:w-[calc(33.33%-66.66px)]">
+//               <div className="icon-box mr-5">
+//                 <img
+//                   src="/images/icon-benefit-list-1.svg"
+//                   alt="active member"
+//                   className="w-full max-w-[50px]"
+//                 />
+//               </div>
+//               <div className="benefit-list-item-content w-[calc(100%-70px)]">
+//                 <h3 className="text-[20px] capitalize mb-1">active member</h3>
+//                 <p className="m-0 text-sm sm:text-base">
+//                   Dedicated to sharing oil benefits.
+//                 </p>
+//               </div>
+//             </div>
+
+//             <div
+//               className="benefit-list-item wow fadeInUp flex items-center w-full md:w-[calc(33.33%-66.66px)]"
+//               data-wow-delay="0.2s"
+//             >
+//               <div className="icon-box mr-5">
+//                 <img
+//                   src="/images/icon-benefit-list-2.svg"
+//                   alt="project complete"
+//                   className="w-full max-w-[50px]"
+//                 />
+//               </div>
+//               <div className="benefit-list-item-content w-[calc(100%-70px)]">
+//                 <h3 className="text-[20px] capitalize mb-1">
+//                   project complete
+//                 </h3>
+//                 <p className="m-0 text-sm sm:text-base">
+//                   Successfully delivered quality oil.
+//                 </p>
+//               </div>
+//             </div>
+
+//             <div
+//               className="benefit-list-item wow fadeInUp flex items-center w-full md:w-[calc(33.33%-66.66px)]"
+//               data-wow-delay="0.4s"
+//             >
+//               <div className="icon-box mr-5">
+//                 <img
+//                   src="/images/icon-benefit-list-3.svg"
+//                   alt="product reward"
+//                   className="w-full max-w-[50px]"
+//                 />
+//               </div>
+//               <div className="benefit-list-item-content w-[calc(100%-70px)]">
+//                 <h3 className="text-[20px] capitalize mb-1">product reward</h3>
+//                 <p className="m-0 text-sm sm:text-base">
+//                   Earn rewards for oil purchases.
+//                 </p>
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     </section>
+//   );
+// }
+
+
+// ====================
+//    NEW CODE
+// ====================
+
+import FaderInAnimation from "@/Hooks/FaderInAnimation";
+
+export default function OurBenefits() {
+  return (
+    <section className="our-benefits py-24">
+      <div className="container mx-auto px-4">
+
+        {/* Top row */}
+        <div className="flex flex-col items-center gap-10 lg:flex-row lg:items-center">
+
+          {/* Left: Image */}
+          <div className="w-full lg:w-5/12">
+            <div className="benefit-image relative lg:mr-4">
+              <figure>
+                <img
+                  src="/images/new/prolixus-benefits.jpeg"
+                  alt="Prolixus Inhaltsstoffe"
+                  className="w-full aspect-[1/1.33] object-cover"
+                />
+              </figure>
+
+              <div className="benefit-quality-circle absolute right-0 top-0">
+                <img
+                  src="/images/premium-quality-circle-2.png"
+                  alt="Premium Qualität"
+                  className="w-full max-w-[120px] animate-spin-slowly"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Right: Content */}
+          <div className="w-full lg:w-7/12">
+            <div className="benefit-content">
+
+              {/* Section Title */}
+              <div className="section-title mb-8">
+                <h3 className="text-sm font-semibold tracking-[0.2em] text-(--primary-color)">
+                  Inhaltsstoffe
+                </h3>
+
+                <h2 className="font-default text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight text-(--primary-color)">
+                  Essenzielle Nährstoffe für{" "}
+                  <span className="block text-(--accent-color) font-accent font-light italic">
+                    Energie und Wohlbefinden
+                  </span>
+                </h2>
+              </div>
+
+              {/* Benefit Body */}
+              <div className="benefit-body">
+
+                {/* Row 1 */}
+                <FaderInAnimation direction="up">
+                  <div className="flex flex-wrap items-center gap-6 mb-8">
+
+                    {/* Calcium */}
+                    <div className="w-full md:w-[calc(50%-15px)] p-4 bg-(--white-color) rounded-2xl">
+                      <div className="icon-box mb-7 flex h-15 w-15 items-center justify-center rounded-full bg-(--accent-color)">
+                        <img
+                          src="/images/icon-benefit-1.svg"
+                          alt="Calcium"
+                          className="w-full max-w-[35px]"
+                        />
+                      </div>
+                      <h3 className="text-[20px] mb-2 font-bold text-(--primary-color)">
+                        Calcium
+                      </h3>
+                      <p className="text-sm sm:text-base">
+                        Trägt zu einem normalen Energiestoffwechsel sowie zur
+                        Erhaltung gesunder Knochen und Zähne bei.
+                      </p>
+                    </div>
+
+                    {/* Magnesium */}
+                    <div className="w-full md:w-[calc(50%-15px)]">
+                      <div className="icon-box mb-7 flex h-15 w-15 items-center justify-center rounded-full bg-(--accent-color)">
+                        <img
+                          src="/images/icon-benefit-2.svg"
+                          alt="Magnesium"
+                          className="w-full max-w-[35px]"
+                        />
+                      </div>
+                      <h3 className="text-[20px] mb-2 font-bold text-(--primary-color)">
+                        Magnesium
+                      </h3>
+                      <p className="text-sm sm:text-base">
+                        Unterstützt eine normale Muskelfunktion und trägt zu
+                        einer normalen Funktion des Nervensystems bei.
+                      </p>
+                    </div>
+
+                  </div>
+                </FaderInAnimation>
+
+                {/* Row 2 */}
+                <FaderInAnimation direction="up">
+                  <div className="flex flex-wrap items-center gap-6">
+
+                    {/* Eisen */}
+                    <div className="w-full md:w-[calc(50%-15px)]">
+                      <div className="icon-box mb-7 flex h-15 w-15 items-center justify-center rounded-full bg-(--accent-color)">
+                        <img
+                          src="/images/icon-benefit-3.svg"
+                          alt="Eisen"
+                          className="w-full max-w-[35px]"
+                        />
+                      </div>
+                      <h3 className="text-[20px] mb-2 font-bold text-(--primary-color)">
+                        Eisen
+                      </h3>
+                      <p className="text-sm sm:text-base">
+                        Trägt zur normalen Bildung roter Blutkörperchen
+                        und zum Sauerstofftransport im Körper bei.
+                      </p>
+                    </div>
+
+                    {/* Vitamin C */}
+                    <div className="w-full md:w-[calc(50%-15px)] p-4 bg-(--white-color) rounded-2xl">
+                      <div className="icon-box mb-7 flex h-15 w-15 items-center justify-center rounded-full bg-(--accent-color)">
+                        <img
+                          src="/images/icon-benefit-4.svg"
+                          alt="Vitamin C"
+                          className="w-full max-w-[35px]"
+                        />
+                      </div>
+                      <h3 className="text-[20px] mb-2 font-bold text-(--primary-color)">
+                        Vitamin C
+                      </h3>
+                      <p className="text-sm sm:text-base">
+                        Unterstützt das Immunsystem und schützt die Zellen
+                        vor oxidativem Stress.
+                      </p>
+                    </div>
+
+                  </div>
+                </FaderInAnimation>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom stats / trust row */}
+        <div className="mt-20">
+          <div className="flex flex-wrap gap-y-8 gap-x-24 border-t border-(--divider-color) pt-20">
+
+            {/* Item 1 */}
+            <div className="flex items-center w-full md:w-[calc(33.33%-66.66px)]">
+              <div className="mr-5">
+                <img
+                  src="/images/icon-benefit-list-1.svg"
+                  alt="Zufriedene Kunden"
+                  className="w-full max-w-[50px]"
+                />
+              </div>
+              <div>
+                <h3 className="text-[20px] mb-1">Zufriedene Kunden</h3>
+                <p className="text-sm sm:text-base">
+                  Viele Kundinnen und Kunden vertrauen bereits auf Prolixus.
+                </p>
+              </div>
+            </div>
+
+            {/* Item 2 */}
+            <div className="flex items-center w-full md:w-[calc(33.33%-66.66px)]">
+              <div className="mr-5">
+                <img
+                  src="/images/icon-benefit-list-2.svg"
+                  alt="Apotheken gelistet"
+                  className="w-full max-w-[50px]"
+                />
+              </div>
+              <div>
+                <h3 className="text-[20px] mb-1">
+                  Apotheken gelistet
+                </h3>
+                <p className="text-sm sm:text-base">
+                  Gelistet unter PZN: 17879717.
+                </p>
+              </div>
+            </div>
+
+            {/* Item 3 */}
+            <div className="flex items-center w-full md:w-[calc(33.33%-66.66px)]">
+              <div className="mr-5">
+                <img
+                  src="/images/icon-benefit-list-3.svg"
+                  alt="Höchste Qualität"
+                  className="w-full max-w-[50px]"
+                />
+              </div>
+              <div>
+                <h3 className="text-[20px] mb-1">Geprüfte Qualität</h3>
+                <p className="text-sm sm:text-base">
+                  Hergestellt nach strengen Qualitäts- und Sicherheitsstandards.
+                </p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+  );
+}
+

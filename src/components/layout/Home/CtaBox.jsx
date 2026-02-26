@@ -1,0 +1,150 @@
+// import FaderInAnimation from "@/Hooks/FaderInAnimation";
+// import RevealInAnimation from "@/Hooks/RevealInAnimation";
+// import Link from "next/link";
+// import Button from "@/components/ui/Button";
+
+// export default function CtaBox() {
+//   return (
+//     <section className="cta-box dark-section relative py-24 bg-(--primary-color)">
+//       <div className="container mx-auto px-4 relative z-1">
+//         <div className="flex flex-col items-center gap-10 lg:flex-row">
+//           {/* Left: Content */}
+//           <div className="w-full lg:w-1/2">
+//             <div className="cta-content h-full text-center lg:text-left">
+//               {/* Section Title */}
+//               <div className="section-title">
+//                 <RevealInAnimation>
+//                   <h2
+//                     className="text-anime-style-2 leading-tight text-2xl sm:text-3xl lg:text-8xl font-bold text-(--white-color) text-center font-default"
+//                     data-cursor="-opaque"
+//                   >
+//                     <span className="block  font-accent font-light italic lg:text-6xl">
+//                       Get 50% off
+//                     </span>
+//                     Premium oil
+//                   </h2>
+//                 </RevealInAnimation>
+//                 <FaderInAnimation direction="up">
+//                   <p
+//                     className="wow fadeInUp mt-6 opacity-80 text-sm sm:text-base text-align--center justify lg:text-center text-(--white-color)"
+//                     data-wow-delay="0.2s"
+//                   >
+//                     Porches Premium Oil is crafted for those who value purity and
+//                     excellence. Sourced from the finest natural ingredients, our
+//                     premium oil is carefully extracted to preserve its full
+//                     potency.
+//                   </p>
+//                 </FaderInAnimation>
+//               </div>
+
+//               {/* Button */}
+//               <FaderInAnimation direction="up" delay="0.4s">
+//                 <div
+//                   className="cta-buton wow fadeInUp mt-8"
+//                   data-wow-delay="0.4s"
+//                 >
+//                   <div className="flex justify-center">
+//                     <Link href="/contact">
+//                       <Button
+//                         variant="accent"
+//                         size="lg"
+//                         className="!rounded-full !px-8 uppercase tracking-wide"
+//                       >
+//                         purchase now
+//                       </Button>
+//                     </Link>
+//                   </div>
+//                 </div>
+//               </FaderInAnimation>
+//             </div>
+//           </div>
+
+//           {/* Right: Image */}
+//           <div className="w-full lg:w-1/2">
+//             <div className="cta-image h-full text-center">
+//               <figure>
+//                 <img
+//                   src="/images/cta-image.png"
+//                   alt="Premium oil"
+//                   className="mx-auto w-full object-cover aspect-[1/0.955] -mb-24"
+//                 />
+//               </figure>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     </section>
+//   );
+// }
+
+
+import FaderInAnimation from "@/Hooks/FaderInAnimation";
+import RevealInAnimation from "@/Hooks/RevealInAnimation";
+import Link from "next/link";
+import Button from "@/components/ui/Button";
+
+export default function CtaBox() {
+  return (
+    <section className="cta-box dark-section relative py-24 bg-(--primary-color)">
+      <div className="container mx-auto px-4 relative z-1">
+        <div className="flex flex-col items-center gap-10 lg:flex-row">
+
+          {/* Left: Content */}
+          <div className="w-full lg:w-1/2">
+            <div className="cta-content h-full text-center lg:text-center">
+              {/* Section Title */}
+              <div className="section-title">
+
+                <RevealInAnimation>
+                  <h2 className="leading-tight text-2xl sm:text-3xl lg:text-8xl font-bold text-(--white-color) text-center lg:text-center font-default">
+                    <span className="block font-accent font-light italic lg:text-6xl">
+                      Starten Sie jetzt
+                    </span>
+                    mit Prolixus
+                  </h2>
+                </RevealInAnimation>
+
+                <FaderInAnimation direction="up">
+                  <p className="mt-6 opacity-90 text-sm sm:text-base text-(--white-color) text-center lg:text-center leading-relaxed">
+                    Unterstützen Sie Ihren Energiestoffwechsel mit einer 
+                    ausgewogenen Kombination aus Vitamin C, Eisen, 
+                    Calcium und Magnesium – entwickelt für Ihren Alltag.
+                  </p>
+                </FaderInAnimation>
+
+              </div>
+
+              {/* Button */}
+              <FaderInAnimation direction="up" delay={0.4}>
+                <div className="mt-8 flex justify-center lg:justify-center">
+                  <Link href="/products">
+                    <Button
+                      variant="accent"
+                      size="lg"
+                      className="rounded-full! px-8! uppercase tracking-wide"
+                    >
+                      Jetzt entdecken
+                    </Button>
+                  </Link>
+                </div>
+              </FaderInAnimation>
+
+            </div>
+          </div>
+
+          {/* Right: Image */}
+          <div className="w-full lg:w-1/2">
+            <div className="cta-image h-full text-center">
+              <img
+                src="/images/new/prolixus-nutrients.jpeg"
+                alt="Prolixus Produkt"
+                className="mx-auto w-full object-cover aspect-[1/0.955] -mb-24 rounded-2xl"
+              />
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  );
+}

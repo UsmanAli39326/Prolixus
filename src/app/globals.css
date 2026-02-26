@@ -1,0 +1,155 @@
+@import "tailwindcss";
+
+@keyframes rotate-loading {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes rotate-loading-slow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.animate-spin-loader { animation: rotate-loading 1.5s linear infinite; }
+.animate-spin-slowly { animation: rotate-loading-slow 10s linear infinite; }
+
+:root{
+  /* === BRAND COLORS (Adjusted to Product) === */
+  --primary-color: #0B1020;      /* Deep navy (was green) */
+  --secondary-color: #F4F7FB;    /* Light cool background (kept light) */
+  --accent-color: #00C2FF;       /* Electric blue glow */
+
+  /* === TEXT === */
+  --text-color: #2C2C2C;         /* Neutral dark gray for readability */
+  --white-color: #FFFFFF;
+
+  /* === DIVIDERS === */
+  --divider-color: #0B10201A;    /* Navy with opacity */
+  --dark-divider-color: #FFFFFF1A;
+
+  /* === STATES === */
+  --error-color: rgb(230, 87, 87);
+
+  /* === FONTS (unchanged) === */
+  --default-font: "Plus Jakarta Sans", sans-serif;
+  --accent-font: "Lora", serif;
+
+  /* === SURFACES (keep light structure) === */
+  --surface-color: #FFFFFF;
+  --surface-2-color: #EEF2F7;    /* Light cool card background */
+}
+@theme {
+  --color-primary: var(--primary-color);
+  --color-secondary: var(--secondary-color);
+  --color-text: var(--text-color);
+  --color-accent: var(--accent-color);
+  --color-white: var(--white-color);
+  --color-divider: var(--divider-color);
+  --color-divider-dark: var(--dark-divider-color);
+  --color-error: var(--error-color);
+
+  --color-surface: var(--surface-color);
+  --color-surface-2: var(--surface-2-color);
+  --color-border: var(--divider-color);
+
+  --font-default: var(--default-font);
+  --font-accent: var(--accent-font);
+
+  --color-ring: color-mix(in srgb, var(--accent-color) 55%, transparent);
+}
+
+@layer base {
+  body {
+    font-family: var(--font-default);
+    background-color: var(--color-secondary);
+    color: var(--color-text);
+  }
+
+  h1,h2,h3,h4,h5,h6 {
+    font-family: var(--font-accent);
+    color: var(--color-primary);
+  }
+
+  a { color: inherit; text-decoration: none; }
+  a:hover { color: var(--color-accent); text-decoration: underline; }
+}
+
+@layer components {
+  .input-wrapper {
+    border: 1px solid var(--divider-color);
+    border-radius: 0.5rem;
+    transition: border-color 0.2s ease;
+  }
+
+  .input-wrapper:focus-within {
+    border-color: var(--accent-color);
+  }
+
+  .input-wrapper.input-error {
+    border-color: var(--error-color);
+  }
+
+  .input-error-text {
+    color: var(--error-color);
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+    line-height: 1.4;
+  }
+}
+
+@layer utilities {
+  .hover-pinch-zoom-in {
+    position: relative;
+    overflow: hidden;
+    transform: translateZ(0);
+    transition: transform 300ms ease;
+  }
+
+  .hover-pinch-zoom-in::before,
+  .hover-pinch-zoom-in::after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 250ms ease;
+  }
+
+  .hover-pinch-zoom-in::before {
+    top: 0;
+    left: 0;
+    border-top: 16px solid var(--secondary-color);
+    border-right: 16px solid transparent;
+  }
+
+  .hover-pinch-zoom-in::after {
+    bottom: 0;
+    right: 0;
+    border-bottom: 16px solid var(--secondary-color);
+    border-left: 16px solid transparent;
+  }
+
+  /* trigger via parent .group hover */
+  .group:hover .hover-pinch-zoom-in::before,
+  .group:hover .hover-pinch-zoom-in::after {
+    opacity: 1;
+  }
+
+  .group:hover .hover-pinch-zoom-in {
+    transform: scale(1.01);
+  }
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--divider-color);
+    border-radius: 10px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-color);
+  }
+}

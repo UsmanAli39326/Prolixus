@@ -1,0 +1,622 @@
+"use client";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { validateEmail, validatePassword, sanitize } from "@/utitlis/validation";
+import Link from "next/link";
+import Button from "@/components/ui/Button";
+import { FaGoogle } from "react-icons/fa6";
+import Input from "@/components/ui/Input";
+import FaderInAnimation from "@/Hooks/FaderInAnimation";
+import { apiService } from "@/lib/api";
+
+export default function AuthPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [isLogin, setIsLogin] = useState(true);
+
+  // Redirect to dashboard if already logged in
+  useEffect(() => {
+    if (localStorage.getItem("authToken")) {
+      router.replace("/dashboard");
+    }
+  }, []);
+
+  useEffect(() => {
+    if (searchParams.get("mode") === "register") {
+      setIsLogin(false);
+    }
+  }, [searchParams]);
+
+  // Login state
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
+
+  // Register state
+  const [name, setName] = useState("");
+  const [regEmail, setRegEmail] = useState("");
+  const [regPassword, setRegPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [agreeTerms, setAgreeTerms] = useState(false);
+
+  const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+
+  // Clear a specific field error when user types
+  const clearFieldError = (field) => {
+    setFieldErrors((prev) => {
+      const next = { ...prev };
+      delete next[field];
+      return next;
+    });
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError("");
+    const errors = {};
+
+    const cleanEmail = sanitize(email);
+    const cleanPassword = sanitize(password);
+
+    if (!cleanEmail) {
+      errors.email = "Email is required";
+    } else if (!validateEmail(cleanEmail)) {
+      errors.email = "Please enter a valid email address";
+    }
+
+    if (!cleanPassword) {
+      errors.password = "Password is required";
+    } else if (!validatePassword(cleanPassword)) {
+      errors.password = "Min 8 characters, at least 1 letter and 1 number";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      return;
+    }
+
+    setFieldErrors({});
+    setLoading(true);
+    try {
+      const response = await apiService.post("/Account/login", {
+        email: cleanEmail,
+        password: cleanPassword,
+      });
+
+      // Store token/user data from the response
+      if (response?.token) {
+        localStorage.setItem("authToken", response.token);
+      }
+      if (response?.user) {
+        localStorage.setItem("user", JSON.stringify(response.user));
+      }
+      if (!response?.success) {
+        throw new Error(response || "Login Failed")
+      }
+
+      router.replace("/dashboard");
+    } catch (err) {
+      let errorMessage = "Login failed. Please try again.";
+      try {
+        // If backend sent JSON string inside message → parse it
+        if (typeof err.message === "string") {
+          const parsed = JSON.parse(err.message);
+          errorMessage = parsed?.message || errorMessage;
+        }
+      } catch {
+        // If parsing fails, fallback to plain message
+        errorMessage = err.message || errorMessage;
+      }
+
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setError("");
+    const errors = {};
+
+    const cleanName = sanitize(name);
+    const cleanRegEmail = sanitize(regEmail);
+    const cleanRegPassword = sanitize(regPassword);
+    const cleanConfirmPassword = sanitize(confirmPassword);
+
+    if (!cleanName) {
+      errors.name = "Full name is required";
+    }
+
+    if (!cleanRegEmail) {
+      errors.regEmail = "Email is required";
+    } else if (!validateEmail(cleanRegEmail)) {
+      errors.regEmail = "Please enter a valid email address.";
+    }
+
+    if (!cleanRegPassword) {
+      errors.regPassword = "Password is required";
+    } else if (!validatePassword(cleanRegPassword)) {
+      errors.regPassword = "Password must be at least 8 characters long and include a number and a special character.";
+    }
+
+    if (!cleanConfirmPassword) {
+      errors.confirmPassword = "Please confirm your password";
+    } else if (cleanRegPassword !== cleanConfirmPassword) {
+      errors.confirmPassword = "Passwords do not match";
+    }
+
+    if (!agreeTerms) {
+      errors.agreeTerms = "You must agree to the terms and conditions";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      return;
+    }
+
+    setFieldErrors({});
+    setLoading(true);
+    try {
+      await apiService.post("/Account/SignUp", {
+        name: cleanName,
+        email: cleanRegEmail,
+        password: cleanRegPassword,
+        confirmPassword: cleanConfirmPassword,
+      });
+
+      setIsLogin(true);
+      setError("");
+    } catch (err) {
+      const raw = err.message || "";
+      let friendly = "Registration failed. Please try again.";
+
+      try {
+        const parsed = JSON.parse(raw);
+        const msg = (parsed?.message || parsed?.title || "").toLowerCase();
+
+        if (msg.includes("already") || msg.includes("duplicate") || msg.includes("exists")) {
+          friendly = "This email is already registered. Try logging in instead.";
+        } else if (parsed?.message || parsed?.title) {
+          friendly = parsed.message || parsed.title;
+        }
+      } catch {
+        const lower = raw.toLowerCase();
+        if (lower.includes("already") || lower.includes("duplicate") || lower.includes("exists")) {
+          friendly = "This email is already registered. Try logging in instead.";
+        } else if (
+          !lower.includes("400") &&
+          !lower.includes("validationerror") &&
+          !lower.includes("bad request") &&
+          !lower.includes("stack") &&
+          raw.length > 0 &&
+          raw.length < 200
+        ) {
+          friendly = raw;
+        }
+      }
+
+      setError(friendly);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const toggleMode = () => {
+    setError("");
+    setFieldErrors({});
+    setIsLogin(!isLogin);
+  };
+
+  return (
+    <FaderInAnimation direction="up">
+      <div className="flex items-center justify-center p-4 bg-secondary min-h-screen overflow-x-hidden">
+        {/* Outer frame */}
+        <div className="w-full max-w-4xl bg-white rounded-2xl shadow-xl overflow-hidden animate-fade-up">
+          <div className="relative min-h-[640px]">
+
+            {/* Forms Container */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[640px]">
+
+              {/* LEFT SIDE - Login Form (visible when isLogin) */}
+              <div
+                className={`
+                  flex items-center justify-center p-8 sm:p-12
+                  transition-all duration-700 ease-in-out
+                  ${isLogin ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none absolute inset-0 lg:relative lg:opacity-0"}
+                `}
+              >
+                <div className="w-full max-w-md">
+                  {/* Brand (for mobile) */}
+                  <div className="lg:hidden mb-8">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-2xl border-2 border-dashed border-primary/35 flex items-center justify-center bg-primary/5">
+                        <span className="text-xs text-primary/65">Logo</span>
+                      </div>
+                      <div>
+                        <div className="font-accent text-2xl text-primary">Prolixus</div>
+                        <div className="text-sm text-text">Secure access portal</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <Link href="/" className="flex justify-end w-full">
+                    <Button variant="ghost">Back To Home</Button>
+                  </Link>
+
+                  <h1 className="text-3xl font-bold font-accent text-center text-primary">
+                    Welcome back to <span className="text-accent">Prolixus</span>
+                  </h1>
+                  <p className="mt-2 text-center text-sm text-text">
+                    Sign in to continue to your dashboard.
+                  </p>
+
+                  {error && isLogin && (
+                    <p className="text-red-500 text-sm text-center mt-4">{error}</p>
+                  )}
+
+                  <form onSubmit={handleLogin} className="mt-8 space-y-4">
+                    <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      label="Email"
+                      inputClassName="w-full border border-gray-300 rounded-md px-4 py-2 focus:ring-0 focus:border-primary"
+                      className="w-full"
+                      placeholder="you@example.com"
+                      value={email}
+                      onChange={(e) => { setEmail(e.target.value); clearFieldError("email"); }}
+                      error={fieldErrors.email}
+                      required
+                    />
+
+                    <Input
+                      id="password"
+                      name="password"
+                      type="password"
+                      label="Password"
+                      inputClassName="w-full border border-gray-300 rounded-md px-4 py-2 focus:ring-0 focus:border-primary"
+                      className="w-full"
+                      placeholder="••••••••"
+                      value={password}
+                      onChange={(e) => { setPassword(e.target.value); clearFieldError("password"); }}
+                      error={fieldErrors.password}
+                      required
+                    />
+
+                    <div className="flex items-center justify-between pt-1">
+                      <Link
+                        href="/forgot-password"
+                        className="text-sm font-medium text-accent hover:underline"
+                      >
+                        Forgot password?
+                      </Link>
+
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm text-text">Remember me</span>
+                        <label className="flex items-center gap-2 select-none cursor-pointer">
+                          <Input
+                            type="checkbox"
+                            checked={rememberMe}
+                            onChange={(e) => setRememberMe(e.target.checked)}
+                            className="hidden"
+                          />
+                          <span
+                            className={`
+                              relative w-[46px] h-[26px] rounded-full transition-colors duration-200
+                              ${rememberMe ? "bg-accent/90" : "bg-primary/20"}
+                            `}
+                          >
+                            <span
+                              className={`
+                                absolute top-[3px] left-[3px] w-5 h-5 rounded-full bg-white shadow-md
+                                transition-transform duration-200
+                                ${rememberMe ? "translate-x-5" : "translate-x-0"}
+                              `}
+                            />
+                          </span>
+                        </label>
+                      </div>
+                    </div>
+
+                    <Button
+                      type="submit"
+                      variant="primary"
+                      fullWidth
+                      loading={loading}
+                      loadingText="Signing in..."
+                      className="mt-2 hover:bg-accent/90 cursor-pointer duration-300"
+                    >
+                      Log in
+                    </Button>
+
+                    <div className="flex items-center gap-4 py-2">
+                      <div className="h-px bg-divider flex-1" />
+                      <div className="text-xs text-text/60">OR</div>
+                      <div className="h-px bg-divider flex-1" />
+                    </div>
+
+                    <Button
+                      type="button"
+                      variant="outline"
+                      fullWidth
+                      className="border-divider bg-surface-2/50 hover:bg-accent/10 cursor-pointer duration-300"
+                    >
+                      <span className="flex w-full h-full items-center justify-center rounded-md text-primary">
+                        <FaGoogle className="mx-2" /> Continue with Google
+                      </span>
+                    </Button>
+
+                    <p className="text-center text-sm text-text pt-2">
+                      Don't have an account?{" "}
+                      <button
+                        type="button"
+                        onClick={toggleMode}
+                        className="font-medium text-primary hover:underline"
+                      >
+                        Sign up
+                      </button>
+                    </p>
+                  </form>
+                </div>
+              </div>
+
+              {/* RIGHT SIDE - Register Form (visible when !isLogin) */}
+              <div
+                className={`
+                  flex items-center justify-center p-8 sm:p-12
+                  transition-all duration-700 ease-in-out
+                  ${!isLogin ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none absolute inset-0 lg:relative lg:opacity-0"}
+                  lg:col-start-2
+                `}
+              >
+                <div className="w-full max-w-md">
+                  {/* Brand (for mobile) */}
+                  <div className="lg:hidden mb-8">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-2xl border-2 border-dashed border-primary/35 flex items-center justify-center bg-primary/5">
+                        <span className="text-xs text-primary/65">Logo</span>
+                      </div>
+                      <div>
+                        <div className="font-accent text-2xl text-primary">Prolixus</div>
+                        <div className="text-sm text-text">Secure access portal</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <Link href="/" className="flex justify-end w-full">
+                    <Button variant="ghost">Back To Home</Button>
+                  </Link>
+
+                  <h1 className="text-3xl font-bold font-accent text-center text-primary">
+                    Create your <span className="text-accent">Prolixus</span> account
+                  </h1>
+                  <p className="mt-2 text-center text-sm text-text">
+                    Join us and start your journey today.
+                  </p>
+
+                  {error && !isLogin && (
+                    <p className=" text-sm text-center mt-4 text-error">{error}</p>
+                  )}
+
+                  <form onSubmit={handleRegister} noValidate className="mt-8 space-y-4">
+                    <Input
+                      id="name"
+                      name="name"
+                      type="text"
+                      label="Full Name"
+                      inputClassName="w-full border border-gray-300 rounded-md px-4 py-2 focus:ring-0 focus:border-primary"
+                      className="w-full"
+                      placeholder="John Doe"
+                      value={name}
+                      onChange={(e) => { setName(e.target.value); clearFieldError("name"); }}
+                      error={fieldErrors.name}
+                      required
+                    />
+
+                    <Input
+                      id="regEmail"
+                      name="regEmail"
+                      type="email"
+                      label="Email"
+                      inputClassName="w-full border border-gray-300 rounded-md px-4 py-2 focus:ring-0 focus:border-primary"
+                      className="w-full"
+                      placeholder="you@example.com"
+                      value={regEmail}
+                      onChange={(e) => { setRegEmail(e.target.value); clearFieldError("regEmail"); }}
+                      onBlur={() => {
+                        const v = sanitize(regEmail);
+                        if (v && !validateEmail(v)) {
+                          setFieldErrors(prev => ({ ...prev, regEmail: "Please enter a valid email address." }));
+                        }
+                      }}
+                      error={fieldErrors.regEmail}
+                      required
+                    />
+
+                    <Input
+                      id="regPassword"
+                      name="regPassword"
+                      type="password"
+                      label="Password"
+                      inputClassName="w-full border border-gray-300 rounded-md px-4 py-2 focus:ring-0 focus:border-primary"
+                      className="w-full"
+                      placeholder="••••••••"
+                      value={regPassword}
+                      onChange={(e) => { setRegPassword(e.target.value); clearFieldError("regPassword"); }}
+                      onBlur={() => {
+                        if (regPassword && !validatePassword(regPassword)) {
+                          setFieldErrors(prev => ({
+                            ...prev,
+                            regPassword: "Password must be at least 8 characters long and include a number and a special character."
+                          }));
+                        }
+                      }}
+                      error={fieldErrors.regPassword}
+                      required
+                    />
+
+                    <Input
+                      id="confirmPassword"
+                      name="confirmPassword"
+                      type="password"
+                      label="Confirm Password"
+                      inputClassName="w-full border border-gray-300 rounded-md px-4 py-2 focus:ring-0 focus:border-primary"
+                      className="w-full"
+                      placeholder="••••••••"
+                      value={confirmPassword}
+                      onChange={(e) => { setConfirmPassword(e.target.value); clearFieldError("confirmPassword"); }}
+                      error={fieldErrors.confirmPassword}
+                      required
+                    />
+
+                    <div className="flex flex-col pt-1">
+                      <div className="flex items-center gap-3">
+                        <label className="flex items-center gap-2 select-none cursor-pointer">
+                          <Input
+                            type="checkbox"
+                            checked={agreeTerms}
+                            onChange={(e) => { setAgreeTerms(e.target.checked); clearFieldError("agreeTerms"); }}
+                            className="hidden"
+                          />
+                          <span
+                            className={`
+                              relative w-[46px] h-[26px] rounded-full transition-colors duration-200
+                              ${agreeTerms ? "bg-accent/90" : "bg-primary/20"}
+                            `}
+                          >
+                            <span
+                              className={`
+                                absolute top-[3px] left-[3px] w-5 h-5 rounded-full bg-white shadow-md
+                                transition-transform duration-200
+                                ${agreeTerms ? "translate-x-5" : "translate-x-0"}
+                              `}
+                            />
+                          </span>
+                        </label>
+                        <span className="text-sm text-text">
+                          I agree to the{" "}
+                          <Link href="/terms" className="font-medium text-accent hover:underline">
+                            Terms & Conditions
+                          </Link>
+                        </span>
+                      </div>
+                      {fieldErrors.agreeTerms && (
+                        <p className="text-error text-sm mt-1">{fieldErrors.agreeTerms}</p>
+                      )}
+                    </div>
+
+                    <Button
+                      type="submit"
+                      variant="primary"
+                      fullWidth
+                      loading={loading}
+                      loadingText="Creating account..."
+                      className="mt-2 hover:bg-accent/90 cursor-pointer duration-300"
+                    >
+                      Sign up
+                    </Button>
+
+                    <div className="flex items-center gap-4 py-2">
+                      <div className="h-px bg-divider flex-1" />
+                      <div className="text-xs text-text/60">OR</div>
+                      <div className="h-px bg-divider flex-1" />
+                    </div>
+
+                    <Button
+                      type="button"
+                      variant="outline"
+                      fullWidth
+                      className="border-divider! bg-surface-2/50! hover:bg-surface-2! flex items-center justify-center gap-2 cursor-pointer duration-300"
+                    >
+                      <span className="flex w-full h-full items-center justify-center rounded-md text-primary">
+                        <FaGoogle className="mx-2" /> Continue with Google
+                      </span>
+                    </Button>
+
+                    <p className="text-center text-sm text-text pt-2">
+                      Already have an account?{" "}
+                      <button
+                        type="button"
+                        onClick={toggleMode}
+                        className="font-medium text-primary hover:underline"
+                      >
+                        Sign in
+                      </button>
+                    </p>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+            {/* Sliding Image Panel */}
+            <div
+              className={`
+                absolute top-0 bottom-0 w-1/2 hidden lg:block
+                transition-all duration-700 ease-in-out
+                ${isLogin ? "right-0" : "right-1/2"}
+              `}
+            >
+              <div
+                className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+                style={{ backgroundImage: "url('/images/bg.jpg')" }}
+              />
+
+              {/* Overlay */}
+              <div className="absolute inset-0 bg-linear-to-b from-black/10 via-black/55 to-black/75" />
+
+              {/* Top brand */}
+              <div
+                className={`
+                  absolute top-6 left-6 right-6 flex items-center
+                  transition-all duration-700 ease-in-out
+                  ${isLogin ? "justify-start" : "justify-end"}
+                `}
+              >
+                <div className={`flex items-center gap-3 ${!isLogin ? "flex-row-reverse" : ""}`}>
+                  <div className="w-10 h-10 rounded-xl border-2 border-dashed border-white/60 flex items-center justify-center bg-white/10">
+                    <span className="text-xs text-white/70">Logo</span>
+                  </div>
+                  <div className={`leading-tight ${!isLogin ? "text-right" : ""}`}>
+                    <div className="text-white font-semibold tracking-wide">Prolixus</div>
+                    <div className="text-white/70 text-xs">Secure access portal</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Quote block */}
+              <div className="absolute bottom-7 left-7 right-7">
+                <div
+                  className={`
+                    text-white text-2xl font-semibold leading-snug font-accent
+                    transition-all duration-700 ease-in-out
+                    ${isLogin ? "text-left" : "text-right"}
+                  `}
+                >
+                  {isLogin
+                    ? '"Simply the tools that my team and I need."'
+                    : '"Join thousands of users who trust Prolixus."'}
+                </div>
+                <div
+                  className={`
+                    mt-3 text-white/80 text-sm
+                    transition-all duration-700 ease-in-out
+                    ${isLogin ? "text-left" : "text-right"}
+                  `}
+                >
+                  {isLogin
+                    ? "Prolixus User • Product Team"
+                    : "Prolixus Community • Growing Together"}
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </FaderInAnimation>
+  );
+}
+
