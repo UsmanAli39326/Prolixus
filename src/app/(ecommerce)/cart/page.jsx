@@ -1,21 +1,18 @@
 "use client";
-import { useState } from "react";
 import Link from "next/link";
 import FaderInAnimation from "@/Hooks/FaderInAnimation";
 import RevealInAnimation from "@/Hooks/RevealInAnimation";
 import Button from "@/components/ui/Button";
 import useCart from "@/Hooks/useCart";
 import { stripHtmlTags } from "@/utitlis/formatters";
+import { calcCartTotals, PRICING } from "@/lib/cart";
 import { FiMinus, FiPlus, FiTrash2, FiArrowLeft, FiArrowRight, FiCheck, FiShield, FiTruck, FiPackage } from "react-icons/fi";
 
 export default function CartPage() {
   const { cartItems, updateQuantity, removeFromCart } = useCart();
 
-  // Calculate totals
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const shipping = subtotal > 100 ? 0 : 9.99;
-  const tax = subtotal * 0.08;
-  const total = subtotal + shipping + tax;
+  // Calculate totals — single source of truth via shared utility
+  const { subtotal, vatAmount, shipping, total, vatPercentage } = calcCartTotals(cartItems);
 
   return (
     <FaderInAnimation direction="up">
@@ -31,7 +28,7 @@ export default function CartPage() {
                   </h1>
                   <p className="text-text mt-2">
                     {cartItems.length} {cartItems.length === 1 ? "item" : "items"} in your cart
-                    {subtotal > 100 && (
+                    {subtotal >= PRICING.FREE_SHIPPING_THRESHOLD && (
                       <span className="text-accent font-medium ml-2">• Free shipping eligible!</span>
                     )}
                   </p>
@@ -193,8 +190,8 @@ export default function CartPage() {
                         </div>
 
                         <div className="flex justify-between items-center text-sm">
-                          <span className="text-text">Tax</span>
-                          <span className="font-medium text-primary">${tax.toFixed(2)}</span>
+                          <span className="text-text">VAT ({vatPercentage}%)</span>
+                          <span className="font-medium text-primary">${vatAmount.toFixed(2)}</span>
                         </div>
 
                         <div className="h-px bg-divider my-4" />

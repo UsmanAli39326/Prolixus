@@ -3,17 +3,13 @@ import OrderItem from "./OrderItem";
 import FaderInAnimation from "@/Hooks/FaderInAnimation";
 import RevealInAnimation from "@/Hooks/RevealInAnimation";
 import useCart from "@/Hooks/useCart";
+import { calcCartTotals } from "@/lib/cart";
 
 export default function OrderSummary() {
     const { cartItems } = useCart();
 
-    // SYNCED CALCULATIONS: This logic must match CheckoutWizard.jsx and the backend payload requirements.
-    const vatPercentage = 19;
-    const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
-    const discountAmount = 0; // Initialize for future coupon logic
-    const totalNetAmount = subtotal - discountAmount;
-    const totalVatAmount = totalNetAmount * (vatPercentage / 100);
-    const total = totalNetAmount + totalVatAmount;
+    // SYNCED CALCULATIONS: Uses the same shared utility as the cart page and payload builder.
+    const { subtotal, vatAmount, shipping, total, vatPercentage } = calcCartTotals(cartItems);
 
     return (
         <aside className="lg:col-span-12 xl:col-span-5 relative">
@@ -38,7 +34,7 @@ export default function OrderSummary() {
                     </div>
                 </FaderInAnimation>
 
-                {/* Price Calculation */}
+                {/* Price Breakdown */}
                 <FaderInAnimation direction="up" delay={0.2}>
                     <div className="space-y-3 pt-6 border-t border-divider text-sm text-left">
                         <div className="flex justify-between text-text/70 font-accent">
@@ -46,12 +42,14 @@ export default function OrderSummary() {
                             <span className="font-semibold text-primary">${subtotal.toFixed(2)}</span>
                         </div>
                         <div className="flex justify-between text-text/70 font-accent">
-                            <span>Net Total</span>
-                            <span className="font-semibold text-primary">${totalNetAmount.toFixed(2)}</span>
+                            <span>Shipping</span>
+                            <span className={`font-semibold ${shipping === 0 ? 'text-accent' : 'text-primary'}`}>
+                                {shipping === 0 ? 'Free' : `$${shipping.toFixed(2)}`}
+                            </span>
                         </div>
                         <div className="flex justify-between text-text/70 font-accent">
                             <span>VAT ({vatPercentage}%)</span>
-                            <span className="font-semibold text-primary">${totalVatAmount.toFixed(2)}</span>
+                            <span className="font-semibold text-primary">${vatAmount.toFixed(2)}</span>
                         </div>
                     </div>
                 </FaderInAnimation>

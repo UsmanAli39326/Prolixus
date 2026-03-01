@@ -2,22 +2,27 @@
 "use client";
 import FaderInAnimation from "@/Hooks/FaderInAnimation";
 import RevealInAnimation from "@/Hooks/RevealInAnimation";
-import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 import { getAboutPayload } from "@/app/api/about/about";
+
 export default function ContactSection() {
-  const about = getAboutPayload(); // 👈 API CALL
+  const about = getAboutPayload();
+
+  const fieldClass =
+    "w-full h-12 px-4 rounded-xl border border-divider bg-white text-text placeholder:text-text/50 text-sm font-default outline-none transition-[border-color,box-shadow] duration-200 focus:border-accent focus:ring-2 focus:ring-accent/20";
+
   return (
     <section className="py-24">
       <div className="mx-auto w-full max-w-full px-4">
         <div className="rounded-3xl border border-divider bg-white overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-2">
+
             {/* LEFT: FORM */}
             <div className="p-8 sm:p-12">
               <div className="mb-8">
                 <FaderInAnimation direction="up">
-                  <p className="mb-3 flex items-center gap-2 text-sm font-semibold  tracking-[0.2em] text-accent">
-                    <span className="inline-block h-2 w-2 rounded-full bg-accent font-accent italic capitalize" />
+                  <p className="mb-3 flex items-center gap-2 text-sm font-semibold tracking-[0.2em] text-accent">
+                    <span className="inline-block h-2 w-2 rounded-full bg-accent" />
                     contact us
                   </p>
                 </FaderInAnimation>
@@ -34,57 +39,62 @@ export default function ContactSection() {
                 onSubmit={(e) => e.preventDefault()}
                 className="grid grid-cols-1 gap-4"
               >
+                {/* Name row */}
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <FaderInAnimation direction="up">
-                    <Input
+                    <input
                       type="text"
                       name="fname"
                       placeholder="First name"
-                      inputClassName="!rounded-xl"
+                      className={fieldClass}
                       required
                     />
                   </FaderInAnimation>
 
                   <FaderInAnimation direction="up">
-                    <Input
+                    <input
                       type="text"
                       name="lname"
                       placeholder="Last name"
-                      inputClassName="!rounded-xl"
+                      className={fieldClass}
                       required
                     />
                   </FaderInAnimation>
                 </div>
 
+                {/* Email */}
                 <FaderInAnimation direction="up">
-                  <Input
+                  <input
                     type="email"
                     name="email"
                     placeholder="E-mail"
-                    inputClassName="!rounded-xl"
+                    className={fieldClass}
                     required
                   />
                 </FaderInAnimation>
 
+                {/* Phone */}
                 <FaderInAnimation direction="up">
-                  <Input
+                  <input
                     type="tel"
                     name="phone"
                     placeholder="Phone"
-                    inputClassName="!rounded-xl"
+                    className={fieldClass}
                     required
                   />
                 </FaderInAnimation>
 
+                {/* Message */}
                 <FaderInAnimation direction="up">
                   <textarea
                     name="message"
-                    rows={4}
-                    placeholder="Write message..."
-                    className="textarea"
+                    rows={5}
+                    placeholder="Write your message..."
+                    className="w-full px-4 py-3 rounded-xl border border-divider bg-white text-text placeholder:text-text/50 text-sm font-default outline-none resize-vertical transition-[border-color,box-shadow] duration-200 focus:border-accent focus:ring-2 focus:ring-accent/20 min-h-[130px]"
                   />
                 </FaderInAnimation>
 
+                {/* Submit */}
                 <FaderInAnimation direction="up">
                   <Button
                     type="submit"
@@ -115,51 +125,6 @@ export default function ContactSection() {
           </div>
         </div>
       </div>
-
-      {/* Minimal CSS (uses your :root variables) */}
-      <style jsx global>{`
-        .input {
-          width: 100%;
-          border: 1px solid var(--divider-color);
-          border-radius: 12px;
-          padding: 12px 14px;
-          font-size: 16px;
-          line-height: 1.4;
-          color: var(--text-color);
-          background: var(--white-color);
-          outline: none;
-          transition: border-color 0.2s ease, box-shadow 0.2s ease;
-        }
-        .input::placeholder {
-          color: color-mix(in srgb, var(--text-color) 65%, transparent);
-        }
-        .input:focus {
-          border-color: var(--accent-color);
-          box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent-color) 18%, transparent);
-        }
-
-        .textarea {
-          width: 100%;
-          border: 1px solid var(--divider-color);
-          border-radius: 12px;
-          padding: 12px 14px;
-          font-size: 16px;
-          line-height: 1.4;
-          color: var(--text-color);
-          background: var(--white-color);
-          outline: none;
-          resize: vertical;
-          min-height: 120px;
-          transition: border-color 0.2s ease, box-shadow 0.2s ease;
-        }
-        .textarea::placeholder {
-          color: color-mix(in srgb, var(--text-color) 65%, transparent);
-        }
-        .textarea:focus {
-          border-color: var(--accent-color);
-          box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent-color) 18%, transparent);
-        }
-      `}</style>
     </section>
   );
 }

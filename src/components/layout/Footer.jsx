@@ -18,7 +18,7 @@ export default async function MainFooter() {
             <div className="logo">
               <Image
                 src="/images/new/Prolixus-logo-white.webp"
-                alt="Prolixus Logo"
+                alt="Prolixus Logo" 
                 className="w-44 opacity-100"
               />
             </div>
