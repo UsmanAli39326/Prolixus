@@ -19,7 +19,7 @@ export default function ShippingForm({ nextStep, prevStep, goToStep, formData })
     return (
         <div className="flex flex-col gap-8">
             <RevealInAnimation direction="left">
-                <nav className="flex items-center gap-3 text-sm font-medium">
+                <nav className="flex items-center gap-3 text-sm font-medium font-default">
                     <button onClick={() => goToStep(0)} className="text-accent hover:underline">Information</button>
                     <div className="text-gray-400">
                         <svg className="size-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
@@ -35,17 +35,17 @@ export default function ShippingForm({ nextStep, prevStep, goToStep, formData })
             <div className="space-y-10">
                 {/* Summary Box */}
                 <FaderInAnimation direction="up" delay={0.1}>
-                    <div className="bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-2xl overflow-hidden text-sm">
-                        <div className="p-5 flex items-baseline justify-between gap-4 border-b border-gray-100 dark:border-white/10">
+                    <div className="bg-white dark:bg-white/5 border border-divider rounded-2xl overflow-hidden text-sm">
+                        <div className="p-5 flex items-baseline justify-between gap-4 border-b border-divider">
                             <div className="flex gap-6">
-                                <span className="text-gray-400 font-serif w-12">Contact</span>
+                                <span className="text-gray-400 font-accent w-12">Contact</span>
                                 <span className="text-primary">{formData.email}</span>
                             </div>
                             <button onClick={() => goToStep(0)} className="text-accent text-xs font-bold hover:underline">Change</button>
                         </div>
                         <div className="p-5 flex items-baseline justify-between gap-4">
                             <div className="flex gap-6">
-                                <span className="text-gray-400 font-serif w-12">Ship to</span>
+                                <span className="text-gray-400 font-accent w-12">Ship to</span>
                                 <span className="text-primary">
                                     {formData.address}, {formData.apartment ? `${formData.apartment}, ` : ''}{formData.city} {formData.zip}
                                 </span>
@@ -59,14 +59,14 @@ export default function ShippingForm({ nextStep, prevStep, goToStep, formData })
                     <div className="space-y-6">
                         <h2 className="text-2xl font-bold tracking-tight text-primary">Shipping Method</h2>
 
-                        <div className="bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-2xl overflow-hidden p-5 flex items-center justify-between gap-4">
+                        <div className="bg-white dark:bg-white/5 border border-divider rounded-2xl overflow-hidden p-5 flex items-center justify-between gap-4">
                             <div className="flex items-center gap-4">
                                 <div className="size-5 rounded-full bg-accent flex items-center justify-center">
                                     <div className="size-2 rounded-full bg-white" />
                                 </div>
                                 <div>
                                     <div className="text-base font-bold text-primary text-left">Standard Shipping</div>
-                                    <div className="text-sm text-gray-500 dark:text-gray-400 font-serif text-left">3-5 business days</div>
+                                    <div className="text-sm text-gray-500 dark:text-gray-400 font-accent text-left">3-5 business days</div>
                                 </div>
                             </div>
                             <div className="text-base font-bold text-primary">
@@ -106,7 +106,7 @@ export default function ShippingForm({ nextStep, prevStep, goToStep, formData })
 
                 {/* Actions */}
                 <FaderInAnimation direction="up" delay={0.3}>
-                    <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-6 pt-6 border-t border-gray-100 dark:border-white/10">
+                    <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-6 pt-6 border-t border-divider">
                         <button
                             onClick={prevStep}
                             className="flex items-center gap-1 text-sm font-medium text-primary hover:text-accent transition-colors group"

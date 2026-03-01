@@ -97,67 +97,14 @@
 // }
 
 
-// ====================
-//    NEW CODE
-// ====================
-
-import FaderInAnimation from "@/Hooks/FaderInAnimation";
-import ProductCard from "../Ecommerce/ProductListingPage/ProductCard";
-
-const PRODUCTS = [
-  {
-    id: "prolixus-30",
-    image: "/images/new/prolixus-nutrients.jpeg",
-    title: "Prolixus – 30 Tage",
-    description:
-      "Vitamin C, Eisen, Calcium und Magnesium zur täglichen Unterstützung.",
-    price: 29.9,
-    rating: 4.8,
-    reviews: 124,
-    badge: "Bestseller",
-  },
-  {
-    id: "prolixus-90",
-    image: "/images/new/prolixus-absorb.jpeg",
-    title: "Prolixus – 90 Tage",
-    description:
-      "Langfristige Versorgung für einen aktiven Lebensstil.",
-    price: 79.9,
-    rating: 4.9,
-    reviews: 86,
-    badge: "Beliebt",
-    delay: "0.2s",
-  },
-  {
-    id: "prolixus-family",
-    image: "/images/new/prolixus-steps.jpeg",
-    title: "Prolixus Familienpack",
-    description:
-      "Ideal für die ganze Familie – hohe Verträglichkeit.",
-    price: 99.9,
-    rating: 4.7,
-    reviews: 54,
-    delay: "0.6s",
-  },
-  {
-    id: "prolixus-special",
-    image: "/images/new/prolixus-uv.jpeg",
-    title: "Prolixus Special Edition",
-    description:
-      "Premium Qualität mit bewährter Rezeptur.",
-    price: 62.0,
-    rating: 4.8,
-    reviews: 42,
-    delay: "1s",
-  },
-];
+import ProductGrid from "../Ecommerce/ProductListingPage/ProductGrid";
 
 export default function ProductsSection() {
   return (
     <section className="our-products py-24">
       <div className="container mx-auto px-4">
 
-        {/* Header Row (UNCHANGED STRUCTURE) */}
+        {/* Header Row */}
         <div className="section-row mb-12 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="section-title max-w-xl">
             <h3 className="capitalize tracking-[0.2em] text-sm font-thin font-accent italic mb-4 text-(--primary-color)">
@@ -182,14 +129,8 @@ export default function ProductsSection() {
           </div>
         </div>
 
-        {/* Product Grid (UNCHANGED STRUCTURE) */}
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          {PRODUCTS.map((product) => (
-            <FaderInAnimation direction="up" key={product.id} delay={product.delay}>
-              <ProductCard product={product} />
-            </FaderInAnimation>
-          ))}
-        </div>
+        {/* Product Grid */}
+        <ProductGrid products={products} />
 
       </div>
     </section>

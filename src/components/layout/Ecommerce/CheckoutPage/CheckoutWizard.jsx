@@ -6,77 +6,117 @@ import CheckoutForm from "./CheckoutForm";
 import ShippingForm from "./ShippingForm";
 import PaymentForm from "./PaymentForm";
 
+// ---------------------------------------------------------------------------
+// PAYLOAD BUILDER
+// Pure function — no React dependency, easy to unit-test independently.
+// Converts the cart state + checkout formData into the exact guest-order
+// payload required by the backend API contract.
+// ---------------------------------------------------------------------------
+export function buildGuestOrderPayload(formData, cartItems) {
+    // Helper: round a number to 2 decimal places
+    const r = (n) => parseFloat((n ?? 0).toFixed(2));
+
+    // ── orderDetails ────────────────────────────────────────────────────────
+    const vatPercentage = 19;
+
+    const orderDetails = cartItems.map((item) => ({
+        itemId: item.id,
+        quantity: item.quantity,
+        unitPrice: r(item.price),
+        vatPercentage,
+        vatAmount: r(item.price * item.quantity * (vatPercentage / 100)),
+        promotionPrice: r(item.price),   // same as unitPrice when no promotion
+        discount: 0,
+        totalNetPrice: r(item.price * item.quantity),
+    }));
+
+    // ── Financial totals ────────────────────────────────────────────────────
+    const totalNetAmount = r(orderDetails.reduce((s, d) => s + d.totalNetPrice, 0));
+    const totalVatAmount = r(orderDetails.reduce((s, d) => s + d.vatAmount, 0));
+    const shippingChargesAmount = 0;
+    const shippingChargesPercentage = 0;
+    const servicesChargesAmount = 0;
+    const servicesChargesPercentage = 0;
+    const discountAmount = 0;
+
+    // grossAmount = totalNetAmount + totalVatAmount + shipping + services - discount
+    const grossAmount = r(
+        totalNetAmount +
+        totalVatAmount +
+        shippingChargesAmount +
+        servicesChargesAmount -
+        discountAmount
+    );
+
+    // ── Guest customer string ───────────────────────────────────────────────
+    const guestCustomerInfo = `${formData.fullName}, ${formData.email}, ${formData.phone}`;
+
+    // ── Final payload ───────────────────────────────────────────────────────
+    return {
+        shopId: 1,
+        guestCustomerInfo,
+        orderDetails,                                   // always a proper array
+        couponCode: formData.couponCode?.trim() || null,
+        paymentMethod: formData.paymentMethod || "Cash",
+        paymentToken: formData.paymentToken ?? null,
+        grossAmount,
+        totalNetAmount,
+        discountAmount,
+        totalVatAmount,
+        vatPercentage,
+        shippingChargesAmount,
+        shippingChargesPercentage,
+        servicesChargesAmount,
+        servicesChargesPercentage,
+        currency: "USD",
+        invoiceNumber: "",                              // default empty string
+        description: formData.orderNotes || "",
+        deliveryPostCode: formData.zip || "",
+        deliveryCity: formData.city || "",
+        deliveryStreet: formData.address || "",
+        deliveryCountryId: parseInt(formData.countryId) || 1,
+        addMoreAddress: formData.apartment || "",
+        affiliateCustomerCode: formData.affiliateCustomerCode || "",
+    };
+}
+
+// ---------------------------------------------------------------------------
+// WIZARD
+// ---------------------------------------------------------------------------
 export default function CheckoutWizard() {
     const { cartItems } = useCart();
     const [currentStep, setCurrentStep] = useState(0);
-    // 1. STATE MANAGEMENT: Centralized state for the entire checkout lifecycle.
-    // This allows easy payload construction in the final step.
+
+    // 1. CENTRALISED FORM STATE — covers all three wizard steps
     const [formData, setFormData] = useState({
-        // Contact Information
+        // Contact
         email: "",
         fullName: "",
         phone: "",
 
-        // Shipping Address
+        // Shipping address
         address: "",
         apartment: "",
         city: "",
         zip: "",
-        countryId: 1, // Mapping to backend Country ID (default 1)
+        countryId: 1,
 
-        // Payment & Metadata
+        // Payment & metadata
         paymentMethod: "Cash",
+        paymentToken: null,
         couponCode: "",
         orderNotes: "",
-        paymentToken: null,
+
+        // Optional extras
+        affiliateCustomerCode: "",
     });
 
     const nextStep = () => setCurrentStep((prev) => Math.min(prev + 1, 2));
     const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 0));
     const goToStep = (step) => setCurrentStep(step);
 
-    // Generic updater for shared form state
     const updateFormData = (newData) => {
-        setFormData(prev => ({ ...prev, ...newData }));
-    };
-
-    // 2. FINANCIAL CALCULATIONS: Synced with backend expectations.
-    // Ensure vatPercentage matches the shop's tax settings.
-    const vatPercentage = 19;
-    const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-    const discountAmount = 0; // Hook for future promo-code backend validation
-    const totalNetAmount = subtotal - discountAmount;
-    const totalVatAmount = totalNetAmount * (vatPercentage / 100);
-    const grossAmount = totalNetAmount + totalVatAmount;
-
-    // 3. PAYLOAD MAPPING: Transforms cart items into 'orderDetails' array.
-    // These fields are required for the /orders API endpoint.
-    const orderDetails = cartItems.map(item => ({
-        itemId: item.id,
-        quantity: item.quantity,
-        unitPrice: item.price,
-        vatPercentage: vatPercentage,
-        vatAmount: (item.price * item.quantity) * (vatPercentage / 100),
-        promotionPrice: item.price,
-        discount: 0,
-        totalNetPrice: item.price * item.quantity
-    }));
-
-    // 4. ORDER SUMMARY: The core object sent to the backend.
-    const orderSummary = {
-        shopId: 1,
-        orderDetails,
-        grossAmount,
-        totalNetAmount,
-        discountAmount,
-        totalVatAmount,
-        vatPercentage,
-        shippingChargesAmount: 0,
-        shippingChargesPercentage: 0,
-        servicesChargesAmount: 0,
-        servicesChargesPercentage: 0,
-        currency: "USD",
-        invoiceNumber: `INV-${Date.now()}`,
+        setFormData((prev) => ({ ...prev, ...newData }));
     };
 
     const steps = [
@@ -95,7 +135,10 @@ export default function CheckoutWizard() {
             currentStep={currentStep}
             formData={formData}
             updateFormData={updateFormData}
-            orderSummary={orderSummary}
+            // Pass builder + raw cart items so PaymentForm can compose
+            // the final payload at submission time (has access to latest state)
+            buildGuestOrderPayload={buildGuestOrderPayload}
+            cartItems={cartItems}
         />
     );
 }

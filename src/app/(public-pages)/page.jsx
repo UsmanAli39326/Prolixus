@@ -1,4 +1,3 @@
-import Image from "next/image"
 import Hero from "@/components/layout/Home/Hero";
 import AboutSection from "@/components/layout/About Us/About";
 import WhyChooseUs from "@/components/layout/Home/WhyChooseUs";
@@ -11,22 +10,25 @@ import CtaBox from "@/components/layout/Home/CtaBox";
 import OurFaqs from "@/components/layout/Home/OurFAQs";
 import OurTestimonials from "@/components/layout/Home/Testemonials";
 import OurBlog from "@/components/layout/Home/OurBlog";
+import getAllProducts from "@/app/api/products/products";
 
-export default function Home() {
+export default async function Home() {
+  const { products = [] } = await getAllProducts(1, 3);
+
   return (
     <>
-      <Hero/>
-      <AboutSection/>
-      <WhyChooseUs/>
-      <ProductsSection/>
-      <WhatWeDo/>
-      <OurKeyPoints/>
-      <PremiumProducts/>
-      <OurBenefits/>
-      <CtaBox/>
-      <OurFaqs/>
-      <OurTestimonials/>
-      <OurBlog/>
+      <Hero />
+      <AboutSection />
+      <WhyChooseUs />
+      <ProductsSection />
+      <WhatWeDo />
+      <OurKeyPoints />
+      <PremiumProducts products={products} />
+      <OurBenefits />
+      <CtaBox />
+      <OurFaqs />
+      <OurTestimonials />
+      <OurBlog />
     </>
   );
 }

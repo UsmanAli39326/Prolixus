@@ -12,8 +12,8 @@ export default function CheckoutForm({ nextStep, goToStep, formData, updateFormD
     const [errors, setErrors] = useState({});
 
     const inputStyles = {
-        labelClassName: "text-sm font-medium ml-2 text-primary font-serif",
-        inputClassName: "w-full h-12 px-4 rounded-xl border border-divider bg-white dark:bg-white/5 focus:border-accent focus:ring-1 focus:ring-accent transition-colors"
+        labelClassName: "text-sm font-medium ml-2 text-primary font-accent",
+        inputClassName: "w-full h-12 px-4 rounded-xl border border-divider bg-white dark:bg-white/5 focus:border-accent focus:ring-1 focus:ring-accent transition-colors font-default"
     };
 
     const countries = [
@@ -56,7 +56,7 @@ export default function CheckoutForm({ nextStep, goToStep, formData, updateFormD
     return (
         <div className="flex flex-col gap-8">
             <RevealInAnimation direction="left">
-                <nav className="flex items-center gap-3 text-sm font-medium">
+                <nav className="flex items-center gap-3 text-sm font-medium font-default">
                     <span className="text-primary font-bold">Information</span>
                     <div className="text-gray-400">
                         <svg className="size-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
@@ -75,7 +75,7 @@ export default function CheckoutForm({ nextStep, goToStep, formData, updateFormD
                     <div className="space-y-6">
                         <div className="flex items-baseline justify-between">
                             <h2 className="text-2xl font-bold tracking-tight text-primary">Contact Information</h2>
-                            <span className="text-sm font-serif text-gray-500">
+                            <span className="text-sm font-accent text-gray-500">
                                 Have an account? <Link href="/login" className="text-accent font-bold hover:underline">Log in</Link>
                             </span>
                         </div>
@@ -175,7 +175,7 @@ export default function CheckoutForm({ nextStep, goToStep, formData, updateFormD
                                 {...inputStyles}
                             />
                             <div className="md:col-span-2">
-                                <label className="text-sm font-medium ml-2 text-primary font-serif block mb-1.5">Country</label>
+                                <label className="text-sm font-medium ml-2 text-primary font-accent block mb-1.5">Country</label>
                                 <select
                                     name="countryId"
                                     className="w-full h-12 px-4 rounded-xl border border-divider bg-white dark:bg-white/5 focus:border-accent focus:ring-1 focus:ring-accent transition-colors"

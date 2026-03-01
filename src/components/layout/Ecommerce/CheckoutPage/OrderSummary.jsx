@@ -21,7 +21,7 @@ export default function OrderSummary() {
                 <RevealInAnimation direction="bottom">
                     <div className="flex items-center justify-between mb-6 pb-4 border-b border-divider">
                         <h3 className="text-xl font-bold text-primary">Order Summary</h3>
-                        <span className="text-sm text-gray-400 font-serif">{cartItems.length} items</span>
+                        <span className="text-sm text-gray-400 font-accent">{cartItems.length} items</span>
                     </div>
                 </RevealInAnimation>
 
@@ -33,7 +33,7 @@ export default function OrderSummary() {
                                 <OrderItem key={item.id} item={item} />
                             ))
                         ) : (
-                            <p className="text-gray-500 py-8 italic font-serif text-left">Your cart is empty</p>
+                            <p className="text-gray-500 py-8 italic font-accent text-left">Your cart is empty</p>
                         )}
                     </div>
                 </FaderInAnimation>
@@ -41,15 +41,15 @@ export default function OrderSummary() {
                 {/* Price Calculation */}
                 <FaderInAnimation direction="up" delay={0.2}>
                     <div className="space-y-3 pt-6 border-t border-divider text-sm text-left">
-                        <div className="flex justify-between text-text/70 font-serif">
+                        <div className="flex justify-between text-text/70 font-accent">
                             <span>Subtotal</span>
                             <span className="font-semibold text-primary">${subtotal.toFixed(2)}</span>
                         </div>
-                        <div className="flex justify-between text-text/70 font-serif">
+                        <div className="flex justify-between text-text/70 font-accent">
                             <span>Net Total</span>
                             <span className="font-semibold text-primary">${totalNetAmount.toFixed(2)}</span>
                         </div>
-                        <div className="flex justify-between text-text/70 font-serif">
+                        <div className="flex justify-between text-text/70 font-accent">
                             <span>VAT ({vatPercentage}%)</span>
                             <span className="font-semibold text-primary">${totalVatAmount.toFixed(2)}</span>
                         </div>
@@ -58,7 +58,7 @@ export default function OrderSummary() {
 
                 <FaderInAnimation direction="up" delay={0.3}>
                     <div className="flex justify-between items-end mt-6 pt-6 border-t border-divider">
-                        <span className="text-base font-medium text-text/60 font-serif">Total due</span>
+                        <span className="text-base font-medium text-text/60 font-accent">Total due</span>
                         <span className="text-3xl font-bold text-accent tracking-tight">${total.toFixed(2)}</span>
                     </div>
                 </FaderInAnimation>

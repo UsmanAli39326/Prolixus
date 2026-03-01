@@ -26,14 +26,14 @@ export default function OrderItem({ item }) {
 
             <div className="flex-1 flex flex-col justify-center">
                 <h4 className="font-semibold text-primary text-base leading-tight">{item.name}</h4>
-                <p className="text-sm text-text mt-1 truncate max-w-[200px] font-serif">
+                <p className="text-sm text-text mt-1 truncate max-w-[200px] font-accent">
                     {item.variant || stripHtmlTags(item.description) || "Product"}
                 </p>
             </div>
 
             <div className="flex flex-col justify-center text-right">
                 <span className="font-semibold text-primary whitespace-nowrap">${item.price.toFixed(2)}</span>
-                <span className="text-xs text-text/60 font-serif">Qty: {item.quantity}</span>
+                <span className="text-xs text-text/60 font-accent">Qty: {item.quantity}</span>
             </div>
         </div>
     );

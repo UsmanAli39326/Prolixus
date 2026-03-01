@@ -7,52 +7,34 @@ import Button from "@/components/ui/Button";
 import FaderInAnimation from "@/Hooks/FaderInAnimation";
 import RevealInAnimation from "@/Hooks/RevealInAnimation";
 import useCart from "@/Hooks/useCart";
+import { apiService } from "@/lib/api";
 
-export default function PaymentForm({ prevStep, goToStep, formData, updateFormData, orderSummary }) {
+export default function PaymentForm({ prevStep, goToStep, formData, updateFormData, buildGuestOrderPayload, cartItems }) {
     const { clearCart } = useCart();
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState(null);
 
-    // FORM SUBMISSION: Handles the final API call to /Configuration/orders
+    // FORM SUBMISSION: Handles the final API call to /Checkout/create-order
     const handleSubmit = async (e) => {
         if (e) e.preventDefault();
         setLoading(true);
         setError(null);
 
         try {
-            // 1. PAYMENT TOKEN: If Card is selected, generate a dummy token.
-            // In a real scenario, this would come from a payment gateway (Stripe/PayPal).
-            const paymentToken = 1234567890
+            // 1. BUILD PAYLOAD: Uses the pure builder from CheckoutWizard — produces
+            //    the exact guest-order shape required by the backend API contract.
+            const payload = buildGuestOrderPayload(formData, cartItems);
 
-            // 2. FINAL PAYLOAD: Merges orderSummary (totals/items) with user input.
-            const payload = {
-                ...orderSummary,
-                // Customer details formatted as a single string for guest identification
-                guestCustomerInfo: `${formData.fullName}, ${formData.email}, ${formData.phone}`,
-                paymentMethod: formData.paymentMethod,
-                paymentToken: paymentToken,
-                couponCode: formData.couponCode,
-                description: formData.orderNotes,
-
-                // Address Mapping
-                deliveryStreet: formData.address,
-                deliveryCity: formData.city,
-                deliveryPostCode: formData.zip,
-                deliveryCountryId: parseInt(formData.countryId),
-                addMoreAddress: formData.apartment || "",
-                affiliateCustomerCode: "", // Hook for partner/referral programs
-            };
-
-            // 3. API CALL: Uses the unified apiService from @/lib/api
-            const response = "api"
+            // 2. API CALL: Await the response from the unified apiService
+            const response = await apiService.post("/Checkout/create-order", payload);
 
             if (response.success) {
-                // 4. SUCCESS: Clear cart and show confirmation screen
+                // 3. SUCCESS: Clear cart and show confirmation screen
                 setSuccess(true);
                 clearCart();
             } else {
-                // 5. ERROR: Display backend error messages (e.g., "Out of stock")
+                // 4. ERROR: Display backend error messages (e.g., "Out of stock")
                 setError(response.message || "Failed to place order. Please try again.");
             }
         } catch (err) {
@@ -71,7 +53,7 @@ export default function PaymentForm({ prevStep, goToStep, formData, updateFormDa
                         <HiCheckCircle className="text-8xl text-accent animate-bounce" />
                     </div>
                     <h2 className="text-4xl font-bold text-primary">Order Confirmed!</h2>
-                    <p className="text-lg text-text max-w-md mx-auto font-serif">
+                    <p className="text-lg text-text max-w-md mx-auto font-accent">
                         Thank you for your purchase. Your order has been placed successfully.
                         We'll send you an email confirmation shortly.
                     </p>
@@ -90,7 +72,7 @@ export default function PaymentForm({ prevStep, goToStep, formData, updateFormDa
     return (
         <div className="flex flex-col gap-8 text-left">
             <RevealInAnimation direction="left">
-                <nav className="flex items-center gap-3 text-sm font-medium">
+                <nav className="flex items-center gap-3 text-sm font-medium font-default">
                     <button onClick={() => goToStep(0)} className="text-accent hover:underline">Information</button>
                     <div className="text-gray-400">
                         <svg className="size-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
@@ -109,14 +91,14 @@ export default function PaymentForm({ prevStep, goToStep, formData, updateFormDa
                     <div className="bg-white dark:bg-white/5 border border-divider rounded-2xl overflow-hidden text-sm">
                         <div className="p-5 flex items-baseline justify-between gap-4 border-b border-divider">
                             <div className="flex gap-6">
-                                <span className="text-gray-400 font-serif w-12 text-left">Contact</span>
+                                <span className="text-gray-400 font-accent w-12 text-left">Contact</span>
                                 <span className="text-primary">{formData.email}</span>
                             </div>
                             <button onClick={() => goToStep(0)} className="text-accent text-xs font-bold hover:underline">Change</button>
                         </div>
                         <div className="p-5 flex items-baseline justify-between gap-4 border-b border-divider">
                             <div className="flex gap-6">
-                                <span className="text-gray-400 font-serif w-12 text-left">Ship to</span>
+                                <span className="text-gray-400 font-accent w-12 text-left">Ship to</span>
                                 <span className="text-primary">
                                     {formData.address}, {formData.apartment ? `${formData.apartment}, ` : ''}{formData.city} {formData.zip}
                                 </span>
@@ -125,7 +107,7 @@ export default function PaymentForm({ prevStep, goToStep, formData, updateFormDa
                         </div>
                         <div className="p-5 flex items-baseline justify-between gap-4 border-divider">
                             <div className="flex gap-6">
-                                <span className="text-gray-400 font-serif w-12 text-left">Method</span>
+                                <span className="text-gray-400 font-accent w-12 text-left">Method</span>
                                 <span className="text-primary">Standard Shipping • <span className="font-bold">Free</span></span>
                             </div>
                             <button onClick={() => goToStep(1)} className="text-accent text-xs font-bold hover:underline">Change</button>
@@ -138,7 +120,7 @@ export default function PaymentForm({ prevStep, goToStep, formData, updateFormDa
                     <div className="space-y-6">
                         <div className="text-left">
                             <h2 className="text-2xl font-bold tracking-tight text-primary">Payment</h2>
-                            <p className="text-sm text-text/60 mt-1 font-serif">All transactions are secure and encrypted.</p>
+                            <p className="text-sm text-text/60 mt-1 font-accent">All transactions are secure and encrypted.</p>
                         </div>
 
                         {/* Payment method selection disabled to focus on Cash on Delivery */}
@@ -147,7 +129,7 @@ export default function PaymentForm({ prevStep, goToStep, formData, updateFormDa
                                 <HiOutlineCreditCard className="text-2xl" />
                                 <span className="font-bold text-lg text-left">Cash on Delivery (COD)</span>
                             </div>
-                            <p className="text-sm text-text/70 font-serif leading-relaxed text-left">
+                            <p className="text-sm text-text/70 font-accent leading-relaxed text-left">
                                 You will pay for your order in cash at the moment of delivery. Please ensure you have the correct amount ready.
                             </p>
                         </div>
@@ -197,9 +179,9 @@ export default function PaymentForm({ prevStep, goToStep, formData, updateFormDa
                 <FaderInAnimation direction="up" delay={0.3}>
                     <div className="space-y-6">
                         <div className="text-left">
-                            <label className="text-sm font-medium ml-2 text-primary font-serif block mb-1.5">Order Notes (optional)</label>
+                            <label className="text-sm font-medium ml-2 text-primary font-accent block mb-1.5">Order Notes (optional)</label>
                             <textarea
-                                className="w-full p-4 rounded-xl border border-divider bg-white dark:bg-white/5 focus:border-accent focus:ring-1 focus:ring-accent transition-colors min-h-[100px]"
+                                className="w-full p-4 rounded-xl border border-divider bg-white dark:bg-white/5 focus:border-accent focus:ring-1 focus:ring-accent transition-colors min-h-[100px] font-default"
                                 placeholder="Special instructions for delivery..."
                                 value={formData.orderNotes || ""}
                                 onChange={(e) => updateFormData({ orderNotes: e.target.value })}
@@ -229,7 +211,7 @@ export default function PaymentForm({ prevStep, goToStep, formData, updateFormDa
                             <HiLockClosed className="text-primary dark:text-accent text-xl mt-0.5" />
                             <div>
                                 <p className="text-xs font-semibold uppercase tracking-wider text-primary mb-1 text-left">Security Guarantee</p>
-                                <p className="text-sm text-gray-600 dark:text-gray-400 leading-snug font-serif text-left">Your data is protected with 256-bit encryption. We do not store your full card details.</p>
+                                <p className="text-sm text-gray-600 dark:text-gray-400 leading-snug font-accent text-left">Your data is protected with 256-bit encryption. We do not store your full card details.</p>
                             </div>
                         </div>
 
@@ -255,7 +237,7 @@ export default function PaymentForm({ prevStep, goToStep, formData, updateFormDa
                             disabled={loading}
                             className="w-full sm:w-auto h-14 bg-accent! hover:bg-accent! text-white! font-bold text-lg rounded-full! shadow-lg shadow-accent/10 px-10"
                         >
-                            Complete Order <span className="hidden sm:inline"> • ${orderSummary.grossAmount.toFixed(2)}</span>
+                            Complete Order
                         </Button>
                     </div>
                 </FaderInAnimation>
