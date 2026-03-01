@@ -20,10 +20,10 @@ export default async function Home() {
       <Hero />
       <AboutSection />
       <WhyChooseUs />
-      <ProductsSection />
+      <ProductsSection products={products} />
       <WhatWeDo />
       <OurKeyPoints />
-      <PremiumProducts products={products} />
+      <PremiumProducts/>
       <OurBenefits />
       <CtaBox />
       <OurFaqs />

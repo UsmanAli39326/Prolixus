@@ -99,8 +99,8 @@
 
 import ProductGrid from "../Ecommerce/ProductListingPage/ProductGrid";
 
-export default function ProductsSection() {
-  return (
+export default function ProductsSection({ products = [] }) {
+return (
     <section className="our-products py-24">
       <div className="container mx-auto px-4">
 
