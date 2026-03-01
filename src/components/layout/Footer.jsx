@@ -17,9 +17,12 @@ export default async function MainFooter() {
           <div className="space-y-8">
             <div className="logo">
               <Image
-                src="/images/new/Prolixus-logo-white.webp"
-                alt="Prolixus Logo" 
-                className="w-44 opacity-100"
+                src="/images/new/Prolixus-Logo-white.webp"
+                alt="Prolixus Logo"
+                width={140}
+                height={40}
+                className="h-10 w-auto"
+                priority
               />
             </div>
             <p className="text-(--white-color)/60 font-default text-[15px] leading-[1.6] max-w-sm">
