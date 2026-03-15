@@ -75,7 +75,11 @@ import { apiService } from "@/lib/api";
 // fetch all products
 export async function getAllProducts(page = 1, size = 20) {
   try {
-    const response = await apiService.get(`/Configuration/items?pageNumber=${page}&pageSize=${size}`);
+    const response = await apiService.get(
+      `/Configuration/items?pageNumber=${page}&pageSize=${size}`,
+      {},
+      { next: { revalidate: 3600 } }
+    );
     if (!response?.success || !response?.data) {
       return { products: [], pagination: null };
     }
@@ -119,7 +123,11 @@ export async function getAllProducts(page = 1, size = 20) {
 // fetch single product by ID
 export async function getProductById(id) {
   try {
-    const response = await apiService.get(`/Configuration/items/${id}`);
+    const response = await apiService.get(
+      `/Configuration/items/${id}`,
+      {},
+      { next: { revalidate: 600 } }
+    );
     if (!response?.success || !response?.data) return null;
 
     const item = response.data;

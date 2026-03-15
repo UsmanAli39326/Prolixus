@@ -15,7 +15,7 @@ export default function OrderSummary() {
     const { formData, updateFormData, totals, isAuthenticated, walletBalance } = useCheckout();
 
     const [inputCode, setInputCode] = useState("");
-    const [codeType, setCodeType] = useState("promo"); // "promo" or "affiliate"
+    const [codeType, setCodeType] = useState("promo");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 

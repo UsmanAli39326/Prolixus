@@ -1,5 +1,7 @@
 import Hero from "@/components/layout/Home/Hero";
 
+export const revalidate = 3600; // ISR: revalidate homepage every 1 hour
+
 export const metadata = {
   title: "Prolixus - Premium Organic Products",
   description: "Shop nature's finest organic ingredients, curated for your holistic well-being.",

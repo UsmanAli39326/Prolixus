@@ -21,7 +21,7 @@ export default function ProductCard({ product }) {
         transition-all
         hover:-translate-y-0.5 hover:shadow-lg
       "
-      prefetch
+      prefetch={true}
     >
       <div className="relative aspect-4/5 bg-(--secondary-color)">
         <img

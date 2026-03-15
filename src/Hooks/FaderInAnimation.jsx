@@ -20,14 +20,14 @@ export default function FaderInAnimation({
         direction === "left"
           ? -safeDistance
           : direction === "right"
-          ? safeDistance
-          : 0,
+            ? safeDistance
+            : 0,
       y:
         direction === "up"
           ? safeDistance
           : direction === "down"
-          ? -safeDistance
-          : 0,
+            ? -safeDistance
+            : 0,
     },
     visible: { opacity: 1, x: 0, y: 0 },
   };
