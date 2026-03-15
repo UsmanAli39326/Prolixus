@@ -8,18 +8,27 @@ import { FaGoogle } from "react-icons/fa6";
 import Input from "@/components/ui/Input";
 import FaderInAnimation from "@/Hooks/FaderInAnimation";
 import { apiService } from "@/lib/api";
+import { useAuth } from "@/context/AuthContext";
 
 export default function AuthPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isLogin, setIsLogin] = useState(true);
+  const { login, isLoggedIn } = useAuth();
+
+  // Helper to safely redirect to an internal route or fallback
+  const performRedirect = (path) => {
+    // Basic validation: must start with / and not be // (common open redirect trick)
+    const safePath = (path && path.startsWith("/") && !path.startsWith("//")) ? path : "/dashboard";
+    router.replace(safePath);
+  };
 
   // Redirect to dashboard if already logged in
   useEffect(() => {
-    if (localStorage.getItem("authToken")) {
-      router.replace("/dashboard");
+    if (isLoggedIn) {
+      performRedirect(searchParams.get("redirect") || "/dashboard");
     }
-  }, []);
+  }, [isLoggedIn, searchParams]);
 
   useEffect(() => {
     if (searchParams.get("mode") === "register") {
@@ -85,18 +94,19 @@ export default function AuthPage() {
         password: cleanPassword,
       });
 
-      // Store token/user data from the response
-      if (response?.token) {
-        localStorage.setItem("authToken", response.token);
+      // Store token/user data from the response using AuthContext
+      if (response?.data) {
+        login(response.data, response.data?.user || null);
       }
-      if (response?.user) {
-        localStorage.setItem("user", JSON.stringify(response.user));
-      }
+      
       if (!response?.success) {
         throw new Error(response || "Login Failed")
       }
 
-      router.replace("/dashboard");
+      console.log("Login successful, redirecting to:", searchParams.get("redirect") || "/dashboard");
+      setTimeout(() => {
+        performRedirect(searchParams.get("redirect") || "/dashboard");
+      }, 100);
     } catch (err) {
       let errorMessage = "Login failed. Please try again.";
       try {
@@ -160,13 +170,16 @@ export default function AuthPage() {
     setFieldErrors({});
     setLoading(true);
     try {
-      await apiService.post("/Account/SignUp", {
+      const response = await apiService.post("/Account/SignUp", {
         name: cleanName,
         email: cleanRegEmail,
         password: cleanRegPassword,
         confirmPassword: cleanConfirmPassword,
       });
-
+      console.log("sign up response: ", response)
+      if (!response?.success) {
+        throw new Error(response || "Registration Failed")
+      }
       setIsLogin(true);
       setError("");
     } catch (err) {
@@ -294,6 +307,7 @@ export default function AuthPage() {
                         Forgot password?
                       </Link>
 
+                      {/* Remember me toggle hidden
                       <div className="flex items-center gap-3">
                         <span className="text-sm text-text">Remember me</span>
                         <label className="flex items-center gap-2 select-none cursor-pointer">
@@ -319,6 +333,7 @@ export default function AuthPage() {
                           </span>
                         </label>
                       </div>
+                      */}
                     </div>
 
                     <Button
@@ -332,6 +347,7 @@ export default function AuthPage() {
                       Log in
                     </Button>
 
+                    {/* OR divider and Google sign-in hidden
                     <div className="flex items-center gap-4 py-2">
                       <div className="h-px bg-divider flex-1" />
                       <div className="text-xs text-text/60">OR</div>
@@ -348,16 +364,17 @@ export default function AuthPage() {
                         <FaGoogle className="mx-2" /> Continue with Google
                       </span>
                     </Button>
+                    */}
 
                     <p className="text-center text-sm text-text pt-2">
                       Don't have an account?{" "}
-                      <button
-                        type="button"
-                        onClick={toggleMode}
+                      <Link
+                        href={`/login?mode=register${searchParams.get("redirect") ? `&redirect=${encodeURIComponent(searchParams.get("redirect"))}` : ""}`}
                         className="font-medium text-primary hover:underline"
+                        onClick={(e) => { e.preventDefault(); toggleMode(); }}
                       >
                         Sign up
-                      </button>
+                      </Link>
                     </p>
                   </form>
                 </div>
@@ -519,6 +536,7 @@ export default function AuthPage() {
                       Sign up
                     </Button>
 
+                    {/* OR divider and Google sign-up hidden
                     <div className="flex items-center gap-4 py-2">
                       <div className="h-px bg-divider flex-1" />
                       <div className="text-xs text-text/60">OR</div>
@@ -535,16 +553,17 @@ export default function AuthPage() {
                         <FaGoogle className="mx-2" /> Continue with Google
                       </span>
                     </Button>
+                    */}
 
                     <p className="text-center text-sm text-text pt-2">
                       Already have an account?{" "}
-                      <button
-                        type="button"
-                        onClick={toggleMode}
+                      <Link
+                        href={`/login${searchParams.get("redirect") ? `?redirect=${encodeURIComponent(searchParams.get("redirect"))}` : ""}`}
                         className="font-medium text-primary hover:underline"
+                        onClick={(e) => { e.preventDefault(); toggleMode(); }}
                       >
                         Sign in
-                      </button>
+                      </Link>
                     </p>
                   </form>
                 </div>

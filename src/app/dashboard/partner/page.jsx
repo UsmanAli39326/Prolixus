@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     FaChevronRight,
     FaWallet,
@@ -7,7 +7,8 @@ import {
     FaChartLine,
     FaLink,
     FaCopy,
-    FaCheckCircle
+    FaCheckCircle,
+    FaExclamationTriangle
 } from "react-icons/fa";
 import { MdTrendingUp } from "react-icons/md";
 
@@ -17,38 +18,40 @@ import Badge from "@/components/ui/Badge";
 import DataTable from "@/components/ui/DataTable";
 import RevealInAnimation from "@/Hooks/RevealInAnimation";
 import FaderInAnimation from "@/Hooks/FaderInAnimation";
+import { getWalletData } from "@/lib/PartnerService";
+import { MdRefresh, MdErrorOutline } from "react-icons/md";
 
-const mockCommissions = [
-    {
-        id: "#ORD-9923",
-        date: "Oct 24, 2023",
-        status: "Completed",
-        earnings: "$128.50",
-        variant: "success",
-    },
-    {
-        id: "#ORD-9841",
-        date: "Oct 22, 2023",
-        status: "Pending",
-        earnings: "$45.00",
-        variant: "warning",
-    },
-    {
-        id: "#ORD-9755",
-        date: "Oct 18, 2023",
-        status: "Completed",
-        earnings: "$212.00",
-        variant: "success",
-    },
-    {
-        id: "#ORD-9630",
-        date: "Oct 15, 2023",
-        status: "Canceled",
-        earnings: "$85.00",
-        variant: "error",
-        canceled: true
-    },
-];
+// // const mockCommissions = [
+// //     {
+// //         id: "#ORD-9923",
+// //         date: "Oct 24, 2023",
+// //         status: "Completed",
+// //         earnings: "$128.50",
+// //         variant: "success",
+// //     },
+// //     {
+// //         id: "#ORD-9841",
+// //         date: "Oct 22, 2023",
+// //         status: "Pending",
+// //         earnings: "$45.00",
+// //         variant: "warning",
+// //     },
+// //     {
+// //         id: "#ORD-9755",
+// //         date: "Oct 18, 2023",
+// //         status: "Completed",
+// //         earnings: "$212.00",
+// //         variant: "success",
+// //     },
+// //     {
+// //         id: "#ORD-9630",
+// //         date: "Oct 15, 2023",
+// //         status: "Canceled",
+// //         earnings: "$85.00",
+// //         variant: "error",
+// //         canceled: true
+// //     },
+// ];
 
 const StatsCard = ({ title, value, trend, detail, icon: Icon }) => (
     <div className="group relative overflow-hidden rounded-xl bg-primary p-6 transition-all hover:-translate-y-1 hover:shadow-xl">
@@ -61,7 +64,7 @@ const StatsCard = ({ title, value, trend, detail, icon: Icon }) => (
             <div>
                 <div className="text-3xl font-bold text-accent">{value}</div>
                 <div className="mt-2 flex items-center gap-1 text-xs text-white/60">
-                    <MdTrendingUp className="text-sm text-green-400" />
+                    {/* <MdTrendingUp className="text-sm text-green-400" /> */}
                     <span className="text-green-400 font-medium">{trend}</span>
                     <span>{detail}</span>
                 </div>
@@ -71,8 +74,33 @@ const StatsCard = ({ title, value, trend, detail, icon: Icon }) => (
 );
 
 export default function PartnerProgramPage() {
-    const [referralLink] = useState("organicbrand.com/ref/jdoe23");
+    const [walletData, setWalletData] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [copied, setCopied] = useState(false);
+
+    const fetchData = async () => {
+        setIsLoading(true);
+        setError(null);
+        try {
+            const response = await getWalletData();
+            if (response.success) {
+                setWalletData(response.data);
+            } else {
+                setError(response.message || "Failed to fetch wallet data.");
+            }
+        } catch (err) {
+            setError(err.message || "An unexpected error occurred.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    const referralLink = walletData?.affiliateCode || "";
 
     const handleCopy = () => {
         navigator.clipboard.writeText(referralLink);
@@ -113,14 +141,44 @@ export default function PartnerProgramPage() {
 
     const pagination = {
         currentPage: 1,
-        totalPages: 3,
+        totalPages: 1,
         from: 1,
-        to: 4,
-        total: 12,
+        to: walletData?.walletEntries?.length || 0,
+        total: walletData?.walletEntries?.length || 0,
         onPageChange: () => { },
         onPrev: () => { },
         onNext: () => { }
     };
+
+    if (isLoading) {
+        return (
+            <div className="flex min-h-[400px] flex-col items-center justify-center gap-4">
+                <div className="h-12 w-12 animate-spin rounded-full border-4 border-accent border-t-transparent"></div>
+                <p className="text-text/60 animate-pulse">Loading partner details...</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="flex min-h-[400px] flex-col items-center justify-center gap-6 text-center">
+                <div className="rounded-full bg-red-100 p-4 dark:bg-red-900/20">
+                    <MdErrorOutline className="text-5xl text-red-500" />
+                </div>
+                <div>
+                    <h3 className="text-xl font-bold text-text">Something went wrong</h3>
+                    <p className="mt-2 text-text/60 max-w-md">{error}</p>
+                </div>
+                <Button
+                    variant="primary"
+                    leftIcon={<MdRefresh />}
+                    onClick={fetchData}
+                >
+                    Try Again
+                </Button>
+            </div>
+        );
+    }
 
     return (
         <div className="flex flex-col gap-8 pb-10">
@@ -137,24 +195,24 @@ export default function PartnerProgramPage() {
             <FaderInAnimation direction="up" delay={0.2}>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <StatsCard
-                        title="Total Earnings"
-                        value="$1,240.50"
-                        trend="+12%"
-                        detail="from last month"
+                        title="Total Affiliate Amount"
+                        value={`${walletData?.totalAffiliateAmount?.toFixed(2) || "0.00"}`}
+                        // trend="+0%"
+                        // detail="Lifetime earnings"
                         icon={FaWallet}
                     />
                     <StatsCard
-                        title="Referrals"
-                        value="45"
-                        trend="+5%"
-                        detail="new customers"
+                        title="Amount Used"
+                        value={`${walletData?.totalAffiliateAmountUsedInOrders?.toFixed(2) || "0.00"}`}
+                        // trend="0"
+                        // detail="Used in orders"
                         icon={FaUsers}
                     />
                     <StatsCard
-                        title="Conversion Rate"
-                        value="4.2%"
-                        trend="+0.8%"
-                        detail="avg. performance"
+                        title="Wallet Balance"
+                        value={`${walletData?.remainingAffiliateAmount?.toFixed(2) || "0.00"}`}
+                        // trend="Live"
+                        // detail="Available for use"
                         icon={FaChartLine}
                     />
                 </div>
@@ -165,8 +223,8 @@ export default function PartnerProgramPage() {
                 <div className="rounded-2xl bg-white dark:bg-background-dark/30 border border-divider p-8 shadow-sm">
                     <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
                         <div className="flex-1">
-                            <h3 className="text-lg font-bold text-text mb-1">Your Referral Link</h3>
-                            <p className="text-sm text-text/60">Share this link with your audience to earn commissions on every sale.</p>
+                            <h3 className="text-lg font-bold text-text mb-1">Your Referral Code </h3>
+                            <p className="text-sm text-text/60">Share this Code with your audience to earn commissions on every sale.</p>
                         </div>
                         <div className="flex w-full lg:w-auto flex-col sm:flex-row items-center gap-3">
                             <div className="relative w-full lg:w-[320px]">
@@ -184,7 +242,7 @@ export default function PartnerProgramPage() {
                                 leftIcon={copied ? <FaCheckCircle /> : <FaCopy />}
                                 onClick={handleCopy}
                             >
-                                {copied ? "Copied!" : "Copy Link"}
+                                {copied ? "Copied!" : "Copy"}
                             </Button>
                         </div>
                     </div>
@@ -195,13 +253,26 @@ export default function PartnerProgramPage() {
             <FaderInAnimation direction="up" delay={0.6}>
                 <div className="space-y-4">
                     <div className="flex items-center justify-between px-2">
-                        <h3 className="text-xl font-bold text-primary font-accent">Recent Commissions</h3>
+                        <h3 className="text-xl font-bold text-primary font-accent">Transaction History</h3>
                     </div>
-                    <DataTable
-                        columns={columns}
-                        data={mockCommissions}
-                        pagination={pagination}
-                    />
+                    {walletData?.walletEntries?.length > 0 ? (
+                        <DataTable
+                            columns={columns}
+                            data={walletData.walletEntries.map(entry => ({
+                                id: entry.orderId ? `#ORD-${entry.orderId}` : "N/A",
+                                date: new Date(entry.transactionDate).toLocaleDateString(),
+                                status: entry.transactionType === 1 ? "Earnings" : "Used",
+                                earnings: `${entry.amount.toFixed(2)}`,
+                                variant: entry.transactionType === 1 ? "success" : "info",
+                            }))}
+                            pagination={pagination}
+                        />
+                    ) : (
+                        <div className="flex flex-col items-center justify-center py-12 bg-white dark:bg-background-dark/30 rounded-2xl border border-divider">
+                            <FaExclamationTriangle className="text-4xl text-text/20 mb-4" />
+                            <p className="text-text/60 font-medium">No wallet transactions available.</p>
+                        </div>
+                    )}
                 </div>
             </FaderInAnimation>
 

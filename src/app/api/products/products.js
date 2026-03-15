@@ -75,14 +75,14 @@ import { apiService } from "@/lib/api";
 // fetch all products
 export async function getAllProducts(page = 1, size = 20) {
   try {
-    const response = await apiService.get( `/Configuration/items?pageNumber=${page}&pageSize=${size}`);
-     if (!response?.success || !response?.data) {
+    const response = await apiService.get(`/Configuration/items?pageNumber=${page}&pageSize=${size}`);
+    if (!response?.success || !response?.data) {
       return { products: [], pagination: null };
     }
 
-   const data = response.data;
-console.log("getAllProducts:", data);
-    const products =  data.items.map((item) => ({
+    const data = response.data;
+    console.log("getAllProducts:", data);
+    const products = data.items.map((item) => ({
       id: item.itemId,
       title: item.itemName,
       price: item.unitPrice,
@@ -91,12 +91,14 @@ console.log("getAllProducts:", data);
       description: item.itemDisplayName,
       badge: item.isItemOutOfStock ? "Out of Stock" : null,
       categoryId: item.categoryId,
+      vatPercentage: item.vatPercentage ?? 0,
+
       image: item.thumbnailUrl
         ? `https://admin.aa-consultants.de${item.thumbnailUrl}`
         : "/images/placeholder.png",
     }));
 
-return {
+    return {
       products,
       pagination: {
         pageNumber: data.pageNumber,
@@ -131,6 +133,7 @@ export async function getProductById(id) {
       description: item.description ?? "No description available",
       badge: item.isItemOutOfStock ? "Out of Stock" : null,
       categoryId: item.categoryId,
+      vatPercentage: item.vatPercentage ?? 0,
       image:
         item.fileUrl
           ? `https://admin.aa-consultants.de${item.fileUrl}`

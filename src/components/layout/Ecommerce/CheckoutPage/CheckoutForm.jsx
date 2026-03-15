@@ -1,14 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { HiChevronLeft } from "react-icons/hi";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 import FaderInAnimation from "@/Hooks/FaderInAnimation";
 import RevealInAnimation from "@/Hooks/RevealInAnimation";
+import { getCountries } from "@/app/api/products/countries";
 
-export default function CheckoutForm({ nextStep, goToStep, formData, updateFormData }) {
+export default function CheckoutForm({ nextStep, goToStep, formData, updateFormData, isAuthenticated }) {
     const [errors, setErrors] = useState({});
 
     const inputStyles = {
@@ -16,13 +17,22 @@ export default function CheckoutForm({ nextStep, goToStep, formData, updateFormD
         inputClassName: "w-full h-12 px-4 rounded-xl border border-divider bg-white dark:bg-white/5 focus:border-accent focus:ring-1 focus:ring-accent transition-colors font-default"
     };
 
-    const countries = [
-        { id: 1, name: "United States" },
-        { id: 2, name: "Germany" },
-        { id: 3, name: "United Kingdom" },
-        { id: 4, name: "Canada" },
-        { id: 5, name: "Australia" },
-    ];
+    const [countries, setCountries] = useState([]);
+    const [isLoadingCountries, setIsLoadingCountries] = useState(true);
+
+    useEffect(() => {
+        const fetchCountries = async () => {
+            try {
+                const data = await getCountries();
+                setCountries(data);
+            } catch (error) {
+                console.error("Failed to fetch countries:", error);
+            } finally {
+                setIsLoadingCountries(false);
+            }
+        };
+        fetchCountries();
+    }, []);
 
     const validate = () => {
         const newErrors = {};
@@ -46,7 +56,6 @@ export default function CheckoutForm({ nextStep, goToStep, formData, updateFormD
     // INPUT HANDLERS: Generic change handler that maps directly to the global checkout state.
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
-        // updateFormData is passed from the parent CheckoutWizard to keep state centralized
         updateFormData({ [name]: type === 'checkbox' ? checked : value });
         if (errors[name]) {
             setErrors(prev => ({ ...prev, [name]: null }));
@@ -61,11 +70,7 @@ export default function CheckoutForm({ nextStep, goToStep, formData, updateFormD
                     <div className="text-gray-400">
                         <svg className="size-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
                     </div>
-                    <button onClick={() => goToStep(1)} className="text-gray-500 hover:text-accent transition-colors">Shipping</button>
-                    <div className="text-gray-400">
-                        <svg className="size-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
-                    </div>
-                    <button onClick={() => goToStep(2)} className="text-gray-500 hover:text-accent transition-colors">Payment</button>
+                    <span className="text-gray-400 cursor-default">Payment</span>
                 </nav>
             </RevealInAnimation>
 
@@ -75,9 +80,11 @@ export default function CheckoutForm({ nextStep, goToStep, formData, updateFormD
                     <div className="space-y-6">
                         <div className="flex items-baseline justify-between">
                             <h2 className="text-2xl font-bold tracking-tight text-primary">Contact Information</h2>
-                            <span className="text-sm font-accent text-gray-500">
-                                Have an account? <Link href="/login" className="text-accent font-bold hover:underline">Log in</Link>
-                            </span>
+                            {!isAuthenticated && (
+                                <span className="text-sm font-accent text-gray-500">
+                                    Have an account? <Link href="/login?redirect=/checkout" className="text-accent font-bold hover:underline hover:cursor-pointer">Log in</Link>
+                                </span>
+                            )}
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
@@ -95,32 +102,28 @@ export default function CheckoutForm({ nextStep, goToStep, formData, updateFormD
                                     {...inputStyles}
                                 />
                             </div>
-                            <div className="md:col-span-2">
-                                <Input
-                                    label="Full Name"
-                                    name="fullName"
-                                    value={formData.fullName}
-                                    onChange={handleChange}
-                                    error={errors.fullName}
-                                    placeholder="e.g. Jane Doe"
-                                    className="space-y-1.5"
-                                    required
-                                    {...inputStyles}
-                                />
-                            </div>
-                            <div className="md:col-span-2">
-                                <Input
-                                    label="Phone Number"
-                                    name="phone"
-                                    value={formData.phone}
-                                    onChange={handleChange}
-                                    error={errors.phone}
-                                    placeholder="+1 (555) 000-0000"
-                                    className="space-y-1.5"
-                                    required
-                                    {...inputStyles}
-                                />
-                            </div>
+                            <Input
+                                label="Full Name"
+                                name="fullName"
+                                value={formData.fullName}
+                                onChange={handleChange}
+                                error={errors.fullName}
+                                placeholder="e.g. Jane Doe"
+                                className="space-y-1.5"
+                                required
+                                {...inputStyles}
+                            />
+                            <Input
+                                label="Phone Number"
+                                name="phone"
+                                value={formData.phone}
+                                onChange={handleChange}
+                                error={errors.phone}
+                                placeholder="+1 (555) 000-0000"
+                                className="space-y-1.5"
+                                required
+                                {...inputStyles}
+                            />
                         </div>
                     </div>
                 </FaderInAnimation>
@@ -155,21 +158,21 @@ export default function CheckoutForm({ nextStep, goToStep, formData, updateFormD
                                 />
                             </div>
                             <Input
-                                label="City"
-                                name="city"
-                                value={formData.city}
-                                onChange={handleChange}
-                                error={errors.city}
-                                className="space-y-1.5"
-                                required
-                                {...inputStyles}
-                            />
-                            <Input
                                 label="ZIP / Post Code"
                                 name="zip"
                                 value={formData.zip}
                                 onChange={handleChange}
                                 error={errors.zip}
+                                className="space-y-1.5"
+                                required
+                                {...inputStyles}
+                            />
+                            <Input
+                                label="City"
+                                name="city"
+                                value={formData.city}
+                                onChange={handleChange}
+                                error={errors.city}
                                 className="space-y-1.5"
                                 required
                                 {...inputStyles}
@@ -182,9 +185,13 @@ export default function CheckoutForm({ nextStep, goToStep, formData, updateFormD
                                     value={formData.countryId}
                                     onChange={handleChange}
                                 >
-                                    {countries.map(c => (
-                                        <option key={c.id} value={c.id}>{c.name}</option>
-                                    ))}
+                                    {isLoadingCountries ? (
+                                        <option disabled>Loading countries...</option>
+                                    ) : (
+                                        countries.map(c => (
+                                            <option key={c.id} value={c.id}>{c.name}</option>
+                                        ))
+                                    )}
                                 </select>
                             </div>
                         </div>
@@ -206,7 +213,7 @@ export default function CheckoutForm({ nextStep, goToStep, formData, updateFormD
                             onClick={handleNext}
                             className="w-full sm:w-auto h-14 bg-accent! hover:bg-accent! text-white! font-bold text-lg rounded-full! shadow-lg shadow-accent/10 px-10"
                         >
-                            Continue to Shipping
+                            Continue to Payment
                         </Button>
                     </div>
                 </FaderInAnimation>

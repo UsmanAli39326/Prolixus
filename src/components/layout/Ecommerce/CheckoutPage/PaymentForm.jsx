@@ -1,83 +1,165 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
-import { HiChevronLeft, HiOutlineCreditCard, HiLockClosed, HiCheckCircle } from "react-icons/hi";
+import { HiChevronLeft, HiLockClosed, HiCheckCircle } from "react-icons/hi";
 import Button from "@/components/ui/Button";
 import FaderInAnimation from "@/Hooks/FaderInAnimation";
 import RevealInAnimation from "@/Hooks/RevealInAnimation";
 import useCart from "@/Hooks/useCart";
-import { apiService } from "@/lib/api";
+import { useAuth } from "@/context/AuthContext";
+import { useCurrency } from "@/context/CurrencyContext";
+import { useCheckout } from "@/context/CheckoutContext";
+import PaymentMethodSelector from "./PaymentMethodSelector";
 
-export default function PaymentForm({ prevStep, goToStep, formData, updateFormData, buildGuestOrderPayload, cartItems }) {
+export default function PaymentForm({
+    prevStep,
+    goToStep,
+    formData,
+    updateFormData,
+    buildGuestOrderPayload,
+    cartItems,
+    // Dynamic payment props
+    paymentMethods,
+    methodsLoading,
+    methodsError,
+    selectedMethod,
+    onMethodSelect,
+    gateway,
+}) {
     const { clearCart } = useCart();
+    const { isLoggedIn } = useAuth();
+    const { currency, formatPrice } = useCurrency();
+    const { setOrderCompleted } = useCheckout();
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
+    const [orderData, setOrderData] = useState(null);
     const [error, setError] = useState(null);
 
-    // FORM SUBMISSION: Handles the final API call to /Checkout/create-order
+    // Ref to hold the gateway-specific payment handler
+    const paymentHandlerRef = useRef(null);
+
+    const handleSuccess = (data) => {
+        setOrderData(data);
+        setSuccess(true);
+        setOrderCompleted(true);
+        clearCart();
+    };
+
+    const handleError = (message) => {
+        setError(message);
+        setLoading(false);
+    };
+
+    // Called when the gateway's checkout component is ready
+    const handleGatewayReady = (handler) => {
+        paymentHandlerRef.current = handler;
+    };
+
+    // Submit handler — delegates to the active gateway's payment handler
     const handleSubmit = async (e) => {
         if (e) e.preventDefault();
-        setLoading(true);
-        setError(null);
 
-        try {
-            // 1. BUILD PAYLOAD: Uses the pure builder from CheckoutWizard — produces
-            //    the exact guest-order shape required by the backend API contract.
-            const payload = buildGuestOrderPayload(formData, cartItems);
-
-            // 2. API CALL: Await the response from the unified apiService
-            const response = await apiService.post("/Checkout/create-order", payload);
-
-            if (response.success) {
-                // 3. SUCCESS: Clear cart and show confirmation screen
-                setSuccess(true);
-                clearCart();
-            } else {
-                // 4. ERROR: Display backend error messages (e.g., "Out of stock")
-                setError(response.message || "Failed to place order. Please try again.");
-            }
-        } catch (err) {
-            console.error("Order Submission Error:", err);
-            setError("A connection error occurred. Please try again.");
-        } finally {
-            setLoading(false);
+        if (!selectedMethod) {
+            setError("Please select a payment method.");
+            return;
         }
+
+        if (!selectedMethod.publishableKey) {
+            setError("This payment method is not properly configured.");
+            return;
+        }
+
+        // For gateways with a handlePayment callback (e.g. Stripe)
+        if (paymentHandlerRef.current) {
+            setError(null);
+            paymentHandlerRef.current();
+        }
+        // For gateways that manage their own submit (e.g. PayPal buttons), no action needed
     };
 
     if (success) {
         return (
             <FaderInAnimation direction="up">
-                <div className="text-center py-20 space-y-6">
-                    <div className="flex justify-center">
-                        <HiCheckCircle className="text-8xl text-accent animate-bounce" />
-                    </div>
-                    <h2 className="text-4xl font-bold text-primary">Order Confirmed!</h2>
-                    <p className="text-lg text-text max-w-md mx-auto font-accent">
-                        Thank you for your purchase. Your order has been placed successfully.
-                        We'll send you an email confirmation shortly.
-                    </p>
-                    <div className="pt-8">
-                        <Link href="/shop">
-                            <Button variant="accent" size="lg" className="rounded-full px-12">
-                                Continue Shopping
-                            </Button>
-                        </Link>
+                <div className="max-w-lg mx-auto py-12">
+                    {/* Confirmation Card */}
+                    <div className="bg-white dark:bg-white/5 border border-divider rounded-3xl shadow-xl shadow-accent/5 overflow-hidden">
+                        {/* Header */}
+                        <div className="bg-linear-to-br from-accent/10 via-accent/5 to-transparent px-8 pt-10 pb-8 text-center">
+                            <div className="flex justify-center mb-4">
+                                <div className="w-20 h-20 rounded-full bg-accent/10 flex items-center justify-center">
+                                    <HiCheckCircle className="text-5xl text-accent" />
+                                </div>
+                            </div>
+                            <h2 className="text-3xl font-bold text-primary mb-2">Order Confirmed!</h2>
+                            <p className="text-text/70 font-accent text-sm">
+                                Your order has been placed successfully.
+                            </p>
+                        </div>
+
+                        {/* Order Details */}
+                        <div className="px-8 py-6 space-y-4">
+                            <div className="flex justify-between items-center py-3 border-b border-divider">
+                                <span className="text-sm text-text/60 font-accent">Order ID</span>
+                                <span className="text-sm font-bold text-primary">#{orderData?.orderId}</span>
+                            </div>
+                            <div className="flex justify-between items-center py-3 border-b border-divider">
+                                <span className="text-sm text-text/60 font-accent">Invoice Number</span>
+                                <span className="text-sm font-bold text-primary">{orderData?.invoiceNumber}</span>
+                            </div>
+                            <div className="flex justify-between items-center py-3 border-b border-divider">
+                                <span className="text-sm text-text/60 font-accent">Total Amount</span>
+                                <span className="text-sm font-bold text-accent">{formatPrice(orderData?.totalNetAmount)}</span>
+                            </div>
+                            <div className="flex justify-between items-center py-3">
+                                <span className="text-sm text-text/60 font-accent">Payment Status</span>
+                                <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-full bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                                    {orderData?.paymentStatus}
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* Footer */}
+                        <div className="px-8 pb-8 pt-2">
+                            <p className="text-xs text-text/50 font-accent text-center mb-6">
+                                We&apos;ll send you an email confirmation shortly.
+                            </p>
+                            {isLoggedIn ? (
+                                <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
+                                    <Link href={`/order-detail?orderId=${orderData?.orderId}`} className="block flex-1">
+                                        <Button variant="outline" size="lg" className="rounded-full! w-full border-2 border-divider hover:border-accent">
+                                            View Order
+                                        </Button>
+                                    </Link>
+                                    <Link href="/dashboard" className="block flex-1">
+                                        <Button variant="accent" size="lg" className="rounded-full! w-full">
+                                            Go to Dashboard
+                                        </Button>
+                                    </Link>
+                                </div>
+                            ) : (
+                                <Link href="/products" className="block">
+                                    <Button variant="accent" size="lg" className="rounded-full! px-12 w-full">
+                                        Continue Shopping
+                                    </Button>
+                                </Link>
+                            )}
+                        </div>
                     </div>
                 </div>
             </FaderInAnimation>
         );
     }
 
+    // Resolve the CheckoutComponent from the active gateway adapter
+    const GatewayCheckout = gateway?.CheckoutComponent;
+
     return (
         <div className="flex flex-col gap-8 text-left">
             <RevealInAnimation direction="left">
                 <nav className="flex items-center gap-3 text-sm font-medium font-default">
-                    <button onClick={() => goToStep(0)} className="text-accent hover:underline">Information</button>
-                    <div className="text-gray-400">
-                        <svg className="size-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
-                    </div>
-                    <button onClick={() => goToStep(1)} className="text-accent hover:underline">Shipping</button>
+                    <span className="text-gray-400 cursor-default">Information</span>
                     <div className="text-gray-400">
                         <svg className="size-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
                     </div>
@@ -107,72 +189,41 @@ export default function PaymentForm({ prevStep, goToStep, formData, updateFormDa
                         </div>
                         <div className="p-5 flex items-baseline justify-between gap-4 border-divider">
                             <div className="flex gap-6">
-                                <span className="text-gray-400 font-accent w-12 text-left">Method</span>
-                                <span className="text-primary">Standard Shipping • <span className="font-bold">Free</span></span>
+                                <span className="text-gray-400 font-accent w-12 text-left">Shipping</span>
+                                <span className="font-bold text-accent">Free</span>
                             </div>
-                            <button onClick={() => goToStep(1)} className="text-accent text-xs font-bold hover:underline">Change</button>
                         </div>
                     </div>
                 </FaderInAnimation>
 
-                {/* Payment Methods */}
+                {/* Dynamic Payment Method Selector */}
                 <FaderInAnimation direction="up" delay={0.2}>
-                    <div className="space-y-6">
-                        <div className="text-left">
-                            <h2 className="text-2xl font-bold tracking-tight text-primary">Payment</h2>
-                            <p className="text-sm text-text/60 mt-1 font-accent">All transactions are secure and encrypted.</p>
-                        </div>
+                    <PaymentMethodSelector
+                        paymentMethods={paymentMethods}
+                        selectedMethod={selectedMethod?.name}
+                        onSelect={onMethodSelect}
+                        loading={methodsLoading}
+                        error={methodsError}
+                    />
 
-                        {/* Payment method selection disabled to focus on Cash on Delivery */}
-                        <div className="bg-surface border border-divider rounded-2xl p-6 space-y-4">
-                            <div className="flex items-center gap-3 text-primary">
-                                <HiOutlineCreditCard className="text-2xl" />
-                                <span className="font-bold text-lg text-left">Cash on Delivery (COD)</span>
-                            </div>
-                            <p className="text-sm text-text/70 font-accent leading-relaxed text-left">
-                                You will pay for your order in cash at the moment of delivery. Please ensure you have the correct amount ready.
-                            </p>
-                        </div>
-
-                        {/* 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <button
-                                onClick={() => updateFormData({ paymentMethod: "Cash" })}
-                                className={`flex flex-col items-center gap-3 p-6 rounded-2xl border-2 transition-all ${formData.paymentMethod === "Cash"
-                                    ? "border-accent bg-accent/5 ring-4 ring-accent/10"
-                                    : "border-divider bg-white dark:bg-white/5 hover:border-accent/50"
-                                    }`}
-                            >
-                                <div className={`size-12 rounded-full flex items-center justify-center ${formData.paymentMethod === "Cash" ? "bg-accent text-white" : "bg-secondary text-primary"}`}>
-                                    <HiCheckCircle className="text-2xl" />
-                                </div>
-                                <span className="font-bold text-primary">Cash on Delivery</span>
-                            </button>
-
-                            <button
-                                onClick={() => updateFormData({ paymentMethod: "Card" })}
-                                className={`flex flex-col items-center gap-3 p-6 rounded-2xl border-2 transition-all ${formData.paymentMethod === "Card"
-                                    ? "border-accent bg-accent/5 ring-4 ring-accent/10"
-                                    : "border-divider bg-white dark:bg-white/5 hover:border-accent/50"
-                                    }`}
-                            >
-                                <div className={`size-12 rounded-full flex items-center justify-center ${formData.paymentMethod === "Card" ? "bg-accent text-white" : "bg-secondary text-primary"}`}>
-                                    <HiOutlineCreditCard className="text-2xl" />
-                                </div>
-                                <span className="font-bold text-primary">Credit Card</span>
-                            </button>
-                        </div>
-
-                        {formData.paymentMethod === "Card" && (
-                            <RevealInAnimation direction="down">
-                                <div className="bg-surface border border-divider rounded-2xl p-6 text-left">
-                                    <p className="text-primary font-bold mb-2">Card Details</p>
-                                    <p className="text-sm text-text font-serif">For demonstration, clicking 'Complete Order' will simulate a secure card transaction.</p>
-                                </div>
-                            </RevealInAnimation>
-                        )}
-                        */}
-                    </div>
+                    {/* Gateway-specific checkout UI */}
+                    {selectedMethod && GatewayCheckout && (
+                        <RevealInAnimation direction="down">
+                            <GatewayCheckout
+                                formData={formData}
+                                updateFormData={updateFormData}
+                                buildGuestOrderPayload={buildGuestOrderPayload}
+                                cartItems={cartItems}
+                                currency={currency}
+                                onSuccess={handleSuccess}
+                                onError={handleError}
+                                loading={loading}
+                                setLoading={setLoading}
+                                onReady={handleGatewayReady}
+                                methodName={selectedMethod.displayName || selectedMethod.name}
+                            />
+                        </RevealInAnimation>
+                    )}
                 </FaderInAnimation>
 
                 {/* Additional Information */}
@@ -187,33 +238,14 @@ export default function PaymentForm({ prevStep, goToStep, formData, updateFormDa
                                 onChange={(e) => updateFormData({ orderNotes: e.target.value })}
                             />
                         </div>
-
-                        <div className="space-y-4">
-                            <div className="relative">
-                                <input
-                                    type="text"
-                                    name="couponCode"
-                                    value={formData.couponCode || ""}
-                                    onChange={(e) => updateFormData({ couponCode: e.target.value })}
-                                    placeholder="Gift card or promo code"
-                                    className="w-full h-12 pl-4 pr-24 rounded-xl border border-divider bg-white dark:bg-white/5 focus:ring-2 focus:ring-accent focus:border-accent placeholder:text-text/50 text-sm transition-all duration-200"
-                                />
-                                <button
-                                    type="button"
-                                    className="absolute right-1 top-1 h-10 px-4 rounded-lg bg-primary text-white text-xs font-bold uppercase tracking-wider hover:bg-primary/90 transition-all duration-200"
-                                >
-                                    Apply
-                                </button>
-                            </div>
-                        </div>
-
+                        {/* 
                         <div className="bg-secondary/50 rounded-xl p-4 flex items-start gap-3 mt-4 text-left">
                             <HiLockClosed className="text-primary dark:text-accent text-xl mt-0.5" />
                             <div>
                                 <p className="text-xs font-semibold uppercase tracking-wider text-primary mb-1 text-left">Security Guarantee</p>
                                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-snug font-accent text-left">Your data is protected with 256-bit encryption. We do not store your full card details.</p>
                             </div>
-                        </div>
+                        </div> */}
 
                         {error && (
                             <p className="text-red-500 text-sm font-bold bg-red-50 p-4 rounded-xl border border-red-200 text-left">
@@ -228,7 +260,7 @@ export default function PaymentForm({ prevStep, goToStep, formData, updateFormDa
                     <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-6 pt-6 border-t border-divider">
                         <button onClick={prevStep} className="flex items-center gap-1 text-sm font-medium text-primary hover:text-accent transition-colors group">
                             <HiChevronLeft className="text-lg transition-transform group-hover:-translate-x-1" />
-                            Return to Shipping
+                            Return to Information
                         </button>
 
                         <Button

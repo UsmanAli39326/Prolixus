@@ -1,10 +1,15 @@
+"use client";
+
 import Badge from "@/components/ui/Badge";
 import { stripHtmlTags } from "@/utitlis/formatters";
+import { useCurrency } from "@/context/CurrencyContext";
 
 export default function OrderItem({ item }) {
+    const { formatPrice } = useCurrency();
     return (
-        <div className="flex gap-4">
-            <div className="w-20 h-20 rounded-xl overflow-hidden bg-gray-50 shrink-0 border border-gray-100 dark:border-white/5 relative">
+        <div className="flex gap-3 py-1">
+            {/* Thumbnail */}
+            <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-50 shrink-0 border border-gray-100 dark:border-white/5 relative">
                 {item.image ? (
                     <img
                         src={item.image}
@@ -17,23 +22,27 @@ export default function OrderItem({ item }) {
                 {item.quantity > 1 && (
                     <Badge
                         variant="info"
-                        className="absolute top-0 right-0 -mt-2 -mr-2 size-5 flex items-center justify-center p-0 text-[10px]"
+                        className="absolute -top-1.5 -right-1.5 size-4 flex items-center justify-center p-0 text-[8px]"
                     >
                         {item.quantity}
                     </Badge>
                 )}
             </div>
 
-            <div className="flex-1 flex flex-col justify-center">
-                <h4 className="font-semibold text-primary text-base leading-tight">{item.name}</h4>
-                <p className="text-sm text-text mt-1 truncate max-w-[200px] font-accent">
-                    {item.variant || stripHtmlTags(item.description) || "Product"}
-                </p>
+            {/* Details */}
+            <div className="flex-1 min-w-0 flex flex-col justify-center gap-0.5">
+                <h4 className="font-semibold text-primary text-base leading-snug font-accent truncate">{item.name}</h4>
+                <div className="flex items-center gap-3 text-sm text-text/50 font-default">
+                    <span className="truncate max-w-[140px]">
+                        {item.variant || stripHtmlTags(item.description) || "Product"}
+                    </span>
+                    <span className="shrink-0">Qty: {item.quantity}</span>
+                </div>
             </div>
 
-            <div className="flex flex-col justify-center text-right">
-                <span className="font-semibold text-primary whitespace-nowrap">${item.price.toFixed(2)}</span>
-                <span className="text-xs text-text/60 font-accent">Qty: {item.quantity}</span>
+            {/* Price */}
+            <div className="flex items-center shrink-0">
+                <span className="font-bold text-primary text-base font-default whitespace-nowrap">{formatPrice(item.price * item.quantity)}</span>
             </div>
         </div>
     );

@@ -1,6 +1,6 @@
 import FaderInAnimation from "@/Hooks/FaderInAnimation";
 import RevealInAnimation from "@/Hooks/RevealInAnimation";
-import { FaCircle } from "react-icons/fa";
+import { stripHtmlTags } from "@/utitlis/formatters";
 import {getAboutPayload} from "@/app/api/about/about";
 
 export default async function AboutSection() {
@@ -40,7 +40,7 @@ export default async function AboutSection() {
 
               <FaderInAnimation direction="up" delay={0.3}>
                 <p className="text-base text-(--text-color) leading-relaxed">
-                  {about.shortDescription}
+                  {stripHtmlTags(about.description)}
                 </p>
               </FaderInAnimation>
             </div>

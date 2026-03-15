@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { FaFilter, FaDownload, FaArrowRight } from "react-icons/fa";
 import { MdLoop } from "react-icons/md";
@@ -11,58 +11,87 @@ import Badge from "@/components/ui/Badge";
 import DataTable from "@/components/ui/DataTable";
 import RevealInAnimation from "@/Hooks/RevealInAnimation";
 import FaderInAnimation from "@/Hooks/FaderInAnimation";
+import { getCustomerOrders } from "@/lib/OrderService";
+import { useCurrency } from "@/context/CurrencyContext";
 
-const mockOrders = [
-    {
-        id: "ORD-9921",
-        date: "Oct 24, 2023",
-        status: "Shipped",
-        total: "$145.00",
-        variant: "success",
-    },
-    {
-        id: "ORD-8842",
-        date: "Sep 15, 2023",
-        status: "Delivered",
-        total: "$230.50",
-        variant: "info",
-    },
-    {
-        id: "ORD-7719",
-        date: "Aug 02, 2023",
-        status: "Processing",
-        total: "$85.00",
-        variant: "warning",
-        animate: true,
-        icon: MdLoop,
-    },
-    {
-        id: "ORD-6630",
-        date: "Jul 19, 2023",
-        status: "Delivered",
-        total: "$315.00",
-        variant: "info",
-    },
-    {
-        id: "ORD-5501",
-        date: "Jun 05, 2023",
-        status: "Cancelled",
-        total: "$42.00",
-        variant: "error",
-        icon: IoClose,
-    },
-];
+const statusConfig = {
+    "Shipped": { variant: "success" },
+    "Delivered": { variant: "info" },
+    "Processing": { variant: "warning", animate: true, icon: MdLoop },
+    "Cancelled": { variant: "error", icon: IoClose },
+    "Pending": { variant: "warning" },
+};
 
 export default function OrderHistoryPage() {
+    const [orders, setOrders] = useState([]);
+    const [filteredOrders, setFilteredOrders] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const { formatPrice } = useCurrency();
+    const [filterStatus, setFilterStatus] = useState("All");
+
+    const statuses = ["All", ...Object.keys(statusConfig)];
+
+    useEffect(() => {
+        let isMounted = true;
+        const fetchOrders = async () => {
+            try {
+                setIsLoading(true);
+                const response = await getCustomerOrders();
+                const ordersData = response.data || response || [];
+
+                if (isMounted) {
+                    const mappedOrders = ordersData.map(order => {
+                        const config = statusConfig[order.orderStatus] || { variant: "secondary" };
+                        return {
+                            id: order.id,
+                            invoiceNumber: order.invoiceNumber,
+                            date: new Date(order.transactionDate).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: '2-digit',
+                                year: 'numeric'
+                            }),
+                            status: order.orderStatus || "Processing",
+                            isPaid: order.isPaid,
+                            total: formatPrice(order.totalNetAmount || 0),
+                            ...config
+                        };
+                    });
+                    setOrders(mappedOrders);
+                    setFilteredOrders(mappedOrders);
+                }
+            } catch (err) {
+                if (isMounted) {
+                    setError(err.message || "Failed to fetch orders");
+                    console.error("Order fetch error:", err);
+                }
+            } finally {
+                if (isMounted) setIsLoading(false);
+            }
+        };
+
+        fetchOrders();
+        return () => { isMounted = false; };
+    }, []);
+
+    useEffect(() => {
+        if (filterStatus === "All") {
+            setFilteredOrders(orders);
+        } else {
+            setFilteredOrders(orders.filter(order => order.status === filterStatus));
+        }
+    }, [filterStatus, orders]);
+
     const columns = [
+        // ... columns remain same ...
         {
             header: "Date",
             accessor: "date",
             cellClassName: "text-text/80 dark:text-white/80 font-medium"
         },
         {
-            header: "Order ID",
-            accessor: "id",
+            header: "Invoice #",
+            accessor: "invoiceNumber",
             cellClassName: "text-text dark:text-white font-bold"
         },
         {
@@ -79,6 +108,17 @@ export default function OrderHistoryPage() {
             )
         },
         {
+            header: "Payment",
+            cell: (row) => (
+                <Badge
+                    variant={row.isPaid ? "success" : "warning"}
+                    dot
+                >
+                    {row.isPaid ? "Paid" : "Unpaid"}
+                </Badge>
+            )
+        },
+        {
             header: "Total",
             accessor: "total",
             cellClassName: "text-text dark:text-white font-medium"
@@ -89,7 +129,7 @@ export default function OrderHistoryPage() {
             cellClassName: "text-right pr-8",
             cell: (row) => (
                 <Link
-                    href={`/dashboard/orders/${row.id}`}
+                    href={`/order-detail?orderId=${row.id}`}
                     className="inline-flex items-center gap-1 text-accent hover:text-accent/80 text-sm font-bold tracking-wide transition-colors group-hover:underline decoration-2 underline-offset-4"
                 >
                     View Details
@@ -101,10 +141,10 @@ export default function OrderHistoryPage() {
 
     const pagination = {
         currentPage: 1,
-        totalPages: 8,
+        totalPages: 1,
         from: 1,
-        to: 5,
-        total: 24,
+        to: filteredOrders.length,
+        total: filteredOrders.length,
         onPageChange: (page) => console.log("Page change", page),
         onPrev: () => console.log("Prev"),
         onNext: () => console.log("Next")
@@ -118,12 +158,18 @@ export default function OrderHistoryPage() {
                     subtitle="View details and track the status of your past organic purchases."
                     action={
                         <div className="flex gap-2">
-                            <Button size="sm" variant="outline" leftIcon={<FaFilter className="text-xs" />}>
-                                Filter
-                            </Button>
-                            <Button size="sm" variant="outline" leftIcon={<FaDownload className="text-xs" />}>
-                                Export
-                            </Button>
+                            <div className="relative">
+                                <select
+                                    className="appearance-none bg-white border border-divider rounded-lg px-4 py-2 pr-10 text-sm font-bold text-primary focus:outline-none focus:border-accent cursor-pointer shadow-sm hover:bg-secondary/20 transition-all"
+                                    value={filterStatus}
+                                    onChange={(e) => setFilterStatus(e.target.value)}
+                                >
+                                    {statuses.map(status => (
+                                        <option key={status} value={status}>{status}</option>
+                                    ))}
+                                </select>
+                                <FaFilter className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] text-text/40 pointer-events-none" />
+                            </div>
                         </div>
                     }
                 />
@@ -131,13 +177,22 @@ export default function OrderHistoryPage() {
 
             <FaderInAnimation direction="up" delay={0.2}>
                 <div className="flex flex-col gap-6">
-                    <DataTable
-                        columns={columns}
-                        data={mockOrders}
-                        pagination={pagination}
-                    />
+                    {error ? (
+                        <div className="p-4 bg-red-50 text-red-600 rounded-lg border border-red-200">
+                            {error}
+                        </div>
+                    ) : (
+                        <DataTable
+                            columns={columns}
+                            data={filteredOrders}
+                            pagination={pagination}
+                            isLoading={isLoading}
+                        />
+                    )}
                 </div>
             </FaderInAnimation>
         </div>
     );
 }
+
+

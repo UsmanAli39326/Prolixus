@@ -1,4 +1,9 @@
 import Hero from "@/components/layout/Home/Hero";
+
+export const metadata = {
+  title: "Prolixus - Premium Organic Products",
+  description: "Shop nature's finest organic ingredients, curated for your holistic well-being.",
+};
 import AboutSection from "@/components/layout/About Us/About";
 import WhyChooseUs from "@/components/layout/Home/WhyChooseUs";
 import ProductsSection from "@/components/layout/Home/Product";
@@ -9,8 +14,9 @@ import OurBenefits from "@/components/layout/Home/OurBenefits";
 import CtaBox from "@/components/layout/Home/CtaBox";
 import OurFaqs from "@/components/layout/Home/OurFAQs";
 import OurTestimonials from "@/components/layout/Home/Testemonials";
-import OurBlog from "@/components/layout/Home/OurBlog";
+// import OurBlog from "@/components/layout/Home/OurBlog";
 import getAllProducts from "@/app/api/products/products";
+import YouTubeGallery from "@/components/layout/Home/YouTubeGallery";
 
 export default async function Home() {
   const { products = [] } = await getAllProducts(1, 3);
@@ -23,12 +29,13 @@ export default async function Home() {
       <ProductsSection products={products} />
       <WhatWeDo />
       <OurKeyPoints />
-      <PremiumProducts/>
+      <PremiumProducts />
       <OurBenefits />
       <CtaBox />
       <OurFaqs />
       <OurTestimonials />
-      <OurBlog />
+      {/* <OurBlog /> */}
+      <YouTubeGallery />
     </>
   );
 }

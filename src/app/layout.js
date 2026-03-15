@@ -1,6 +1,27 @@
 import "./globals.css";
 import { Plus_Jakarta_Sans, Lora } from "next/font/google";
 import { CartProvider } from "@/context/CartContext";
+import { CurrencyProvider } from "@/context/CurrencyContext";
+import { AuthProvider } from "@/context/AuthContext";
+
+export const metadata = {
+  title: {
+    template: "%s | Prolixus",
+    default: "Prolixus - Premium Organic Products",
+  },
+  description: "Shop nature's finest organic ingredients, curated for your holistic well-being.",
+  openGraph: {
+    title: "Prolixus - Premium Organic Products",
+    description: "Shop nature's finest organic ingredients, curated for your holistic well-being.",
+    type: "website",
+    locale: "en_US",
+    url: "https://prolixus.vercel.app",
+    siteName: "Prolixus",
+  },
+  icons: {
+    icon: "/images/new/logo-image.png",
+  },
+};
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -22,11 +43,15 @@ export default function RootLayout({ children }) {
       className={`${jakarta.variable} ${lora.variable}`}
     >
       <body>
-        <CartProvider>
-          <main className="min-h-screen">
-            {children}
-          </main>
-        </CartProvider>
+        <AuthProvider>
+          <CurrencyProvider>
+            <CartProvider>
+              <main className="min-h-screen">
+                {children}
+              </main>
+            </CartProvider>
+          </CurrencyProvider>
+        </AuthProvider>
       </body>
     </html>
   );

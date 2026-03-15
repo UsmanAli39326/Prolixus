@@ -1,4 +1,9 @@
 import AboutPageHeader from '@/components/layout/PageHeader';
+
+export const metadata = {
+  title: "About Us",
+  description: "Learn about our mission to provide sustainable, premium organic products.",
+};
 import About from '@/components/layout/About Us/About';
 // import OurApproach from '@/components/layout/About Us/OurApproach';
 // import OurKeyPoints from '@/components/layout/Home/OurKeyPoints';

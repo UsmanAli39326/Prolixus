@@ -32,7 +32,7 @@ export default function ForgotPasswordPage() {
         setLoading(true);
 
         try {
-            await apiService.post("/api/Account/forgot-password", { email: value });
+            await apiService.post("/Account/forgot-password", { email: value });
 
             // Store for OTP page   
             sessionStorage.setItem("reset_method", "email");

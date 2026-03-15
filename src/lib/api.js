@@ -1,12 +1,22 @@
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-const TOKEN = process.env.NEXT_PUBLIC_API_TOKEN;
 
-async function request(endpoint, method = 'GET', body = null, headers = {}) {
+// Read the auth token at request-time so the token stored during login is used.
+// Falls back to the build-time env var if localStorage is not available (e.g. SSR).
+function getToken() {
+  if (typeof window !== "undefined") {
+    return localStorage.getItem("authToken") || process.env.NEXT_PUBLIC_API_TOKEN;
+  }
+  return process.env.NEXT_PUBLIC_API_TOKEN;
+}
+
+async function request(endpoint, method = 'GET', body = null, headers = {}, isGuest = false) {
+  const token = isGuest ? process.env.NEXT_PUBLIC_API_TOKEN : getToken();
+
   const response = await fetch(`${BASE_URL}${endpoint}`, {
     method,
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${TOKEN}`,
+      Authorization: `Bearer ${token}`,
       ...headers,
     },
     body: body ? JSON.stringify(body) : null,
@@ -30,6 +40,9 @@ export const apiService = {
 
   post: (endpoint, data, headers) =>
     request(endpoint, 'POST', data, headers),
+
+  postGuest: (endpoint, data, headers) =>
+    request(endpoint, 'POST', data, headers, true),
 
   put: (endpoint, data, headers) =>
     request(endpoint, 'PUT', data, headers),

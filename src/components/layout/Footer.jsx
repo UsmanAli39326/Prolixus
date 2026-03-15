@@ -1,7 +1,7 @@
 import { FaMapMarkerAlt, FaPhoneAlt, FaEnvelope, FaArrowRight, FaAt } from "react-icons/fa";
 import { getAboutPayload } from "@/app/api/about/about";
-import Image from "next/image";
 import Button from "@/components/ui/Button";
+import Image from "next/image";
 
 export default async function MainFooter() {
   const about = await getAboutPayload();
@@ -35,11 +35,11 @@ export default async function MainFooter() {
             <h3 className="text-(--white-color) font-accent font-bold text-xl mb-8">Quick Links</h3>
             <ul className="space-y-4">
               {[
-                "Payment and shipping",
-                "Right of withdrawal",
-                "Data protection",
-                "Imprint",
-                "Terms and Conditions",
+                "Login",
+                "Terms & Conditions",
+                "Privacy Policy",
+                "Return & Refund Policy",
+                "FAQ's",
               ].map((item, index) => (
                 <li key={index}>
                   <a
@@ -60,7 +60,7 @@ export default async function MainFooter() {
               {/* Address */}
               <div className="flex items-start gap-4">
                 <div className="mt-1">
-                  <FaMapMarkerAlt className="text-(--accent-color) text-lg shadow-[0_0_10px_var(--accent-color)]" />
+                  <FaMapMarkerAlt className="text-(--accent-color) text-lg" />
                 </div>
                 <p className="text-(--white-color)/70 font-default text-[15px] leading-relaxed">
                   {about?.address || "Address info unavailable"}

@@ -98,26 +98,30 @@
 
 
 import ProductGrid from "../Ecommerce/ProductListingPage/ProductGrid";
+import FaderInAnimation from "@/Hooks/FaderInAnimation";
+import RevealInAnimation from "@/Hooks/RevealInAnimation";
 
 export default function ProductsSection({ products = [] }) {
-return (
+  return (
     <section className="our-products py-24">
       <div className="container mx-auto px-4">
 
         {/* Header Row */}
         <div className="section-row mb-12 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-          <div className="section-title max-w-xl">
-            <h3 className="capitalize tracking-[0.2em] text-sm font-thin font-accent italic mb-4 text-(--primary-color)">
-              Unsere Produkte
-            </h3>
+          <RevealInAnimation direction="left" delay={0.2} duration={0.8}>
+            <div className="section-title max-w-xl">
+              <h3 className="capitalize tracking-[0.2em] text-sm font-thin font-accent italic mb-4 text-(--primary-color)">
+                Unsere Produkte
+              </h3>
 
-            <h2 className="text-3xl lg:text-4xl font-bold leading-tight font-default text-(--primary-color)">
-              Prolixus für Ihre tägliche
-              <span className="block text-(--accent-color) font-accent font-light italic">
-                Vitalität
-              </span>
-            </h2>
-          </div>
+              <h2 className="text-3xl lg:text-4xl font-bold leading-tight font-default text-(--primary-color)">
+                Prolixus für Ihre tägliche
+                <span className="block text-(--accent-color) font-accent font-light italic">
+                  Vitalität
+                </span>
+              </h2>
+            </div>
+          </RevealInAnimation>
 
           <div className="section-btn flex lg:justify-end">
             <a
@@ -130,7 +134,9 @@ return (
         </div>
 
         {/* Product Grid */}
-        <ProductGrid products={products} />
+        <FaderInAnimation direction="up" delay={0.2} duration={0.8}>
+          <ProductGrid products={products} />
+        </FaderInAnimation>
 
       </div>
     </section>

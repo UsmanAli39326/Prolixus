@@ -1,0 +1,136 @@
+"use client";
+
+import React, { createContext, useContext, useState, useMemo, useEffect } from "react";
+import useCart from "@/Hooks/useCart";
+import { calcCartTotals } from "@/lib/cart";
+import { getProfile } from "@/lib/ProfileService";
+import { apiService } from "@/lib/api";
+import { useAuth } from "./AuthContext";
+
+const CheckoutContext = createContext();
+
+export const CheckoutProvider = ({ children }) => {
+    const { cartItems } = useCart();
+    const { user: authUser, isLoggedIn, token } = useAuth();
+
+    const [user, setUser] = useState(null);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [walletBalance, setWalletBalance] = useState(0);
+    const [orderCompleted, setOrderCompleted] = useState(false);
+
+    const [formData, setFormData] = useState({
+        // Contact
+        email: "",
+        fullName: "",
+        phone: "",
+
+        // Shipping address
+        address: "",
+        apartment: "",
+        city: "",
+        zip: "",
+        countryId: 1,
+
+        // Payment & metadata
+        paymentMethod: "Stripe", // Default to Stripe as per common usage
+        paymentToken: null,
+        couponCode: "",
+        orderNotes: "",
+
+        // Optional extras
+        affiliateCustomerCode: "",
+        discountAmount: 0,
+
+        // Wallet
+        useWallet: false,
+        walletAmount: 0,
+    });
+
+    useEffect(() => {
+        const fetchUserProfile = async () => {
+            if (token) {
+                try {
+                    const response = await getProfile();
+                    if (response?.success && response.data) {
+                        setUser(response.data);
+                        setIsAuthenticated(true);
+
+                        // Prefill form if data is available
+                        setFormData(prev => ({
+                            ...prev,
+                            email: response.data.email || prev.email,
+                            fullName: response.data.name || prev.fullName,
+                            phone: response.data.mobile || prev.phone,
+                            address: response.data.shippingStreet || prev.address,
+                            city: response.data.shippingCity || prev.city,
+                            zip: response.data.shippingPostCode || prev.zip,
+                            countryId: response.data.shippingCountryId || prev.countryId,
+                        }));
+                    }
+
+                    // Fetch wallet balance from dedicated endpoint
+                    try {
+                        const walletRes = await apiService.get("/Dashboard/customer-wallet");
+                        const balance = parseFloat(walletRes?.data?.remainingAffiliateAmount ?? 0);
+                        // const balance = 1000;
+                        setWalletBalance(isNaN(balance) ? 0 : balance);
+                    } catch {
+                        // Wallet fetch is non-critical — silently default to 0
+                        setWalletBalance(0);
+                    }
+                } catch (error) {
+                    console.error("Failed to fetch user profile in CheckoutContext:", error);
+                }
+            } else {
+                setUser(null);
+                setIsAuthenticated(false);
+            }
+        };
+
+        fetchUserProfile();
+    }, [token]);
+
+    const updateFormData = (newData) => {
+        setFormData((prev) => ({ ...prev, ...newData }));
+    };
+
+    // Calculate totals including discount and wallet
+    const totals = useMemo(() => {
+        const baseTotals = calcCartTotals(cartItems);
+        const discountAmount = formData.discountAmount || 0;
+        const afterDiscount = Math.max(0, baseTotals.total - discountAmount);
+        const walletAmount = formData.useWallet ? Math.min(formData.walletAmount, afterDiscount) : 0;
+
+        return {
+            ...baseTotals,
+            discountAmount,
+            walletAmount,
+            total: Math.max(0, afterDiscount - walletAmount),
+        };
+    }, [cartItems, formData.discountAmount, formData.useWallet, formData.walletAmount]);
+
+    return (
+        <CheckoutContext.Provider
+            value={{
+                formData,
+                updateFormData,
+                totals,
+                user,
+                isAuthenticated,
+                walletBalance,
+                orderCompleted,
+                setOrderCompleted,
+            }}
+        >
+            {children}
+        </CheckoutContext.Provider>
+    );
+};
+
+export const useCheckout = () => {
+    const context = useContext(CheckoutContext);
+    if (context === undefined) {
+        throw new Error("useCheckout must be used within a CheckoutProvider");
+    }
+    return context;
+};

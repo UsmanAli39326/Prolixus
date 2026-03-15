@@ -135,9 +135,21 @@ export default function Hero() {
   return (
     <section
       className="relative overflow-hidden bg-cover bg-center pb-20 lg:pt-[220px] lg:pb-[110px] bg--secondary-color"
-      style={{ backgroundImage: "url(/images/new/prolixus-hero-banner.jpeg)" }}
     >
-      <div className="absolute inset-0 bg-linear-to-r from-(--primary-color)/90 via-(--primary-color)/70 to-transparent backdrop-blur-[2px]" />
+      {/* Background Video */}
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="metadata"
+        className="absolute inset-0 w-full h-full object-cover z-0"
+      >
+        <source src="/videos/hero-video.mp4" type="video/mp4" />
+      </video>
+
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-linear-to-r from-(--primary-color)/85 via-(--primary-color)/60 to-transparent z-1" />
 
       <div className="relative z-2 container mx-auto px-4">
         <div className="grid items-center gap-10 lg:grid-cols-2">
@@ -221,7 +233,7 @@ export default function Hero() {
             <div className="hero-image relative mx-6 lg:mx-14">
               <figure className="block">
                 <Image
-                  src="/images/new/prolixus-nutrients.jpeg"
+                  src="/images/new/bottle.png"
                   alt="Prolixus Nahrungsergänzungsmittel"
                   width={600}
                   height={800}
@@ -231,7 +243,6 @@ export default function Hero() {
               </figure>
             </div>
           </div>
-
         </div>
       </div>
     </section>

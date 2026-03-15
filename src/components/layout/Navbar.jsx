@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -11,31 +11,25 @@ import Button from "@/components/ui/Button";
 // import { getShopMenus } from "@/services/menuService"; // ya jis path me aapka file hai
 import { getShopMenus } from "@/app/api/layout/navbar";
 
+import { useAuth } from "@/context/AuthContext";
+
 export default function Header() {
   const { itemCount } = useCart();
   const router = useRouter();
+  const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [menus, setMenus] = useState([]);
   const [shopButton, setShopButton] = useState({ label: "Shop Now", url: "/products" });
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
-    setIsLoggedIn(!!localStorage.getItem("authToken"));
-  }, []);
+  const { isLoggedIn } = useAuth();
 
   const handleUserIconClick = () => {
-    if (isLoggedIn) {
-      router.push("/dashboard");
-    } else {
-      router.push("/login");
-    }
+    router.push("/dashboard")
   };
 
   // 🔥 Fetch shop menus from API
   useEffect(() => {
     async function loadMenus() {
       const data = await getShopMenus();
-      console.log("Fetched menus:", data);
       setMenus(data);
 
       // ✅ Use API data directly to find Shop menu
@@ -50,7 +44,7 @@ export default function Header() {
   const mainMenus = menus.filter((m) => m.label !== "Cart");
 
   return (
-    <header className=" border-b border-divider bg-primary">
+    <header className="fixed top-0 left-0 right-0 z-50 border-b border-divider bg-primary">
       <nav className="container mx-auto flex items-center justify-between px-4 py-4 lg:py-6">
 
         {/* Logo */}
@@ -72,7 +66,7 @@ export default function Header() {
               <li key={menu.id}>
                 <Link
                   href={menu.url}
-                  className="px-4 py-3 text-white font-semibold text-[16px] transition hover:text-accent"
+                  className="px-4 py-3 text-white font-semibold text-[16px] transition hover:text-accent no-underline"
                 >
                   {menu.label}
                 </Link>
@@ -104,7 +98,7 @@ export default function Header() {
               <button
                 onClick={handleUserIconClick}
                 aria-label={isLoggedIn ? "Go to Dashboard" : "Login"}
-                className="flex items-center justify-center h-9 w-9 rounded-full border border-white text-white transition hover:bg-white hover:text-accent"
+                className="flex items-center justify-center h-9 w-9 rounded-full border border-white text-white transition hover:bg-white hover:text-accent cursor-pointer"
               >
                 <FaCircleUser />
               </button>

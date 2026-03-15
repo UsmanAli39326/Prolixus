@@ -11,7 +11,7 @@ export default function EcommerceLayout({ children }) {
     return (
         <>
             <Navbar />
-            <main className="ecommerce-container">
+            <main className="ecommerce-container pt-[80px]">
                 {children}
             </main>
             <MainFooter />

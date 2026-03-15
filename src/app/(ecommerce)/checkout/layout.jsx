@@ -1,9 +1,22 @@
+"use client";
+
 import OrderSummary from "@/components/layout/Ecommerce/CheckoutPage/OrderSummary";
 import FaderInAnimation from "@/Hooks/FaderInAnimation";
+import { CheckoutProvider, useCheckout } from "@/context/CheckoutContext";
 
 export default function CheckoutLayout({ children }) {
     return (
+        <CheckoutProvider>
+            <CheckoutLayoutInner>{children}</CheckoutLayoutInner>
+        </CheckoutProvider>
+    );
+}
+
+function CheckoutLayoutInner({ children }) {
+    const { orderCompleted } = useCheckout();
+    return (
         <div className="bg-secondary text-text font-default antialiased min-h-screen flex flex-col">
+
             <style dangerouslySetInnerHTML={{
                 __html: `
                 .custom-scrollbar::-webkit-scrollbar {
@@ -23,18 +36,21 @@ export default function CheckoutLayout({ children }) {
 
             <main className="grow flex justify-center w-full px-4 py-8 lg:px-8">
                 <div className="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16">
-                    <div className="lg:col-span-12 xl:col-span-7 flex flex-col gap-8">
+                    <div className={`lg:col-span-12 ${orderCompleted ? '' : 'xl:col-span-7'} flex flex-col gap-8`}>
                         <FaderInAnimation direction="up" distance={20}>
                             {children}
                         </FaderInAnimation>
                     </div>
-                    <div className="lg:col-span-12 xl:col-span-5">
-                        <FaderInAnimation direction="left" delay={0.2}>
-                            <OrderSummary />
-                        </FaderInAnimation>
-                    </div>
+                    {!orderCompleted && (
+                        <div className="lg:col-span-12 xl:col-span-5">
+                            <FaderInAnimation direction="left" delay={0.2}>
+                                <OrderSummary />
+                            </FaderInAnimation>
+                        </div>
+                    )}
                 </div>
             </main>
         </div>
     );
 }
+

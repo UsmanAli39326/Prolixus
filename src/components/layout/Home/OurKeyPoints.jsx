@@ -339,13 +339,13 @@ export default function OurKeyPoints() {
           </div>
 
           {/* CENTER IMAGE */}
-          <div className="w-full lg:w-1/3 order-3 lg:order-2 mt-10 lg:mt-0">
-            <div className="key-points-image text-center mx-4">
+          <div className="w-full lg:w-[40%] order-3 lg:order-2 mt-10 lg:mt-0">
+            <div className="key-points-image text-center">
               <figure>
                 <img
-                  src="/images/new/prolixus-why.jpeg"
+                  src="/images/new/bottle.png"
                   alt="Prolixus Produkt"
-                  className="mx-auto w-full max-w-[340px]"
+                  className="mx-auto w-full max-w-[500px] lg:scale-110"
                 />
               </figure>
             </div>

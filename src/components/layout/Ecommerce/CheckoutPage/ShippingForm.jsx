@@ -20,7 +20,7 @@ export default function ShippingForm({ nextStep, prevStep, goToStep, formData })
         <div className="flex flex-col gap-8">
             <RevealInAnimation direction="left">
                 <nav className="flex items-center gap-3 text-sm font-medium font-default">
-                    <button onClick={() => goToStep(0)} className="text-accent hover:underline">Information</button>
+                    <span className="text-gray-400 cursor-default">Information</span>
                     <div className="text-gray-400">
                         <svg className="size-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
                     </div>
@@ -28,7 +28,7 @@ export default function ShippingForm({ nextStep, prevStep, goToStep, formData })
                     <div className="text-gray-400">
                         <svg className="size-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
                     </div>
-                    <button onClick={() => goToStep(2)} className="text-gray-500 hover:text-accent transition-colors">Payment</button>
+                    <span className="text-gray-400 cursor-default">Payment</span>
                 </nav>
             </RevealInAnimation>
 

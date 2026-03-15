@@ -5,14 +5,16 @@ import RevealInAnimation from "@/Hooks/RevealInAnimation";
 import Button from "@/components/ui/Button";
 import useCart from "@/Hooks/useCart";
 import { stripHtmlTags } from "@/utitlis/formatters";
-import { calcCartTotals, PRICING } from "@/lib/cart";
+import { calcCartTotals } from "@/lib/cart";
 import { FiMinus, FiPlus, FiTrash2, FiArrowLeft, FiArrowRight, FiCheck, FiShield, FiTruck, FiPackage } from "react-icons/fi";
+import { useCurrency } from "@/context/CurrencyContext";
 
 export default function CartPage() {
   const { cartItems, updateQuantity, removeFromCart } = useCart();
+  const { formatPrice } = useCurrency();
 
   // Calculate totals — single source of truth via shared utility
-  const { subtotal, vatAmount, shipping, total, vatPercentage } = calcCartTotals(cartItems);
+  const { subtotal, vatAmount, shipping, total, vatPercentage, allVatPercentages, combinedVatPercentage } = calcCartTotals(cartItems);
 
   return (
     <FaderInAnimation direction="up">
@@ -28,9 +30,6 @@ export default function CartPage() {
                   </h1>
                   <p className="text-text mt-2">
                     {cartItems.length} {cartItems.length === 1 ? "item" : "items"} in your cart
-                    {subtotal >= PRICING.FREE_SHIPPING_THRESHOLD && (
-                      <span className="text-accent font-medium ml-2">• Free shipping eligible!</span>
-                    )}
                   </p>
                 </div>
                 <Link href="/products" className="group inline-flex items-center gap-2 text-primary hover:text-accent transition-colors duration-300">
@@ -102,7 +101,7 @@ export default function CartPage() {
                               <p className="text-sm text-text line-clamp-1">{stripHtmlTags(item.description)}</p>
                               {/* Mobile Price */}
                               <p className="text-accent font-semibold md:hidden">
-                                ${item.price.toFixed(2)}
+                                {formatPrice(item.price)}
                               </p>
                             </div>
                           </div>
@@ -131,13 +130,13 @@ export default function CartPage() {
 
                           {/* Unit Price - Desktop Only */}
                           <div className="hidden md:block col-span-2 text-center font-medium text-text">
-                            ${item.price.toFixed(2)}
+                            {formatPrice(item.price)}
                           </div>
 
                           {/* Line Total & Delete */}
                           <div className="col-span-2 flex items-center justify-between md:justify-end gap-4">
                             <span className="font-semibold text-primary text-lg">
-                              ${(item.price * item.quantity).toFixed(2)}
+                              {formatPrice(item.price * item.quantity)}
                             </span>
                             <button
                               onClick={() => removeFromCart(item.id)}
@@ -158,7 +157,7 @@ export default function CartPage() {
                   <div className="mt-8 p-6 bg-surface-2 rounded-2xl lg:hidden">
                     <div className="flex flex-wrap gap-6 justify-center">
                       <TrustBadge icon={<FiShield />} text="100% Organic" />
-                      <TrustBadge icon={<FiTruck />} text="Free Shipping 100+" />
+                      <TrustBadge icon={<FiTruck />} text="Free Shipping" />
                       <TrustBadge icon={<FiCheck />} text="Quality Guaranteed" />
                     </div>
                   </div>
@@ -179,26 +178,25 @@ export default function CartPage() {
                       <div className="space-y-4 mb-6">
                         <div className="flex justify-between items-center text-sm">
                           <span className="text-text">Subtotal</span>
-                          <span className="font-medium text-primary">${subtotal.toFixed(2)}</span>
+                          <span className="font-medium text-primary">{formatPrice(subtotal)}</span>
                         </div>
 
                         <div className="flex justify-between items-center text-sm">
                           <span className="text-text">Shipping</span>
-                          <span className={`font-medium ${shipping === 0 ? 'text-accent' : 'text-primary'}`}>
-                            {shipping === 0 ? 'Free' : `$${shipping.toFixed(2)}`}
-                          </span>
+                          <span className="font-medium text-accent">Free</span>
                         </div>
 
                         <div className="flex justify-between items-center text-sm">
-                          <span className="text-text">VAT ({vatPercentage}%)</span>
-                          <span className="font-medium text-primary">${vatAmount.toFixed(2)}</span>
+                          {/* <span className="text-text">VAT ({allVatPercentages?.join(" % & ") || vatPercentage}%)</span> */}
+                          <span className="text-text">VAT ({combinedVatPercentage}%)</span>
+                          <span className="font-medium text-primary">{formatPrice(vatAmount)}</span>
                         </div>
 
                         <div className="h-px bg-divider my-4" />
 
                         <div className="flex justify-between items-center">
                           <span className="text-xl font-accent font-semibold text-primary">Total</span>
-                          <span className="text-2xl font-bold text-primary">${total.toFixed(2)}</span>
+                          <span className="text-2xl font-bold text-primary">{formatPrice(total)}</span>
                         </div>
                       </div>
 
@@ -221,7 +219,7 @@ export default function CartPage() {
                     </div>
 
                     {/* Trust Badges - Desktop */}
-                    <RevealInAnimation direction="bottom" delay={0.4}>
+                    {/* <RevealInAnimation direction="bottom" delay={0.4}>
                       <div className="hidden lg:block bg-surface-2 rounded-2xl p-6 border border-divider">
                         <div className="space-y-4">
                           <TrustBadgeHorizontal
@@ -232,7 +230,7 @@ export default function CartPage() {
                           <TrustBadgeHorizontal
                             icon={<FiTruck />}
                             title="Free Shipping"
-                            description="On orders over $100"
+                            description="Free shipping on all orders"
                           />
                           <TrustBadgeHorizontal
                             icon={<FiPackage />}
@@ -241,7 +239,7 @@ export default function CartPage() {
                           />
                         </div>
                       </div>
-                    </RevealInAnimation>
+                    </RevealInAnimation> */}
                   </div>
                 </FaderInAnimation>
               </div>

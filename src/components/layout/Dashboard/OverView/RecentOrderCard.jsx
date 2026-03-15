@@ -1,5 +1,7 @@
+import Link from "next/link";
 import { FaTruck } from "react-icons/fa";
 import Button from "@/components/ui/Button";
+import Badge from "@/components/ui/Badge";
 
 export default function RecentOrderCard({ order }) {
     return (
@@ -7,38 +9,39 @@ export default function RecentOrderCard({ order }) {
             <div className="flex flex-col gap-4 flex-1">
                 <div className="flex items-center gap-3">
                     <span className="text-lg font-bold text-primary font-default">
-                        Order #{order.id}
+                        Invoice #{order.invoiceNumber}
                     </span>
 
-                    <span className="px-3 py-1 rounded-full bg-green-100 text-green-800 text-[10px] font-bold uppercase tracking-wider border border-green-200">
-                        {order.status}
-                    </span>
+                    <Badge variant="info" dot>
+                        {order.orderStatus || "Processing"}
+                    </Badge>
+
+                    <Badge variant={order.isPaid ? "success" : "warning"} dot>
+                        {order.isPaid ? "Paid" : "Unpaid"}
+                    </Badge>
                 </div>
 
                 <p className="text-text/60 text-sm font-default">
-                    Estimated Delivery:{" "}
+                    Order Date:{" "}
                     <span className="font-bold text-primary">
-                        {order.deliveryDate}
+                        {new Date(order.transactionDate).toLocaleDateString('en-US', {
+                            month: 'long',
+                            day: 'numeric',
+                            year: 'numeric'
+                        })}
                     </span>
                 </p>
             </div>
 
             <div className="flex gap-3">
-                <Button
-                    variant="accent"
-                    size="sm"
-                    leftIcon={<FaTruck />}
-                    className="shadow-sm"
-                >
-                    Track Order
-                </Button>
-
-                <Button
-                    variant="outline"
-                    size="sm"
-                >
-                    View Details
-                </Button>
+                <Link href={`/order-detail?orderId=${order.id}`}>
+                    <Button
+                        variant="accent"
+                        size="sm"
+                    >
+                        View Details
+                    </Button>
+                </Link>
             </div>
         </div>
     );

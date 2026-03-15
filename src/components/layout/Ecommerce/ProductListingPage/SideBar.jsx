@@ -1,6 +1,10 @@
+"use client";
 import React from "react";
+import { useCurrency } from "@/context/CurrencyContext";
 
-export default function FiltersSidebar({ categories, filters }) {
+export default function FiltersSidebar({ categories, filters, currentPriceRange, onPriceChange, currentSort, onSortChange }) {
+  const { formatPrice } = useCurrency();
+
   return (
     <aside className="rounded-[18px] border border-(--divider-color) bg-(--white-color) p-5 lg:p-6">
       <div className="space-y-8">
@@ -59,18 +63,60 @@ export default function FiltersSidebar({ categories, filters }) {
           </h3>
 
           <div className="px-1">
-            <div className="relative my-6 h-1 w-full rounded-full bg-(--divider-color)">
-              {/* Selected range */}
-              <div className="absolute left-[20%] right-[30%] h-full rounded-full bg-(--primary-color)" />
+            <div className="flex flex-col gap-4 mt-6 mb-2">
+              <div className="flex items-center justify-between text-sm font-bold text-(--primary-color)">
+                <span>{formatPrice(currentPriceRange?.min || filters.price.min)}</span>
+                <span>{formatPrice(currentPriceRange?.max || filters.price.max)}</span>
+              </div>
 
-              {/* Handles */}
-              <div className="absolute left-[20%] top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-full bg-(--white-color) ring-2 ring-(--accent-color) shadow-sm" />
-              <div className="absolute right-[30%] top-1/2 h-4 w-4 translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-full bg-(--white-color) ring-2 ring-(--accent-color) shadow-sm" />
-            </div>
+              <div className="relative h-1 w-full bg-(--divider-color) rounded-lg mb-2 mt-2">
+                {/* Active Track Highlight */}
+                <div
+                  className="absolute h-full bg-(--accent-color) rounded-lg pointer-events-none transition-all duration-75"
+                  style={{
+                    left: `${(( (currentPriceRange?.min ?? filters.price.min) - filters.price.min ) / (filters.price.max - filters.price.min)) * 100}%`,
+                    right: `${100 - (( (currentPriceRange?.max ?? filters.price.max) - filters.price.min ) / (filters.price.max - filters.price.min)) * 100}%`
+                  }}
+                />
 
-            <div className="flex items-center justify-between text-sm font-medium text-(--text-color)">
-              <span>${filters.price.min}</span>
-              <span>${filters.price.max}</span>
+                {/* Min Slider */}
+                <input
+                  type="range"
+                  min={filters.price.min}
+                  max={filters.price.max}
+                  value={currentPriceRange?.min || filters.price.min}
+                  onChange={(e) => {
+                    const newMin = Number(e.target.value);
+                    const currentMax = currentPriceRange?.max || filters.price.max;
+                    if (onPriceChange) {
+                      onPriceChange({
+                        min: Math.min(newMin, currentMax - 1), // prevent thumbs from totally locking
+                        max: currentMax
+                      });
+                    }
+                  }}
+                  className="absolute w-full -top-2 h-5 appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-(--white-color) [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-(--accent-color) [&::-webkit-slider-thumb]:shadow-sm [&::-webkit-slider-thumb]:cursor-grab active:[&::-webkit-slider-thumb]:cursor-grabbing z-20"
+                />
+
+                {/* Max Slider */}
+                <input
+                  type="range"
+                  min={filters.price.min}
+                  max={filters.price.max}
+                  value={currentPriceRange?.max || filters.price.max}
+                  onChange={(e) => {
+                    const newMax = Number(e.target.value);
+                    const currentMin = currentPriceRange?.min || filters.price.min;
+                    if (onPriceChange) {
+                      onPriceChange({
+                        min: currentMin,
+                        max: Math.max(newMax, currentMin + 1)
+                      });
+                    }
+                  }}
+                  className="absolute w-full -top-2 h-5 appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-(--white-color) [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-(--accent-color) [&::-webkit-slider-thumb]:shadow-sm [&::-webkit-slider-thumb]:cursor-grab active:[&::-webkit-slider-thumb]:cursor-grabbing z-30"
+                />
+              </div>
             </div>
           </div>
         </section>
@@ -82,24 +128,52 @@ export default function FiltersSidebar({ categories, filters }) {
           </h3>
 
           <div className="space-y-3">
-            {filters.sort.map((label, idx) => (
-              <label
-                key={label}
-                className="group flex cursor-pointer items-center gap-3"
-              >
-                <input
-                  type="radio"
-                  name="sort"
-                  defaultChecked={idx === 0}
-                  className="h-4 w-4 border-2 border-(--divider-color) text-(--primary-color) focus:ring-2 focus:ring-(--accent-color)/40 focus:ring-offset-2 focus:ring-offset-(--white-color)"
-                />
-                <span className="text-sm text-(--text-color)/80 transition-colors group-hover:text-(--primary-color)">
-                  {label}
-                </span>
-              </label>
-            ))}
+            {filters.sort.map((label, idx) => {
+              const isSelected = currentSort === label || (!currentSort && idx === 0);
+
+              return (
+                <label
+                  key={label}
+                  className="flex items-center gap-3 cursor-pointer group"
+                >
+                  <input
+                    type="radio"
+                    name="sort"
+                    checked={isSelected}
+                    onChange={() => onSortChange && onSortChange(label)}
+                    className="hidden"
+                  />
+
+                  {/* Custom radio */}
+                  <div
+                    className={`relative h-5 w-5 rounded-full border-2 transition-all duration-200
+            ${isSelected
+                        ? "border-(--accent-color)"
+                        : "border-(--divider-color) group-hover:border-(--accent-color)/60"
+                      }`}
+                  >
+                    <div
+                      className={`absolute inset-1 rounded-full bg-(--accent-color) transition-all duration-200
+              ${isSelected ? "scale-100" : "scale-0"}`}
+                    />
+                  </div>
+
+                  <span
+                    className={`text-sm transition-colors
+            ${isSelected
+                        ? "text-(--primary-color) font-medium"
+                        : "text-(--text-color)/80 group-hover:text-(--primary-color)"
+                      }`}
+                  >
+                    {label}
+                  </span>
+                </label>
+              );
+            })}
           </div>
         </section>
+
+
       </div>
     </aside>
   );

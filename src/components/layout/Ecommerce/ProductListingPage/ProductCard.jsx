@@ -1,9 +1,14 @@
+"use client";
+
 import Rating from "./ProductRating";
 import Link from "next/link";
 import Badge from "@/components/ui/Badge";
 import { stripHtmlTags } from "@/utitlis/formatters";
+import AddToCartButton from "@/components/ui/AddToCartButton";
+import { useCurrency } from "@/context/CurrencyContext";
 
 export default function ProductCard({ product }) {
+  const { formatPrice } = useCurrency();
   return (
     <Link
       href={`/products/${product.id}`}
@@ -41,7 +46,7 @@ export default function ProductCard({ product }) {
         </h3>
 
         <div className="mt-2">
-          <Rating value={product.rating} count={product.reviews} />
+          {/* <Rating value={product.rating} count={product.reviews} /> */}
         </div>
 
         <div className="relative mt-2 h-12">
@@ -50,10 +55,15 @@ export default function ProductCard({ product }) {
           </p>
         </div>
 
-        <div className="mt-auto pt-4 text-lg font-semibold text-(--primary-color)">
-          ${product.price.toFixed(2)}
+        <div className="mt-auto pt-4 flex items-center justify-between gap-3">
+          <span className="text-lg font-semibold text-(--primary-color)">
+            {formatPrice(product.price)}
+          </span>
+
+          <AddToCartButton product={product} size="card" />
         </div>
       </div>
     </Link>
   );
 }
+

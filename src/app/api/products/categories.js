@@ -20,7 +20,7 @@ export default async function categories() {
   try {
     const response = await apiService.get("/Configuration/categories");
 
-    console.log("cateegories response:",response)
+    console.log("cateegories response:", response)
 
     if (!response?.success) return [];
 

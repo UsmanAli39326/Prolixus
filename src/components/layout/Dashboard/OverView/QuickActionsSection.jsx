@@ -2,7 +2,7 @@ import { FaArrowRight, FaHandshake, FaIdBadge } from "react-icons/fa";
 import { FaLocationDot } from "react-icons/fa6";
 import ActionCard from "./ActionCard";
 
-export default function QuickActionsSection() {
+export default function QuickActionsSection({ stats, loading }) {
     return (
         <section>
             <h2 className="text-xl font-accent text-primary mb-4">
@@ -16,6 +16,7 @@ export default function QuickActionsSection() {
                     title="Profile Settings"
                     description="Manage your personal details"
                     actionLabel="Edit Profile"
+                    href="/dashboard/profile"
                 />
 
                 <ActionCard
@@ -23,14 +24,16 @@ export default function QuickActionsSection() {
                     title="Saved Addresses"
                     description="Manage shipping destinations"
                     actionLabel="Manage Addresses"
+                    href="/dashboard/profile"
                 />
 
                 <ActionCard
                     icon={<FaHandshake />}
                     title="Partner Program"
                     description="Affiliate Summary"
-                    value="$245.00"
+                    value={loading ? "..." : `$${(stats.walletBalance || 0).toFixed(2)}`}
                     actionLabel="Partner Dashboard"
+                    href="/dashboard/partner"
                 />
 
             </div>

@@ -1,13 +1,17 @@
 import getAllProducts from "@/app/api/products/products";
+
+export const metadata = {
+  title: "Shop All Products",
+  description: "Browse our complete collection of premium organic products.",
+};
 import categories from "@/app/api/products/categories";
 import filters from "@/app/api/products/filter";
 
 import ShopHero from "@/components/layout/Ecommerce/ProductListingPage/ProductHero";
-import ShopTopBar from "@/components/layout/Ecommerce/ProductListingPage/ProductHeader";
-import ProductGrid from "@/components/layout/Ecommerce/ProductListingPage/ProductGrid";
-import LoadMore from "@/components/layout/Ecommerce/ProductListingPage/LoadMore";
-import FiltersSidebar from "@/components/layout/Ecommerce/ProductListingPage/SideBar";
-import ShopLayout from "@/components/layout/Ecommerce/ProductListingPage/ProductLayout";
+// import ShopTopBar from "@/components/layout/Ecommerce/ProductListingPage/ProductHeader";
+// import ProductGrid from "@/components/layout/Ecommerce/ProductListingPage/ProductGrid";
+// import LoadMore from "@/components/layout/Ecommerce/ProductListingPage/LoadMore";
+import ProductsFilterManager from "@/components/layout/Ecommerce/ProductListingPage/ProductsFilterManager";
 
 export default async function ShopPage({ searchParams }) {
   const categoryList = await categories();
@@ -21,26 +25,11 @@ export default async function ShopPage({ searchParams }) {
         subtitle="Discover nature's finest ingredients, curated for your holistic well-being."
       />
 
-      <ShopLayout
-        sidebar={
-          <FiltersSidebar
-            categories={categoryList}
-            filters={filters}
-          />
-        }
-        content={
-          <>
-            <ShopTopBar total={pagination?.totalCount} showing={products.length} />
-            <ProductGrid products={products} />
-            {/* <LoadMore 
-            hasNext={pagination?.hasNextPage}/> */}
-
-            <LoadMore
-              hasNext={pagination?.hasNextPage}
-            // onClick={loadMoreProducts}
-            />
-          </>
-        }
+      <ProductsFilterManager
+        initialProducts={products}
+        pagination={pagination}
+        categoryList={categoryList}
+        filters={filters}
       />
     </div>
   );
