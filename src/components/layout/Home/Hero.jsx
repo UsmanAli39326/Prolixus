@@ -124,6 +124,9 @@
 //   );
 // }
 
+"use client";
+
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import FadeInAnimation from "@/Hooks/FaderInAnimation";
@@ -132,21 +135,33 @@ import RevealInAniation from "@/Hooks/RevealInAnimation";
 import Button from "@/components/ui/Button";
 
 export default function Hero() {
+  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+
+  useEffect(() => {
+    // Delay video loading to prioritize critical assets
+    const timer = setTimeout(() => {
+      setIsVideoLoaded(true);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <section
       className="relative overflow-hidden bg-cover bg-center pb-20 lg:pt-[220px] lg:pb-[110px] bg--secondary-color"
     >
-      {/* Background Video */}
-      <video
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="metadata"
-        className="absolute inset-0 w-full h-full object-cover z-0"
-      >
-        <source src="/videos/hero-video.mp4" type="video/mp4" />
-      </video>
+      {/* Background Video (Delayed) */}
+      {isVideoLoaded && (
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="none"
+          className="absolute inset-0 w-full h-full object-cover z-0 transition-opacity duration-1000"
+        >
+          <source src="/videos/hero-video-compressed.mp4" type="video/mp4" />
+        </video>
+      )}
 
       {/* Overlay */}
       <div className="absolute inset-0 bg-linear-to-r from-(--primary-color)/85 via-(--primary-color)/60 to-transparent z-1" />

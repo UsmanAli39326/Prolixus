@@ -1,4 +1,4 @@
-import { getProductById } from "@/app/api/products/products";
+import { getProductById, getAllProducts } from "@/app/api/products/products";
 import {
   ProductImageGallery,
   ProductInfo,
@@ -6,6 +6,18 @@ import {
   ProductBuySection,
 } from "@/components/layout/Ecommerce/ProductPage";
 import FaderInAnimation from "@/Hooks/FaderInAnimation";
+
+export async function generateStaticParams() {
+  // Fetch the first few pages or a high limit to prerender popular ones
+  // We will fetch up to 100 products for static generation
+  const { products } = await getAllProducts(1, 100);
+
+  if (!products || products.length === 0) return [];
+
+  return products.map((product) => ({
+    slug: String(product.id),
+  }));
+}
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
