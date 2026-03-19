@@ -129,16 +129,19 @@ export default function OrderDetailContent() {
     const handleDownloadInvoice = async () => {
         if (!orderData) return;
 
-        // ✅ Only run in browser
+        // ✅ Only run in browser (prevents SSR errors in Next.js/Nuxt)
         if (typeof window === "undefined") return;
 
+        // Dynamically import jsPDF and autoTable
         const jsPDFModule = await import("jspdf");
         const jsPDF = jsPDFModule.jsPDF || jsPDFModule.default;
-
         const autoTable = (await import("jspdf-autotable")).default;
 
         const doc = new jsPDF();
+
+        // ---------------------------------------------------------
         // Header
+        // ---------------------------------------------------------
         doc.setFontSize(22);
         doc.setTextColor(41, 128, 185);
         doc.text("INVOICE", 14, 22);
@@ -156,13 +159,90 @@ export default function OrderDetailContent() {
         doc.text(`Order ID: #${orderIdVal}`, 14, 38);
         doc.text(`Date: ${dateVal}`, 14, 44);
 
+        // ---------------------------------------------------------
+        // Seller Details
+        // ---------------------------------------------------------
+        // Ensure aboutData is available in your component's scope
+        if (typeof aboutData !== 'undefined' && aboutData) {
+            doc.setFontSize(12);
+            doc.setTextColor(0);
+            doc.text("Seller Information:", 100, 22);
+            doc.setFontSize(10);
+            doc.setTextColor(100);
+            doc.text(`${aboutData.companyName || "Prolixus"}`, 100, 32);
+            const aboutAddress = doc.splitTextToSize(aboutData.address || "N/A", 90);
+            doc.text(aboutAddress, 100, 38);
+            const addressHeight = aboutAddress.length * 5;
+            doc.text(`Email: ${aboutData.email || "N/A"}`, 100, 38 + addressHeight);
+            doc.text(`Phone: ${aboutData.phone || aboutData.mobile || "N/A"}`, 100, 44 + addressHeight);
+        }
+
+        // ---------------------------------------------------------
+        // Customer Details
+        // ---------------------------------------------------------
+        doc.setFontSize(12);
+        doc.setTextColor(0);
+        doc.text("Customer Details:", 14, 56);
+        doc.setFontSize(10);
+        doc.setTextColor(100);
+        doc.text(`Name: ${orderData?.customer?.name || "N/A"}`, 14, 64);
+        doc.text(`Email: ${orderData?.customer?.email || "N/A"}`, 14, 70);
+
+        let promoY = 76;
+        if (orderData?.order?.couponCode) {
+            doc.text(`Promo Code: ${orderData.order.couponCode}`, 14, promoY);
+            promoY += 6;
+        }
+        if (orderData?.order?.affiliateCustomerCode) {
+            doc.text(`Affiliate Code: ${orderData.order.affiliateCustomerCode}`, 14, promoY);
+            promoY += 6;
+        }
+        if (orderData?.order?.walletAmount > 0) {
+            const walletStr = formatPrice(orderData.order.walletAmount).replace(/&nbsp;/g, ' ');
+            doc.text(`Paid via Wallet: ${walletStr}`, 14, promoY);
+        }
+
+        // ---------------------------------------------------------
+        // Delivery Address
+        // ---------------------------------------------------------
+        doc.setFontSize(12);
+        doc.setTextColor(0);
+        doc.text("Delivery Address:", 100, 56);
+        doc.setFontSize(10);
+        doc.setTextColor(100);
+
+        let addressText = "N/A";
+        const addrObj = orderData?.deliveryAddress || orderData?.order?.deliveryAddress || orderData?.customer?.address || orderData?.order?.shippingAddress || orderData?.shippingAddress;
+
+        if (typeof addrObj === 'string') {
+            addressText = addrObj;
+        } else if (addrObj && typeof addrObj === 'object') {
+            const parts = [
+                addrObj.firstName ? `${addrObj.firstName} ${addrObj.lastName || ''}`.trim() : null,
+                addrObj.street,
+                addrObj.addressLine1,
+                addrObj.addressLine2,
+                addrObj.city,
+                addrObj.state,
+                addrObj.zipCode,
+                addrObj.country
+            ].filter(Boolean);
+            if (parts.length > 0) {
+                addressText = parts.join(", ");
+            }
+        }
+
+        const splitAddress = doc.splitTextToSize(addressText, 90);
+        doc.text(splitAddress, 100, 64);
+
+        // ---------------------------------------------------------
         // Table
+        // ---------------------------------------------------------
         const tableColumn = ["Product", "Brand", "Qty", "Unit Price", "Total"];
         const tableRows = [];
 
         orderData?.orderDetails?.forEach(item => {
             const productInfo = item.item || {};
-
             const unitPriceStr = formatPrice(item.unitPrice || 0).replace(/&nbsp;/g, ' ');
             const totalPriceStr = formatPrice(item.totalPrice || item.totalNetPrice || 0).replace(/&nbsp;/g, ' ');
 
@@ -178,12 +258,24 @@ export default function OrderDetailContent() {
         autoTable(doc, {
             head: [tableColumn],
             body: tableRows,
-            startY: 60
+            startY: Math.max(85, 64 + (splitAddress.length * 5)),
+            headStyles: { fillColor: [41, 128, 185], textColor: 255 },
+            alternateRowStyles: { fillColor: [245, 245, 245] },
+            styles: { fontSize: 10, cellPadding: 5 }
         });
 
-        doc.save(`Invoice_${invoiceNum}.pdf`);
-    };
+        // ---------------------------------------------------------
+        // Final Total & Save
+        // ---------------------------------------------------------
+        const finalY = doc.lastAutoTable.finalY + 10;
 
+        doc.setFontSize(12);
+        doc.setTextColor(0);
+        const finalTotalStr = formatPrice(orderData?.order?.totalNetAmount || 0).replace(/&nbsp;/g, ' ');
+        doc.text(`Total Amount: ${finalTotalStr}`, 14, finalY);
+
+        doc.save(`Invoice_${invoiceNum !== "N/A" ? invoiceNum : orderIdVal}.pdf`);
+    };
     useEffect(() => {
 
         const fetchOrder = async () => {
