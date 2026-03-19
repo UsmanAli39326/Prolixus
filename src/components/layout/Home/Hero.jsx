@@ -159,7 +159,7 @@ export default function Hero() {
           preload="none"
           className="absolute inset-0 w-full h-full object-cover z-0 transition-opacity duration-1000"
         >
-          <source src="/videos/hero-video.mp4" type="video/mp4" />
+          <source src="/videos/hero-video-compressed.mp4" type="video/mp4" />
         </video>
       )}
 

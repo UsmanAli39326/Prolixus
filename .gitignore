@@ -7,6 +7,12 @@
 node_modules/
 dist/
 
+# next artifact files
+.next/
+
+# env files
+.env*
+
 # Compiled Java class files
 *.class
 

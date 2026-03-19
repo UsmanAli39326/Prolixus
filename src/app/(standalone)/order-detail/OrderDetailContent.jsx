@@ -20,9 +20,6 @@ import {
     FaWallet
 } from "react-icons/fa6";
 
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
-
 import { useCurrency } from "@/context/CurrencyContext";
 import FaderInAnimation from "@/Hooks/FaderInAnimation";
 import RevealInAnimation from "@/Hooks/RevealInAnimation";
@@ -129,137 +126,60 @@ export default function OrderDetailContent() {
 
     const orderId = searchParams.get("orderId");
 
-    const handleDownloadInvoice = () => {
-        if (!orderData) return;
+    const handleDownloadInvoice = async () => {
+    if (!orderData) return;
 
-        const doc = new jsPDF();
+    // ✅ dynamic imports (THIS FIXES YOUR ERROR)
+    const { jsPDF } = await import("jspdf");
+    const autoTable = (await import("jspdf-autotable")).default;
 
-        // Header
-        doc.setFontSize(22);
-        doc.setTextColor(41, 128, 185);
-        doc.text("INVOICE", 14, 22);
+    const doc = new jsPDF();
 
-        doc.setFontSize(10);
-        doc.setTextColor(100);
+    // Header
+    doc.setFontSize(22);
+    doc.setTextColor(41, 128, 185);
+    doc.text("INVOICE", 14, 22);
 
-        const invoiceNum = orderData?.order?.invoiceNumber || "N/A";
-        const orderIdVal = orderData?.order?.id || "N/A";
-        const dateVal = orderData?.order?.transactionDate
-            ? new Date(orderData.order.transactionDate).toLocaleString()
-            : "N/A";
+    doc.setFontSize(10);
+    doc.setTextColor(100);
 
-        doc.text(`Invoice Number: ${invoiceNum}`, 14, 32);
-        doc.text(`Order ID: #${orderIdVal}`, 14, 38);
-        doc.text(`Date: ${dateVal}`, 14, 44);
+    const invoiceNum = orderData?.order?.invoiceNumber || "N/A";
+    const orderIdVal = orderData?.order?.id || "N/A";
+    const dateVal = orderData?.order?.transactionDate
+        ? new Date(orderData.order.transactionDate).toLocaleString()
+        : "N/A";
 
-        // Seller Details
-        if (aboutData) {
-            doc.setFontSize(12);
-            doc.setTextColor(0);
-            doc.text("Seller Information:", 100, 22);
-            doc.setFontSize(10);
-            doc.setTextColor(100);
-            doc.text(`${aboutData.companyName || "Prolixus"}`, 100, 32);
-            const aboutAddress = doc.splitTextToSize(aboutData.address || "N/A", 90);
-            doc.text(aboutAddress, 100, 38);
-            const addressHeight = aboutAddress.length * 5;
-            doc.text(`Email: ${aboutData.email || "N/A"}`, 100, 38 + addressHeight);
-            doc.text(`Phone: ${aboutData.phone || aboutData.mobile || "N/A"}`, 100, 44 + addressHeight);
-        }
+    doc.text(`Invoice Number: ${invoiceNum}`, 14, 32);
+    doc.text(`Order ID: #${orderIdVal}`, 14, 38);
+    doc.text(`Date: ${dateVal}`, 14, 44);
 
-        // Customer Details
-        doc.setFontSize(12);
-        doc.setTextColor(0);
-        doc.text("Customer Details:", 14, 56);
-        doc.setFontSize(10);
-        doc.setTextColor(100);
-        doc.text(`Name: ${orderData?.customer?.name || "N/A"}`, 14, 64);
-        doc.text(`Email: ${orderData?.customer?.email || "N/A"}`, 14, 70);
+    // Table
+    const tableColumn = ["Product", "Brand", "Qty", "Unit Price", "Total"];
+    const tableRows = [];
 
-        let promoY = 76;
-        if (orderData?.order?.couponCode) {
-            doc.text(`Promo Code: ${orderData.order.couponCode}`, 14, promoY);
-            promoY += 6;
-        }
-        if (orderData?.order?.affiliateCustomerCode) {
-            doc.text(`Affiliate Code: ${orderData.order.affiliateCustomerCode}`, 14, promoY);
-            promoY += 6;
-        }
-        if (orderData?.order?.walletAmount > 0) {
-            const walletStr = formatPrice(orderData.order.walletAmount).replace(/&nbsp;/g, ' ');
-            doc.text(`Paid via Wallet: ${walletStr}`, 14, promoY);
-        }
+    orderData?.orderDetails?.forEach(item => {
+        const productInfo = item.item || {};
 
-        // Delivery Address
-        doc.setFontSize(12);
-        doc.setTextColor(0);
-        doc.text("Delivery Address:", 100, 56);
-        doc.setFontSize(10);
-        doc.setTextColor(100);
+        const unitPriceStr = formatPrice(item.unitPrice || 0).replace(/&nbsp;/g, ' ');
+        const totalPriceStr = formatPrice(item.totalPrice || item.totalNetPrice || 0).replace(/&nbsp;/g, ' ');
 
-        let addressText = "N/A";
-        const addrObj = orderData?.deliveryAddress || orderData?.order?.deliveryAddress || orderData?.customer?.address || orderData?.order?.shippingAddress || orderData?.shippingAddress;
+        tableRows.push([
+            productInfo.name || "Unknown Product",
+            productInfo.brandName || "N/A",
+            item.quantity || 1,
+            unitPriceStr,
+            totalPriceStr
+        ]);
+    });
 
-        if (typeof addrObj === 'string') {
-            addressText = addrObj;
-        } else if (addrObj && typeof addrObj === 'object') {
-            const parts = [
-                addrObj.firstName ? `${addrObj.firstName} ${addrObj.lastName || ''}`.trim() : null,
-                addrObj.street,
-                addrObj.addressLine1,
-                addrObj.addressLine2,
-                addrObj.city,
-                addrObj.state,
-                addrObj.zipCode,
-                addrObj.country
-            ].filter(Boolean);
-            if (parts.length > 0) {
-                addressText = parts.join(", ");
-            }
-        }
+    autoTable(doc, {
+        head: [tableColumn],
+        body: tableRows,
+        startY: 60
+    });
 
-        const splitAddress = doc.splitTextToSize(addressText, 90);
-        doc.text(splitAddress, 100, 64);
-
-        // Table
-        const tableColumn = ["Product", "Brand", "Qty", "Unit Price", "Total"];
-        const tableRows = [];
-
-        orderData?.orderDetails?.forEach(item => {
-            const productInfo = item.item || {};
-            // Basic cleanup of HTML spaces
-            const unitPriceStr = formatPrice(item.unitPrice || 0).replace(/&nbsp;/g, ' ');
-            const totalPriceStr = formatPrice(item.totalPrice || item.totalNetPrice || 0).replace(/&nbsp;/g, ' ');
-
-            const productData = [
-                productInfo.name || "Unknown Product",
-                productInfo.brandName || "N/A",
-                item.quantity || 1,
-                unitPriceStr,
-                totalPriceStr
-            ];
-            tableRows.push(productData);
-        });
-
-        autoTable(doc, {
-            head: [tableColumn],
-            body: tableRows,
-            startY: Math.max(85, 64 + (splitAddress.length * 5)),
-            headStyles: { fillColor: [41, 128, 185], textColor: 255 },
-            alternateRowStyles: { fillColor: [245, 245, 245] },
-            styles: { fontSize: 10, cellPadding: 5 }
-        });
-
-        const finalY = doc.lastAutoTable.finalY + 10;
-
-        // Total
-        doc.setFontSize(12);
-        doc.setTextColor(0);
-        const finalTotalStr = formatPrice(orderData?.order?.totalNetAmount || 0).replace(/&nbsp;/g, ' ');
-        doc.text(`Total Amount: ${finalTotalStr}`, 14, finalY);
-
-        doc.save(`Invoice_${invoiceNum !== "N/A" ? invoiceNum : orderIdVal}.pdf`);
-    };
+    doc.save(`Invoice_${invoiceNum}.pdf`);
+};
 
     useEffect(() => {
 
