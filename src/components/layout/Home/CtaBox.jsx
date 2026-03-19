@@ -106,8 +106,8 @@ export default function CtaBox() {
 
                 <FaderInAnimation direction="up">
                   <p className="mt-6 opacity-90 text-sm sm:text-base text-(--white-color) text-center lg:text-center leading-relaxed">
-                    Unterstützen Sie Ihren Energiestoffwechsel mit einer 
-                    ausgewogenen Kombination aus Vitamin C, Eisen, 
+                    Unterstützen Sie Ihren Energiestoffwechsel mit einer
+                    ausgewogenen Kombination aus Vitamin C, Eisen,
                     Calcium und Magnesium – entwickelt für Ihren Alltag.
                   </p>
                 </FaderInAnimation>

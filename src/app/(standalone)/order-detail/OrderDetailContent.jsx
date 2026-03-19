@@ -13,7 +13,11 @@ import {
     FaRegImage,
     FaArrowRight,
     FaArrowLeft,
-    FaDownload
+    FaDownload,
+    FaPhone,
+    FaTicket,
+    FaUsers,
+    FaWallet
 } from "react-icons/fa6";
 
 import jsPDF from "jspdf";
@@ -25,6 +29,7 @@ import RevealInAnimation from "@/Hooks/RevealInAnimation";
 import Button from "@/components/ui/Button";
 import { getOrderDetails } from "@/lib/OrderService";
 import DataTable from "@/components/ui/DataTable";
+import { getAboutPayload } from "@/app/api/about/about";
 
 export default function OrderDetailContent() {
 
@@ -52,25 +57,30 @@ export default function OrderDetailContent() {
                     : null;
 
                 return (
-                    <div className="flex items-center gap-5">
+                    <div className="flex items-center gap-4 py-1">
 
-                        <div className="size-20 rounded-2xl bg-white dark:bg-white/5 border border-divider shrink-0 overflow-hidden flex items-center justify-center p-2">
+                        <div className="size-16 rounded-xl bg-secondary dark:bg-white/5 border border-divider shrink-0 overflow-hidden flex items-center justify-center p-1.5 shadow-sm">
 
                             {fullImageUrl ? (
                                 <img
                                     src={fullImageUrl}
                                     alt={productInfo.name}
-                                    className="h-full w-full object-contain rounded-xl"
+                                    className="h-full w-full object-contain rounded-lg"
                                 />
                             ) : (
-                                <FaRegImage className="text-gray-300 text-2xl" />
+                                <FaRegImage className="text-text/20 text-xl" />
                             )}
 
                         </div>
 
-                        <span className="font-bold text-primary text-lg">
-                            {productInfo.name || "Unknown Product"}
-                        </span>
+                        <div className="flex flex-col gap-0.5">
+                            <span className="font-bold text-primary text-base line-clamp-1">
+                                {productInfo.name || "Unknown Product"}
+                            </span>
+                            <span className="text-text/40 text-xs font-medium italic">
+                                {productInfo.brandName || "No Brand"}
+                            </span>
+                        </div>
 
                     </div>
                 );
@@ -78,30 +88,21 @@ export default function OrderDetailContent() {
         },
 
         {
-            header: "Brand",
-            cell: (item) => (
-                <span className="text-text/80 text-base font-accent italic">
-                    {(item.item || {}).brandName || "N/A"}
-                </span>
-            ),
-            className: "w-32"
-        },
-
-        {
             header: "Qty",
             cell: (item) => (
-                <span className="font-bold text-primary text-lg">
+                <span className="font-bold text-primary text-base">
                     {item.quantity || 1}
+                    <span className="text-text/40 font-medium ml-1 text-xs">pcs</span>
                 </span>
             ),
-            className: "w-24 px-6 py-6 text-center",
+            className: "w-24 text-center",
             cellClassName: "text-center"
         },
 
         {
             header: "Unit Price",
             cell: (item) => (
-                <span className="text-text/80 text-lg font-accent">
+                <span className="text-text/60 text-base font-medium">
                     {formatPrice(item.unitPrice || 0)}
                 </span>
             ),
@@ -122,6 +123,7 @@ export default function OrderDetailContent() {
     ];
 
     const [orderData, setOrderData] = useState(null);
+    const [aboutData, setAboutData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -150,6 +152,21 @@ export default function OrderDetailContent() {
         doc.text(`Order ID: #${orderIdVal}`, 14, 38);
         doc.text(`Date: ${dateVal}`, 14, 44);
 
+        // Seller Details
+        if (aboutData) {
+            doc.setFontSize(12);
+            doc.setTextColor(0);
+            doc.text("Seller Information:", 100, 22);
+            doc.setFontSize(10);
+            doc.setTextColor(100);
+            doc.text(`${aboutData.companyName || "Prolixus"}`, 100, 32);
+            const aboutAddress = doc.splitTextToSize(aboutData.address || "N/A", 90);
+            doc.text(aboutAddress, 100, 38);
+            const addressHeight = aboutAddress.length * 5;
+            doc.text(`Email: ${aboutData.email || "N/A"}`, 100, 38 + addressHeight);
+            doc.text(`Phone: ${aboutData.phone || aboutData.mobile || "N/A"}`, 100, 44 + addressHeight);
+        }
+
         // Customer Details
         doc.setFontSize(12);
         doc.setTextColor(0);
@@ -158,7 +175,20 @@ export default function OrderDetailContent() {
         doc.setTextColor(100);
         doc.text(`Name: ${orderData?.customer?.name || "N/A"}`, 14, 64);
         doc.text(`Email: ${orderData?.customer?.email || "N/A"}`, 14, 70);
-        doc.text(`Code: ${orderData?.customer?.code || "N/A"}`, 14, 76);
+
+        let promoY = 76;
+        if (orderData?.order?.couponCode) {
+            doc.text(`Promo Code: ${orderData.order.couponCode}`, 14, promoY);
+            promoY += 6;
+        }
+        if (orderData?.order?.affiliateCustomerCode) {
+            doc.text(`Affiliate Code: ${orderData.order.affiliateCustomerCode}`, 14, promoY);
+            promoY += 6;
+        }
+        if (orderData?.order?.walletAmount > 0) {
+            const walletStr = formatPrice(orderData.order.walletAmount).replace(/&nbsp;/g, ' ');
+            doc.text(`Paid via Wallet: ${walletStr}`, 14, promoY);
+        }
 
         // Delivery Address
         doc.setFontSize(12);
@@ -260,14 +290,21 @@ export default function OrderDetailContent() {
 
                 setLoading(true);
 
-                const response = await getOrderDetails(orderId);
+                const [orderResponse, aboutResponse] = await Promise.all([
+                    getOrderDetails(orderId),
+                    getAboutPayload()
+                ]);
 
-                if (response?.success && response.data) {
-                    setOrderData(response.data);
-                } else if (response && !response.error) {
-                    setOrderData(response.data || response);
+                if (orderResponse?.success && orderResponse.data) {
+                    setOrderData(orderResponse.data);
+                } else if (orderResponse && !orderResponse.error) {
+                    setOrderData(orderResponse.data || orderResponse);
                 } else {
-                    setError(response?.message || "Failed to fetch order details.");
+                    setError(orderResponse?.message || "Failed to fetch order details.");
+                }
+
+                if (aboutResponse) {
+                    setAboutData(aboutResponse);
                 }
 
             } catch (err) {
@@ -337,35 +374,35 @@ export default function OrderDetailContent() {
 
     return (
 
-        <div className="flex flex-col items-center gap-14 py-12 px-4 max-w-4xl mx-auto">
+        <div className="flex flex-col items-center gap-10 py-16 px-4 max-w-5xl mx-auto min-h-screen">
 
             {/* SUCCESS HEADER */}
 
-            <div className="flex flex-col items-center text-center gap-6">
+            <div className="flex flex-col items-center text-center gap-5">
 
                 <RevealInAnimation direction="up">
 
-                    <div className="size-28 rounded-full bg-accent/10 flex items-center justify-center shadow-sm ring-1 ring-accent/20">
+                    <div className="size-20 rounded-2xl bg-accent/10 flex items-center justify-center shadow-lg shadow-accent/5 ring-1 ring-accent/20 relative group">
+                        
+                        <div className="absolute inset-0 bg-accent/5 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500 opacity-50"></div>
 
-                        <FaCircleCheck className="text-accent text-6xl" />
+                        <FaCircleCheck className="text-accent text-4xl relative z-10" />
 
                     </div>
 
                 </RevealInAnimation>
 
-                <div className="space-y-4">
+                <div className="space-y-2">
 
-                    <h1 className="text-5xl font-bold tracking-tight text-primary">
-                        Your Order Details
+                    <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-primary">
+                        Order Confirmed
                     </h1>
 
-                    <p className="text-xl text-text/70">
-
-                        Order
-                        <span className="font-serif italic font-bold text-primary text-2xl ml-2">
+                    <p className="text-lg text-text/60 font-medium">
+                        We've received your order 
+                        <span className="text-accent font-bold ml-1.5">
                             #{orderData?.order?.id || "N/A"}
                         </span>
-
                     </p>
 
                 </div>
@@ -376,35 +413,38 @@ export default function OrderDetailContent() {
 
             <FaderInAnimation direction="up" delay={0.2} className="w-full">
 
-                <div className="w-full bg-surface dark:bg-white/5 rounded-4xl shadow-xl border border-divider overflow-hidden">
+                <div className="w-full bg-white dark:bg-white/5 rounded-3xl shadow-2xl shadow-primary/5 border border-divider overflow-hidden">
 
                     {/* HEADER */}
 
-                    <div className="px-10 py-7 border-b border-divider flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+                    <div className="px-8 py-6 border-b border-divider flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 bg-secondary/30 dark:bg-white/5">
 
-                        {/* LEFT SIDE */}
-                        <h2 className="text-2xl font-bold text-primary">
-                            Order Summary
-                        </h2>
-
-                        {/* RIGHT SIDE */}
                         <div className="flex items-center gap-4">
+                            <div className="size-10 rounded-xl bg-primary/5 flex items-center justify-center text-primary">
+                                <FaReceipt size={18} />
+                            </div>
+                            <h2 className="text-xl font-bold text-primary">
+                                Order Summary
+                            </h2>
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-3">
 
                             {/* STATUS */}
-                            <span className="px-5 py-2 rounded-full bg-accent/10 text-accent text-sm font-bold uppercase tracking-wider border border-accent/20 flex items-center gap-2">
-
-                                <span className="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
-
-                                Status: {orderData?.order?.orderStatus || "Processing"}
-
-                            </span>
+                            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-accent/10 border border-accent/20 text-accent text-xs font-bold uppercase tracking-wider">
+                                <span className="relative flex h-2 w-2">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
+                                </span>
+                                {orderData?.order?.orderStatus || "Processing"}
+                            </div>
 
                             {/* DOWNLOAD BUTTON */}
                             <button
                                 onClick={handleDownloadInvoice}
-                                className="px-4 py-2 bg-accent text-white hover:bg-accent/90 transition rounded-xl text-sm font-bold flex items-center gap-2 shadow-sm cursor-pointer"
+                                className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white hover:bg-primary/90 transition-all rounded-xl text-xs font-bold shadow-md shadow-primary/10 active:scale-95 cursor-pointer"
                             >
-                                <FaDownload />
+                                <FaDownload size={14} />
                                 Invoice
                             </button>
                         </div>
@@ -413,97 +453,161 @@ export default function OrderDetailContent() {
 
                     {/* ORDER GRID */}
 
-                    <div className="p-10 grid grid-cols-1 md:grid-cols-2 gap-10">
+                    {/* ORDER GRID */}
 
-                        <div className="flex flex-col gap-4">
+                    <div className="p-8 md:p-10 grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 bg-white dark:bg-transparent">
 
-                            <div className="flex items-center gap-3 text-accent">
+                        {/* ORDER INFO */}
+                        <div className="space-y-6">
 
-                                <FaReceipt size={22} />
-
+                            <div className="flex items-center gap-3 text-primary">
+                                <div className="size-8 rounded-lg bg-accent/10 flex items-center justify-center text-accent">
+                                    <FaReceipt size={16} />
+                                </div>
                                 <h4 className="font-bold text-lg">
                                     Order Information
                                 </h4>
-
                             </div>
 
-                            <div className="text-lg text-text/80 leading-loose space-y-2">
+                            <div className="space-y-4 text-base">
+                                <div className="flex flex-col gap-1">
+                                    <span className="text-text/40 text-xs font-bold uppercase tracking-wider">Order ID</span>
+                                    <span className="text-primary font-bold">#{orderData?.order?.id}</span>
+                                </div>
 
-                                <p>
-                                    <strong>Order ID:</strong> #{orderData?.order?.id}
-                                </p>
+                                <div className="flex flex-col gap-1">
+                                    <span className="text-text/40 text-xs font-bold uppercase tracking-wider">Invoice Number</span>
+                                    <span className="text-text/80 font-medium">{orderData?.order?.invoiceNumber || "N/A"}</span>
+                                </div>
 
-                                <p>
-                                    <strong>Invoice:</strong> {orderData?.order?.invoiceNumber}
-                                </p>
-
-                                <p>
-                                    <strong>Date:</strong>
-                                    {orderData?.order?.transactionDate
-                                        ? new Date(orderData.order.transactionDate).toLocaleString()
-                                        : "N/A"}
-                                </p>
-
-                                <p>
-                                    <strong>Total:</strong>
-                                    <span className="text-accent font-bold ml-2">
-                                        {formatPrice(orderData?.order?.totalNetAmount)}
+                                <div className="flex flex-col gap-1">
+                                    <span className="text-text/40 text-xs font-bold uppercase tracking-wider">Transaction Date</span>
+                                    <span className="text-text/80 font-medium">
+                                        {orderData?.order?.transactionDate
+                                            ? new Date(orderData.order.transactionDate).toLocaleString('en-US', {
+                                                dateStyle: 'medium',
+                                                timeStyle: 'short'
+                                            })
+                                            : "N/A"}
                                     </span>
-                                </p>
+                                </div>
 
+                                <div className="pt-2">
+                                    <div className="flex items-center justify-between p-3 rounded-2xl bg-secondary/50 dark:bg-white/5 border border-divider">
+                                        <span className="text-text/60 font-bold text-sm">Amount Paid</span>
+                                        <span className="text-accent font-black text-xl">
+                                            {formatPrice(orderData?.order?.totalNetAmount)}
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
 
                         </div>
 
                         {/* CUSTOMER */}
+                        <div className="space-y-6">
 
-                        <div className="flex flex-col gap-4">
-
-                            <div className="flex items-center gap-3 text-accent">
-
-                                <FaUser size={22} />
-
+                            <div className="flex items-center gap-3 text-primary">
+                                <div className="size-8 rounded-lg bg-accent/10 flex items-center justify-center text-accent">
+                                    <FaUser size={16} />
+                                </div>
                                 <h4 className="font-bold text-lg">
                                     Customer Details
                                 </h4>
-
                             </div>
 
-                            <div className="text-lg text-text/80 leading-loose">
+                            <div className="space-y-4">
+                                <div className="flex flex-col gap-1">
+                                    <span className="text-text/40 text-xs font-bold uppercase tracking-wider">Name</span>
+                                    <span className="text-primary font-bold">{orderData?.customer?.name}</span>
+                                </div>
 
-                                <p className="font-bold text-primary">
-                                    {orderData?.customer?.name}
-                                </p>
+                                <div className="flex flex-col gap-1 text-text/80">
+                                    <span className="text-text/40 text-xs font-bold uppercase tracking-wider">Email</span>
+                                    <div className="flex items-center gap-2 font-medium">
+                                        <FaEnvelope size={14} className="text-text/40" />
+                                        {orderData?.customer?.email}
+                                    </div>
+                                </div>
 
-                                <p className="flex items-center gap-2">
+                                {(orderData?.order?.couponCode || orderData?.order?.affiliateCustomerCode || orderData?.order?.walletAmount > 0) && (
+                                    <div className="space-y-2 mt-4 pt-4 border-t border-divider">
+                                        {orderData?.order?.couponCode && (
+                                            <div className="flex items-center gap-2 text-accent bg-accent/5 px-3 py-1.5 rounded-lg w-fit">
+                                                <FaTicket size={14} />
+                                                <span className="text-xs font-bold">Promo: {orderData.order.couponCode}</span>
+                                            </div>
+                                        )}
 
-                                    <FaEnvelope size={16} />
+                                        {orderData?.order?.affiliateCustomerCode && (
+                                            <div className="flex items-center gap-2 text-accent bg-accent/5 px-3 py-1.5 rounded-lg w-fit">
+                                                <FaUsers size={14} />
+                                                <span className="text-xs font-bold">Affiliate: {orderData.order.affiliateCustomerCode}</span>
+                                            </div>
+                                        )}
 
-                                    {orderData?.customer?.email}
-
-                                </p>
-
-                                <p className="flex items-center gap-2">
-
-                                    <FaIdCard size={16} />
-
-                                    Code: {orderData?.customer?.code}
-
-                                </p>
-
+                                        {orderData?.order?.walletAmount > 0 && (
+                                            <div className="flex items-center gap-2 text-green-600 bg-green-50 dark:bg-green-500/5 px-3 py-1.5 rounded-lg w-fit">
+                                                <FaWallet size={14} />
+                                                <span className="text-xs font-bold">Wallet: {formatPrice(orderData.order.walletAmount)}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
                             </div>
 
                         </div>
+
+                        {/* SELLER INFORMATION */}
+                        {aboutData && (
+                            <div className="space-y-6">
+
+                                <div className="flex items-center gap-3 text-primary">
+                                    <div className="size-8 rounded-lg bg-accent/10 flex items-center justify-center text-accent">
+                                        <FaTruck size={16} />
+                                    </div>
+                                    <h4 className="font-bold text-lg">
+                                        Seller Information
+                                    </h4>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <div className="flex flex-col gap-1">
+                                        <span className="text-text/40 text-xs font-bold uppercase tracking-wider">Company</span>
+                                        <span className="text-primary font-bold">{aboutData.companyName}</span>
+                                    </div>
+
+                                    <div className="flex flex-col gap-1 text-text/80">
+                                        <span className="text-text/40 text-xs font-bold uppercase tracking-wider">Address</span>
+                                        <span className="text-sm leading-relaxed">{aboutData.address}</span>
+                                    </div>
+
+                                    <div className="flex flex-col gap-3 pt-2">
+                                        <div className="flex items-center gap-2 text-sm text-text/80 font-medium">
+                                            <FaEnvelope size={14} className="text-text/40" />
+                                            {aboutData.email}
+                                        </div>
+                                        <div className="flex items-center gap-2 text-sm text-text/80 font-medium">
+                                            <FaPhone size={14} className="text-text/40" />
+                                            {aboutData.phone || aboutData.mobile}
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        )}
 
                     </div>
 
                     {/* ITEMS */}
 
-                    <div className="p-10 space-y-4">
+                    <div className="px-8 pb-10 space-y-6">
 
-                        <div className="flex items-center gap-3 text-accent">
+                        <div className="flex items-center gap-3 text-primary pt-6 border-t border-divider">
 
-                            <FaBagShopping size={22} />
+                            <div className="size-8 rounded-lg bg-accent/10 flex items-center justify-center text-accent">
+                                <FaBagShopping size={16} />
+                            </div>
 
                             <h4 className="font-bold text-lg">
                                 Order Items
@@ -527,27 +631,27 @@ export default function OrderDetailContent() {
 
             <FaderInAnimation direction="up" delay={0.4} className="w-full">
 
-                <div className="flex flex-col items-center gap-6 w-full max-w-md">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full">
 
-                    <Link href="/products" className="w-full">
+                    <Link href="/products" className="w-full sm:w-auto min-w-[240px]">
 
                         <Button
                             variant="accent"
                             size="lg"
-                            className="w-full rounded-full py-7 text-xl font-bold flex items-center justify-center gap-3"
+                            className="w-full rounded-2xl py-6 text-lg font-bold flex items-center justify-center gap-3 shadow-xl shadow-accent/10 active:scale-95 transition-all"
                         >
-                            <span className="inline-block mr-2">Continue Shopping</span>
-                            <FaArrowRight className="inline-block" />
+                            <span className="inline-block">Continue Shopping</span>
+                            <FaArrowRight className="text-sm" />
                         </Button>
 
                     </Link>
 
                     <button
                         onClick={() => router.push("/dashboard")}
-                        className="w-full flex items-center justify-center gap-3 text-lg font-bold text-gray-500 hover:text-accent py-3"
+                        className="w-full sm:w-auto px-8 py-4 flex items-center justify-center gap-3 text-base font-bold text-text/40 hover:text-primary transition-colors rounded-2xl border border-transparent hover:border-divider"
                     >
 
-                        <FaArrowLeft />
+                        <FaArrowLeft className="text-sm" />
 
                         Back to Dashboard
 

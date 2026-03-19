@@ -103,7 +103,6 @@ export default function AuthPage() {
         throw new Error(response || "Login Failed")
       }
 
-      console.log("Login successful, redirecting to:", searchParams.get("redirect") || "/dashboard");
       setTimeout(() => {
         performRedirect(searchParams.get("redirect") || "/dashboard");
       }, 100);
@@ -176,7 +175,6 @@ export default function AuthPage() {
         password: cleanRegPassword,
         confirmPassword: cleanConfirmPassword,
       });
-      console.log("sign up response: ", response)
       if (!response?.success) {
         throw new Error(response || "Registration Failed")
       }
@@ -517,6 +515,14 @@ export default function AuthPage() {
                           I agree to the{" "}
                           <Link href="/terms" className="font-medium text-accent hover:underline">
                             Terms & Conditions
+                          </Link>
+                          ,{" "}
+                          <Link href="/privacy-policy" className="font-medium text-accent hover:underline">
+                            Privacy Policy
+                          </Link>{" "}
+                          and{" "}
+                          <Link href="/return-and-refund" className="font-medium text-accent hover:underline">
+                            Return Policy
                           </Link>
                         </span>
                       </div>

@@ -147,7 +147,7 @@ export default function Hero() {
 
   return (
     <section
-      className="relative overflow-hidden bg-cover bg-center pb-20 lg:pt-[220px] lg:pb-[110px] bg--secondary-color"
+      className="relative overflow-hidden bg-cover bg-center pt-36 pb-12 sm:pt-40 sm:pb-16 lg:pt-[220px] lg:pb-[110px] bg--secondary-color"
     >
       {/* Background Video (Delayed) */}
       {isVideoLoaded && (
@@ -159,7 +159,7 @@ export default function Hero() {
           preload="none"
           className="absolute inset-0 w-full h-full object-cover z-0 transition-opacity duration-1000"
         >
-          <source src="/videos/hero-video-compressed.mp4" type="video/mp4" />
+          <source src="/videos/hero-video.mp4" type="video/mp4" />
         </video>
       )}
 
@@ -192,7 +192,7 @@ export default function Hero() {
               </div>
 
               <FadeInAnimation direction="up">
-                <div className="hero-content-body mt-8 flex flex-wrap items-center gap-6 lg:gap-10">
+                <div className="hero-content-body mt-6 sm:mt-8 space-y-6">
 
                   <p className="max-w-xl text-sm sm:text-base text-white/90">
                     Die Kombination aus Vitamin C, Eisen, Calcium und Magnesium
@@ -201,42 +201,35 @@ export default function Hero() {
                     für die fitte Generation 50+ geeignet.
                   </p>
 
-                  <div className="hero-btn">
+                  {/* CTA row — stacks on mobile, side-by-side on desktop */}
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-8">
                     <Link href="/contact">
                       <Button
                         variant="accent"
                         size="lg"
-                        className="rounded-full! shadow-md transition-transform duration-200 hover:translate-y-0.5 hover:shadow-lg"
+                        className="rounded-full! shadow-md transition-transform duration-200 hover:translate-y-0.5 hover:shadow-lg w-full sm:w-auto"
                       >
                         Zum Shop
                       </Button>
                     </Link>
-                  </div>
 
-                  <Link
-                    href="tel:+491234567890"
-                    className="contact-now-box inline-flex items-center text-left group"
-                  >
-                    <div className="icon-box mr-4 flex h-12 w-12 items-center justify-center rounded-full bg--accent-color transition-all duration-300 group-hover:bg--accent-color/90">
-                      <i className="fa-solid fa-phone text-2xl text--white-color" />
-                    </div>
-
-                    <div className="contact-now-box-content flex ">
-                      <span className="bg-accent rounded-4xl w-12 h-12 text-white flex justify-center align-middle items-center mr-4 transition-colors duration-300 group-hover:bg--white-color group-hover:text--accent-color text-2xl">
+                    <Link
+                      href="tel:+491234567890"
+                      className="inline-flex items-center text-left group"
+                    >
+                      <span className="bg-(--accent-color) rounded-full w-10 h-10 sm:w-12 sm:h-12 text-white flex justify-center items-center mr-3 sm:mr-4 shrink-0 transition-colors duration-300 group-hover:bg-white group-hover:text-(--accent-color) text-lg sm:text-2xl">
                         <FaPhone />
                       </span>
                       <div>
-                        <h3 className="text-[20px] font-semibold text-white mb-0.5 font-default">
+                        <h3 className="text-base sm:text-lg font-semibold text-white mb-0.5 font-default leading-tight">
                           Persönliche Beratung
                         </h3>
-                        <p className="m-0 text-white">
-                          <span className="transition-colors duration-300 text-white/80  group-hover:text--accent-color font-default">
-                            Jetzt Kontakt aufnehmen
-                          </span>
+                        <p className="m-0 text-xs sm:text-sm text-white/70 font-default">
+                          Jetzt Kontakt aufnehmen
                         </p>
                       </div>
-                    </div>
-                  </Link>
+                    </Link>
+                  </div>
 
                 </div>
               </FadeInAnimation>
@@ -245,7 +238,7 @@ export default function Hero() {
 
           {/* Right: Image */}
           <div>
-            <div className="hero-image relative mx-6 lg:mx-14">
+            <div className="hero-image relative mx-auto max-w-[200px] sm:max-w-[300px] lg:max-w-none lg:mx-14">
               <figure className="block">
                 <Image
                   src="/images/new/bottle.png"

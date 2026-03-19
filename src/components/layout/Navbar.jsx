@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -8,36 +8,23 @@ import { FaCartArrowDown, FaCircleUser } from "react-icons/fa6";
 import { useCart } from "@/context/CartContext";
 import Button from "@/components/ui/Button";
 
-// import { getShopMenus } from "@/services/menuService"; // ya jis path me aapka file hai
-import { getShopMenus } from "@/app/api/layout/navbar";
-
 import { useAuth } from "@/context/AuthContext";
 
-export default function Header() {
+export default function Header({ menus = [] }) {
   const { itemCount } = useCart();
   const router = useRouter();
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [menus, setMenus] = useState([]);
-  const [shopButton, setShopButton] = useState({ label: "Shop Now", url: "/products" });
   const { isLoggedIn } = useAuth();
 
   const handleUserIconClick = () => {
     router.push("/dashboard")
   };
 
-  // 🔥 Fetch shop menus from API
-  useEffect(() => {
-    async function loadMenus() {
-      const data = await getShopMenus();
-      setMenus(data);
-
-      // ✅ Use API data directly to find Shop menu
-      const shopMenu = data.find((m) => m.id === 58);
-      if (shopMenu) setShopButton(shopMenu);
-    }
-    loadMenus();
-  }, []);
+  // ✅ Use memoized data to find Shop menu
+  const shopButton = useMemo(() => {
+    return menus.find((m) => m.id === 58) || { label: "Shop Now", url: "/products" };
+  }, [menus]);
 
 
   // Exclude Cart from main nav (Cart icon handled separately)
@@ -85,7 +72,7 @@ export default function Header() {
             <div className="flex items-center gap-3">
               <Link
                 href="/cart"
-                className="relative flex items-center justify-center h-9 w-9 rounded-full border border-white text-white transition hover:bg-white hover:text-accent"
+                className="relative flex items-center justify-center h-10 w-10 rounded-full border border-white text-white transition hover:bg-white hover:text-accent"
               >
                 <FaCartArrowDown />
                 {itemCount > 0 && (
@@ -98,7 +85,7 @@ export default function Header() {
               <button
                 onClick={handleUserIconClick}
                 aria-label={isLoggedIn ? "Go to Dashboard" : "Login"}
-                className="flex items-center justify-center h-9 w-9 rounded-full border border-white text-white transition hover:bg-white hover:text-accent cursor-pointer"
+                className="flex items-center justify-center h-10 w-10 rounded-full border border-white text-white transition hover:bg-white hover:text-accent cursor-pointer"
               >
                 <FaCircleUser />
               </button>
@@ -108,12 +95,13 @@ export default function Header() {
 
         {/* Mobile Toggle */}
         <button
-          className="lg:hidden flex items-center justify-center h-10 w-10 rounded-lg bg-accent"
+          className="lg:hidden flex flex-col items-center justify-center h-10 w-10 rounded-lg bg-accent"
           onClick={() => setMobileOpen(!mobileOpen)}
+          aria-label="Toggle Menu"
         >
-          <span className={`block h-0.5 w-6 bg-white transition ${mobileOpen ? "rotate-45 translate-y-1.5" : ""}`} />
-          <span className={`block h-0.5 w-6 bg-white my-1 transition ${mobileOpen ? "opacity-0" : ""}`} />
-          <span className={`block h-0.5 w-6 bg-white transition ${mobileOpen ? "-rotate-45 -translate-y-1.5" : ""}`} />
+          <span className={`block h-0.5 w-6 bg-white transition-all duration-300 ${mobileOpen ? "rotate-45 translate-y-1.5" : ""}`} />
+          <span className={`block h-0.5 w-6 bg-white my-1 transition-all duration-300 ${mobileOpen ? "opacity-0" : ""}`} />
+          <span className={`block h-0.5 w-6 bg-white transition-all duration-300 ${mobileOpen ? "-rotate-45 -translate-y-1.5" : ""}`} />
         </button>
       </nav>
 

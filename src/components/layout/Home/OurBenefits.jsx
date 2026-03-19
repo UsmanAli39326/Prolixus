@@ -249,11 +249,13 @@ export default function OurBenefits() {
                 />
               </figure>
 
-              <div className="benefit-quality-circle absolute right-0 top-0">
+              <div className="benefit-quality-circle absolute right-0 top-0 z-1 bg-(--accent-color) p-3 rounded-full shadow-lg">
                 <img
-                  src="/images/premium-quality-circle-2.png"
-                  alt="Premium Qualität"
-                  className="w-full max-w-[120px] animate-spin-slowly"
+                  src="/images/new/Prolixus-Logo-white.png"
+                  alt="Prolixus Logo"
+                  width={80}
+                  height={80}
+                  className="w-full max-w-[80px] animate-spin-slowly"
                 />
               </div>
             </div>
@@ -279,93 +281,99 @@ export default function OurBenefits() {
 
               {/* Benefit Body */}
               <div className="benefit-body">
-
-                {/* Row 1 */}
                 <FaderInAnimation direction="up">
-                  <div className="flex flex-wrap items-center gap-6 mb-8">
-
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     {/* Calcium */}
-                    <div className="w-full md:w-[calc(50%-15px)] p-4 bg-(--white-color) rounded-2xl">
-                      <div className="icon-box mb-7 flex h-15 w-15 items-center justify-center rounded-full bg-(--accent-color)">
+                    <div className="benefit-item p-6 bg-(--white-color) rounded-2xl shadow-sm border border-(--divider-color) transition-all duration-300 hover:shadow-md">
+                      <div className="icon-box mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-(--accent-color)">
                         <img
                           src="/images/icon-benefit-1.svg"
                           alt="Calcium"
-                          className="w-full max-w-[35px]"
+                          className="w-full max-w-[32px]"
                         />
                       </div>
-                      <h3 className="text-[20px] mb-2 font-bold text-(--primary-color)">
+                      <h3 className="text-xl mb-3 font-bold text-(--primary-color) font-default">
                         Calcium
                       </h3>
-                      <p className="text-sm sm:text-base">
+                      <p className="text-sm sm:text-base text-(--primary-color)/80 leading-relaxed">
                         Trägt zu einem normalen Energiestoffwechsel sowie zur
                         Erhaltung gesunder Knochen und Zähne bei.
                       </p>
                     </div>
 
                     {/* Magnesium */}
-                    <div className="w-full md:w-[calc(50%-15px)]">
-                      <div className="icon-box mb-7 flex h-15 w-15 items-center justify-center rounded-full bg-(--accent-color)">
+                    <div className="benefit-item p-6 bg-(--white-color) rounded-2xl shadow-sm border border-(--divider-color) transition-all duration-300 hover:shadow-md">
+                      <div className="icon-box mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-(--accent-color)">
                         <img
                           src="/images/icon-benefit-2.svg"
                           alt="Magnesium"
-                          className="w-full max-w-[35px]"
+                          className="w-full max-w-[32px]"
                         />
                       </div>
-                      <h3 className="text-[20px] mb-2 font-bold text-(--primary-color)">
+                      <h3 className="text-xl mb-3 font-bold text-(--primary-color) font-default">
                         Magnesium
                       </h3>
-                      <p className="text-sm sm:text-base">
+                      <p className="text-sm sm:text-base text-(--primary-color)/80 leading-relaxed">
                         Unterstützt eine normale Muskelfunktion und trägt zu
                         einer normalen Funktion des Nervensystems bei.
                       </p>
                     </div>
 
-                  </div>
-                </FaderInAnimation>
-
-                {/* Row 2 */}
-                <FaderInAnimation direction="up">
-                  <div className="flex flex-wrap items-center gap-6">
-
                     {/* Eisen */}
-                    <div className="w-full md:w-[calc(50%-15px)]">
-                      <div className="icon-box mb-7 flex h-15 w-15 items-center justify-center rounded-full bg-(--accent-color)">
+                    <div className="benefit-item p-6 bg-(--white-color) rounded-2xl shadow-sm border border-(--divider-color) transition-all duration-300 hover:shadow-md">
+                      <div className="icon-box mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-(--accent-color)">
                         <img
                           src="/images/icon-benefit-3.svg"
                           alt="Eisen"
-                          className="w-full max-w-[35px]"
+                          className="w-full max-w-[32px]"
                         />
                       </div>
-                      <h3 className="text-[20px] mb-2 font-bold text-(--primary-color)">
+                      <h3 className="text-xl mb-3 font-bold text-(--primary-color) font-default">
                         Eisen
                       </h3>
-                      <p className="text-sm sm:text-base">
+                      <p className="text-sm sm:text-base text-(--primary-color)/80 leading-relaxed">
                         Trägt zur normalen Bildung roter Blutkörperchen
                         und zum Sauerstofftransport im Körper bei.
                       </p>
                     </div>
 
                     {/* Vitamin C */}
-                    <div className="w-full md:w-[calc(50%-15px)] p-4 bg-(--white-color) rounded-2xl">
-                      <div className="icon-box mb-7 flex h-15 w-15 items-center justify-center rounded-full bg-(--accent-color)">
+                    <div className="benefit-item p-6 bg-(--white-color) rounded-2xl shadow-sm border border-(--divider-color) transition-all duration-300 hover:shadow-md">
+                      <div className="icon-box mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-(--accent-color)">
                         <img
                           src="/images/icon-benefit-4.svg"
                           alt="Vitamin C"
-                          className="w-full max-w-[35px]"
+                          className="w-full max-w-[32px]"
                         />
                       </div>
-                      <h3 className="text-[20px] mb-2 font-bold text-(--primary-color)">
+                      <h3 className="text-xl mb-3 font-bold text-(--primary-color) font-default">
                         Vitamin C
                       </h3>
-                      <p className="text-sm sm:text-base">
+                      <p className="text-sm sm:text-base text-(--primary-color)/80 leading-relaxed">
                         Unterstützt das Immunsystem und schützt die Zellen
                         vor oxidativem Stress.
                       </p>
                     </div>
 
+                    {/* MSM */}
+                    <div className="benefit-item sm:col-span-2 p-6 bg-(--white-color) rounded-2xl shadow-sm border border-(--divider-color) transition-all duration-300 hover:shadow-md">
+                      <div className="icon-box mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-(--accent-color)">
+                        <img
+                          src="/images/icon-about-organic.svg"
+                          alt="MSM"
+                          className="w-full max-w-[32px]"
+                        />
+                      </div>
+                      <h3 className="text-xl mb-3 font-bold text-(--primary-color) font-default">
+                        MSM
+                      </h3>
+                      <p className="text-sm sm:text-base text-(--primary-color)/80 leading-relaxed">
+                        Schwefel, den Sie über die Nahrung nicht aufnehmen
+                        können – essentiell für viele Körperfunktionen.
+                      </p>
+                    </div>
                   </div>
                 </FaderInAnimation>
-
               </div>
             </div>
           </div>

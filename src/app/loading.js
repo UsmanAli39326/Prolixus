@@ -1,7 +1,6 @@
 import React from "react";
 
 export default function Loading() {
-  console.log("loading started.....");
 
   return (
     <div className="fixed inset-0 z-1000 flex items-center justify-center bg-(--primary-color)/90">

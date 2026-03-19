@@ -103,11 +103,11 @@ import RevealInAnimation from "@/Hooks/RevealInAnimation";
 
 export default function ProductsSection({ products = [] }) {
   return (
-    <section className="our-products py-24">
+    <section className="our-products py-16">
       <div className="container mx-auto px-4">
 
         {/* Header Row */}
-        <div className="section-row mb-12 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+        <div className="section-row mb-8 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <RevealInAnimation direction="left" delay={0.2} duration={0.8}>
             <div className="section-title max-w-xl">
               <h3 className="capitalize tracking-[0.2em] text-sm font-thin font-accent italic mb-4 text-(--primary-color)">

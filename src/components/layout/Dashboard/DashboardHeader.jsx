@@ -13,12 +13,12 @@ export default function DashboardHeader({
                 }`}
         >
             <div className="flex flex-col gap-2">
-                <h1 className="text-3xl md:text-4xl font-accent italic font-bold text-primary leading-tight">
+                <h1 className="font-accent italic text-5xl font-light leading-[1.05] tracking-[-0.02em] text-primary lg:text-6xl">
                     {title}
                 </h1>
 
                 {subtitle && (
-                    <p className="text-text/70 font-default text-base">
+                    <p className="max-w-[620px] font-default text-base leading-relaxed text-text/80 lg:text-lg">
                         {subtitle}
                     </p>
                 )}

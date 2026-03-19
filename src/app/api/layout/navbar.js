@@ -4,7 +4,6 @@ export async function getShopMenus() {
   try {
     const response = await apiService.get("/Configuration/shopmenus");
 
-    console.log("shopmenus response:", response);
 
     if (!response?.success) return [];
 

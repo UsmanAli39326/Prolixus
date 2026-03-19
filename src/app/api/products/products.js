@@ -85,7 +85,6 @@ export async function getAllProducts(page = 1, size = 20) {
     }
 
     const data = response.data;
-    console.log("getAllProducts:", data);
     const products = data.items.map((item) => ({
       id: item.itemId,
       title: item.itemName,

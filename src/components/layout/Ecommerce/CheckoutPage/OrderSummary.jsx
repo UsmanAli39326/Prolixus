@@ -120,20 +120,20 @@ export default function OrderSummary() {
                     <div className="mb-6 pt-6 border-t border-divider">
                         <div className="flex gap-4 mb-4">
                             <button
-                                onClick={() => { setCodeType("promo"); setError(""); }}
+                                onClick={() => { setCodeType("promo"); setError(""); setInputCode(""); }}
                                 className={`text-xs font-bold uppercase tracking-wider pb-1 border-b-2 transition-all ${codeType === "promo" ? "border-accent text-primary" : "border-transparent text-gray-400 hover:text-primary"}`}
                             >
                                 Promo Code
                             </button>
                             <button
-                                onClick={() => { setCodeType("affiliate"); setError(""); }}
+                                onClick={() => { setCodeType("affiliate"); setError(""); setInputCode(""); }}
                                 className={`text-xs font-bold uppercase tracking-wider pb-1 border-b-2 transition-all ${codeType === "affiliate" ? "border-accent text-primary" : "border-transparent text-gray-400 hover:text-primary"}`}
                             >
                                 Affiliate Code
                             </button>
                             {isAuthenticated && walletBalance > 0 && (
                                 <button
-                                    onClick={() => { setCodeType("wallet"); setError(""); }}
+                                    onClick={() => { setCodeType("wallet"); setError(""); setInputCode(""); }}
                                     className={`text-xs font-bold uppercase tracking-wider pb-1 border-b-2 transition-all ${codeType === "wallet" ? "border-accent text-primary" : "border-transparent text-gray-400 hover:text-primary"}`}
                                 >
                                     Wallet
@@ -221,11 +221,12 @@ export default function OrderSummary() {
                             <span>Shipping</span>
                             <span className="font-semibold text-accent">Free</span>
                         </div>
-                        <div className="flex justify-between text-text/70 font-accent">
-                            {/* <span>VAT ({totals.allVatPercentages?.join(" % & ") || totals.vatPercentage}%)</span> */}
-                            <span>VAT ({totals.combinedVatPercentage}%)</span>
-                            <span className="font-semibold text-primary">{formatPrice(totals.vatAmount)}</span>
-                        </div>
+                        {totals.vatDetails?.map((vat) => (
+                            <div key={vat.percentage} className="flex justify-between text-text/70 font-accent">
+                                <span>VAT ({vat.percentage}%)</span>
+                                <span className="font-semibold text-primary">{formatPrice(vat.amount)}</span>
+                            </div>
+                        ))}
                         {totals.discountAmount > 0 && (
                             <div className="flex justify-between text-accent font-accent font-bold">
                                 <span>Discount</span>

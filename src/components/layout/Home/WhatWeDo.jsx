@@ -118,9 +118,9 @@ import RevealInAnimation from "@/Hooks/RevealInAnimation";
 
 export default function WhatWeDo() {
   return (
-    <section className="what-we-do py-24 relative bg-(--primary-color)">
-      <div className="container mx-auto px-4 relative z-1">
-        <div className="grid items-center gap-10 lg:grid-cols-2">
+    <section className="what-we-do py-14 sm:py-20 lg:py-24 relative bg-(--primary-color)">
+      <div className="container mx-auto px-4 sm:px-6 relative z-1">
+        <div className="grid items-center gap-8 sm:gap-10 lg:grid-cols-2">
 
           {/* Left: Images */}
           <div>
@@ -139,7 +139,7 @@ export default function WhatWeDo() {
                 </div>
 
                 {/* Image 2 */}
-                <div className="what-we-image-2 relative w-full max-w-[410px] ml-auto -mt-20 z-1">
+                <div className="what-we-image-2 relative w-full max-w-[280px] sm:max-w-[410px] ml-auto -mt-10 sm:-mt-20 z-1">
                   <figure className="block rounded-2xl overflow-hidden">
                     <img
                       src="/images/new/prolixus-steps.jpeg"
@@ -150,13 +150,13 @@ export default function WhatWeDo() {
                 </div>
 
                 {/* Circle */}
-                <div className="what-we-circle absolute left-[50px] bottom-10 border-10 border-(--primary-color) rounded-full z-1 bg-accent p-4 justify-center items-center flex">
+                <div className="what-we-circle absolute left-2 sm:left-[50px] bottom-4 sm:bottom-10 border-4 sm:border-10 border-(--primary-color) rounded-full z-1 bg-accent p-2 sm:p-4 justify-center items-center flex">
                   <img
                     src="/images/new/Prolixus-Logo-white.png"
                     alt="Premium Qualität"
                     width={180}
                     height={180}
-                    className="w-full max-w-[180px] rounded-full animate-spin-slowly"
+                    className="w-full max-w-[80px] sm:max-w-[180px] rounded-full animate-spin-slowly"
                   />
                 </div>
               </div>
@@ -165,7 +165,7 @@ export default function WhatWeDo() {
 
           {/* Right: Content */}
           <div>
-            <div className="what-we-content space-y-10">
+            <div className="what-we-content space-y-6 sm:space-y-10">
 
               {/* Section Title */}
               <div className="section-title">
@@ -184,7 +184,7 @@ export default function WhatWeDo() {
               </div>
 
               {/* Items */}
-              <div className="what-we-item-box space-y-12">
+              <div className="what-we-item-box space-y-8 sm:space-y-12">
 
                 {/* Item 1 */}
                 <FaderInAnimation direction="up" delay={0.2}>

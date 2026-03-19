@@ -145,9 +145,9 @@ export default function OrderHistoryPage() {
         from: 1,
         to: filteredOrders.length,
         total: filteredOrders.length,
-        onPageChange: (page) => console.log("Page change", page),
-        onPrev: () => console.log("Prev"),
-        onNext: () => console.log("Next")
+        onPageChange: (page) => {},
+        onPrev: () => {},
+        onNext: () => {}
     };
 
     return (

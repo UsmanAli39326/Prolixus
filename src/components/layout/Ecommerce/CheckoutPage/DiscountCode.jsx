@@ -15,7 +15,6 @@ export default function DiscountCode() {
             // simulate api call
             await new Promise((resolve) => setTimeout(resolve, 1000));
 
-            console.log("Applied discount:", code);
         } finally {
             setLoading(false);
         }

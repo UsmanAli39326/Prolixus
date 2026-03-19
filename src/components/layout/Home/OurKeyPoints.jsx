@@ -269,15 +269,15 @@ export default function OurKeyPoints() {
         {/* Main content row */}
         <div className="flex flex-col items-center lg:flex-row lg:items-center lg:gap-8 font-default">
 
-          {/* LEFT COLUMN */}
-          <div className="w-full lg:w-1/3 order-1">
+          {/* LEFT COLUMN — on mobile: stacks below image as left-aligned items */}
+          <div className="w-full lg:w-1/3 order-2 lg:order-1">
             <FaderInAnimation direction="up">
-              <div className="key-points-item-box-1">
+              <div className="key-points-item-box-1 space-y-6 sm:space-y-0">
 
                 {/* Item 1 */}
-                <div className="key-points-item flex items-center mb-14">
-                  <div className="key-points-item-content w-[calc(100%-100px)] text-right">
-                    <h3 className="text-lg font-semibold mb-2 text-(--primary-color)">
+                <div className="key-points-item flex items-center mb-6 sm:mb-14 flex-row-reverse lg:flex-row">
+                  <div className="key-points-item-content w-[calc(100%-70px)] sm:w-[calc(100%-100px)] text-left lg:text-right">
+                    <h3 className="text-base sm:text-lg font-semibold mb-1 sm:mb-2 text-(--primary-color)">
                       Unterstützt den Energiestoffwechsel
                     </h3>
                     <p className="m-0 text-sm">
@@ -285,19 +285,19 @@ export default function OurKeyPoints() {
                       und Ermüdung bei.
                     </p>
                   </div>
-                  <div className="icon-box flex h-20 w-20 items-center justify-center rounded-full bg-(--accent-color) ml-5">
+                  <div className="icon-box flex h-14 w-14 sm:h-20 sm:w-20 shrink-0 items-center justify-center rounded-full bg-(--accent-color) mr-4 lg:mr-0 lg:ml-5">
                     <img
                       src="/images/icon-key-points-1.svg"
                       alt="Energie"
-                      className="max-w-[45px]"
+                      className="max-w-[30px] sm:max-w-[45px]"
                     />
                   </div>
                 </div>
 
                 {/* Item 2 */}
-                <div className="key-points-item flex items-center mb-14">
-                  <div className="key-points-item-content w-[calc(100%-100px)] text-right">
-                    <h3 className="text-lg font-semibold mb-2 text-(--primary-color)">
+                <div className="key-points-item flex items-center mb-6 sm:mb-14 flex-row-reverse lg:flex-row">
+                  <div className="key-points-item-content w-[calc(100%-70px)] sm:w-[calc(100%-100px)] text-left lg:text-right">
+                    <h3 className="text-base sm:text-lg font-semibold mb-1 sm:mb-2 text-(--primary-color)">
                       Hohe Bioverfügbarkeit
                     </h3>
                     <p className="m-0 text-sm">
@@ -305,19 +305,19 @@ export default function OurKeyPoints() {
                       Aufnahme im Körper.
                     </p>
                   </div>
-                  <div className="icon-box flex h-20 w-20 items-center justify-center rounded-full bg-(--accent-color) ml-5">
+                  <div className="icon-box flex h-14 w-14 sm:h-20 sm:w-20 shrink-0 items-center justify-center rounded-full bg-(--accent-color) mr-4 lg:mr-0 lg:ml-5">
                     <img
                       src="/images/icon-key-points-2.svg"
                       alt="Bioverfügbarkeit"
-                      className="max-w-[45px]"
+                      className="max-w-[30px] sm:max-w-[45px]"
                     />
                   </div>
                 </div>
 
                 {/* Item 3 */}
-                <div className="key-points-item flex items-center mb-0">
-                  <div className="key-points-item-content w-[calc(100%-100px)] text-right">
-                    <h3 className="text-lg font-semibold mb-2 text-(--primary-color)">
+                <div className="key-points-item flex items-center mb-0 flex-row-reverse lg:flex-row">
+                  <div className="key-points-item-content w-[calc(100%-70px)] sm:w-[calc(100%-100px)] text-left lg:text-right">
+                    <h3 className="text-base sm:text-lg font-semibold mb-1 sm:mb-2 text-(--primary-color)">
                       Geprüfte Qualität
                     </h3>
                     <p className="m-0 text-sm">
@@ -325,11 +325,11 @@ export default function OurKeyPoints() {
                       und Sicherheit.
                     </p>
                   </div>
-                  <div className="icon-box flex h-20 w-20 items-center justify-center rounded-full bg-(--accent-color) ml-5">
+                  <div className="icon-box flex h-14 w-14 sm:h-20 sm:w-20 shrink-0 items-center justify-center rounded-full bg-(--accent-color) mr-4 lg:mr-0 lg:ml-5">
                     <img
                       src="/images/icon-key-points-3.svg"
                       alt="Qualität"
-                      className="max-w-[45px]"
+                      className="max-w-[30px] sm:max-w-[45px]"
                     />
                   </div>
                 </div>
@@ -338,35 +338,35 @@ export default function OurKeyPoints() {
             </FaderInAnimation>
           </div>
 
-          {/* CENTER IMAGE */}
-          <div className="w-full lg:w-[40%] order-3 lg:order-2 mt-10 lg:mt-0">
+          {/* CENTER IMAGE — shown first on mobile, centerered on desktop */}
+          <div className="w-full lg:w-[40%] order-1 lg:order-2 mb-8 lg:mb-0">
             <div className="key-points-image text-center">
               <figure>
                 <img
                   src="/images/new/bottle.png"
                   alt="Prolixus Produkt"
-                  className="mx-auto w-full max-w-[500px] lg:scale-110"
+                  className="mx-auto w-full max-w-[250px] sm:max-w-[350px] lg:max-w-[500px] lg:scale-110"
                 />
               </figure>
             </div>
           </div>
 
           {/* RIGHT COLUMN */}
-          <div className="w-full lg:w-1/3 order-2 lg:order-3 mt-10 lg:mt-0">
+          <div className="w-full lg:w-1/3 order-3 lg:order-3 mt-6 lg:mt-0">
             <FaderInAnimation direction="up">
-              <div className="key-points-item-box-2">
+              <div className="key-points-item-box-2 space-y-6 sm:space-y-0">
 
                 {/* Item 4 */}
-                <div className="key-points-item flex items-center mb-14">
-                  <div className="icon-box flex h-20 w-20 items-center justify-center rounded-full bg-(--accent-color) mr-5">
+                <div className="key-points-item flex items-center mb-6 sm:mb-14">
+                  <div className="icon-box flex h-14 w-14 sm:h-20 sm:w-20 shrink-0 items-center justify-center rounded-full bg-(--accent-color) mr-4 sm:mr-5">
                     <img
                       src="/images/icon-key-points-4.svg"
                       alt="Vegan"
-                      className="max-w-[45px]"
+                      className="max-w-[30px] sm:max-w-[45px]"
                     />
                   </div>
-                  <div className="key-points-item-content w-[calc(100%-100px)]">
-                    <h3 className="text-lg font-semibold mb-2 text-(--primary-color)">
+                  <div className="key-points-item-content w-[calc(100%-70px)] sm:w-[calc(100%-100px)]">
+                    <h3 className="text-base sm:text-lg font-semibold mb-1 sm:mb-2 text-(--primary-color)">
                       Vegan & Glutenfrei
                     </h3>
                     <p className="m-0 text-sm">
@@ -376,16 +376,16 @@ export default function OurKeyPoints() {
                 </div>
 
                 {/* Item 5 */}
-                <div className="key-points-item flex items-center mb-14">
-                  <div className="icon-box flex h-20 w-20 items-center justify-center rounded-full bg-(--accent-color) mr-5">
+                <div className="key-points-item flex items-center mb-6 sm:mb-14">
+                  <div className="icon-box flex h-14 w-14 sm:h-20 sm:w-20 shrink-0 items-center justify-center rounded-full bg-(--accent-color) mr-4 sm:mr-5">
                     <img
                       src="/images/icon-key-points-5.svg"
                       alt="Für jedes Alter"
-                      className="max-w-[45px]"
+                      className="max-w-[30px] sm:max-w-[45px]"
                     />
                   </div>
-                  <div className="key-points-item-content w-[calc(100%-100px)]">
-                    <h3 className="text-lg font-semibold mb-2 text-(--primary-color)">
+                  <div className="key-points-item-content w-[calc(100%-70px)] sm:w-[calc(100%-100px)]">
+                    <h3 className="text-base sm:text-lg font-semibold mb-1 sm:mb-2 text-(--primary-color)">
                       Für jedes Alter geeignet
                     </h3>
                     <p className="m-0 text-sm">
@@ -396,15 +396,15 @@ export default function OurKeyPoints() {
 
                 {/* Item 6 */}
                 <div className="key-points-item flex items-center mb-0">
-                  <div className="icon-box flex h-20 w-20 items-center justify-center rounded-full bg-(--accent-color) mr-5">
+                  <div className="icon-box flex h-14 w-14 sm:h-20 sm:w-20 shrink-0 items-center justify-center rounded-full bg-(--accent-color) mr-4 sm:mr-5">
                     <img
                       src="/images/icon-key-points-6.svg"
                       alt="Transparenz"
-                      className="max-w-[45px]"
+                      className="max-w-[30px] sm:max-w-[45px]"
                     />
                   </div>
-                  <div className="key-points-item-content w-[calc(100%-100px)]">
-                    <h3 className="text-lg font-semibold mb-2 text-(--primary-color)">
+                  <div className="key-points-item-content w-[calc(100%-70px)] sm:w-[calc(100%-100px)]">
+                    <h3 className="text-base sm:text-lg font-semibold mb-1 sm:mb-2 text-(--primary-color)">
                       Transparente Rezeptur
                     </h3>
                     <p className="m-0 text-sm">

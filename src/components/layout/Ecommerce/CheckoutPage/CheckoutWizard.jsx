@@ -3,11 +3,13 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import useCart from "@/Hooks/useCart";
 import usePaymentMethods from "@/Hooks/usePaymentMethods";
-import CheckoutForm from "./CheckoutForm";
+import OrderForm from "./CheckoutForm";
 import PaymentForm from "./PaymentForm";
+import OrderConfirmation from "./OrderConfirmation";
 import { useCurrency } from "@/context/CurrencyContext";
 import { useCheckout } from "@/context/CheckoutContext";
 import { getAdapter } from "@/lib/payment/gatewayRegistry";
+import { apiService } from "@/lib/api";
 
 // ---------------------------------------------------------------------------
 // PAYLOAD BUILDER
@@ -71,6 +73,7 @@ export function buildGuestOrderPayload(formData, cartItems, currency = "EURO", t
         deliveryCountryId: parseInt(formData.countryId) || 1,
         addMoreAddress: formData.apartment || "",
         affiliateCustomerCode: formData.affiliateCustomerCode || "",
+        CustomerAffiliatedAmount: r(totals.walletAmount),
     };
 }
 
@@ -79,9 +82,11 @@ export function buildGuestOrderPayload(formData, cartItems, currency = "EURO", t
 // ---------------------------------------------------------------------------
 export default function CheckoutWizard() {
     const { cartItems } = useCart();
-    const { currency } = useCurrency();
-    const { formData, updateFormData, totals, user, isAuthenticated } = useCheckout();
+    const { currency, formatPrice } = useCurrency();
+    const { formData, updateFormData, totals, user, isAuthenticated, setOrderCompleted } = useCheckout();
     const [currentStep, setCurrentStep] = useState(0);
+    const [orderData, setOrderData] = useState(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Fetch payment methods from the API (sanitized, active-only)
     const {
@@ -117,13 +122,43 @@ export default function CheckoutWizard() {
         return getAdapter(selectedMethod?.name);
     }, [selectedMethod]);
 
+    const handleDirectComplete = async () => {
+        setIsSubmitting(true);
+        try {
+            const payload = buildGuestOrderPayload(
+                { ...formData, paymentMethod: "credit" },
+                cartItems,
+                currency,
+                totals,
+                user
+            );
+
+            const response = await apiService.post("/Checkout/create-order", payload);
+
+            if (response.success) {
+                setOrderData(response.data);
+                setOrderCompleted(true);
+                setCurrentStep(2); // Go to confirmation step
+            } else {
+                alert(response.message || "Failed to create order");
+            }
+        } catch (error) {
+            console.error("Direct completion failed:", error);
+            alert("An error occurred while processing your order.");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+
     const nextStep = () => setCurrentStep((prev) => Math.min(prev + 1, 1));
     const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 0));
     const goToStep = (step) => setCurrentStep(step);
 
     const steps = [
-        { name: "Information", component: CheckoutForm },
+        { name: "Information", component: OrderForm },
         { name: "Payment", component: PaymentForm },
+        { name: "Confirmation", component: OrderConfirmation },
     ];
 
     const CurrentFormComponent = steps[currentStep].component;
@@ -146,18 +181,22 @@ export default function CheckoutWizard() {
         selectedMethod,
         onMethodSelect: handleMethodSelect,
         gateway,
+        // Zero-total props
+        total: totals.total,
+        onDirectComplete: handleDirectComplete,
+        isSubmitting,
+        orderData,
+        formatPrice: (p) => p, // Placeholder, wrapped by useCurrency inside components or passed
     };
 
-    // On the payment step, wrap with the selected gateway's ProviderComponent
-    if (currentStep === 1 && gateway) {
-        const GatewayProvider = gateway.ProviderComponent;
+    // If step is confirmation, we need to pass specific props
+    if (currentStep === 2) {
         return (
-            <GatewayProvider
-                publishableKey={selectedMethod?.publishableKey}
-                currency={currency}
-            >
-                <CurrentFormComponent {...formProps} />
-            </GatewayProvider>
+            <OrderConfirmation
+                orderData={orderData}
+                formatPrice={formatPrice}
+                isLoggedIn={isAuthenticated}
+            />
         );
     }
 

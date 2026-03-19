@@ -2,8 +2,7 @@ import { apiService } from "@/lib/api";
 
 export  async function getAboutPayload() {
   try {
-    const response = await apiService.get("/Configuration/about");
-    console.log("about response:", response);
+    const response = await apiService.get("/Configuration/about", {}, { next: { revalidate: 3600 } });
 
     if (!response?.success || !response?.data) return null;
 

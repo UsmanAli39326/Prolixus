@@ -1,6 +1,11 @@
 "use client";
 
-import { HiOutlineCreditCard } from "react-icons/hi";
+import {
+    FaCreditCard,
+    FaPaypal,
+    FaMoneyBillWave,
+    FaBuildingColumns,
+} from "react-icons/fa6";
 import FaderInAnimation from "@/Hooks/FaderInAnimation";
 
 /**
@@ -46,50 +51,50 @@ export default function PaymentMethodSelector({
         );
     }
 
+    // ─── Icon mapping ─────────────────────────────────────────────────────
+    const getPaymentIcon = (methodName) => {
+        const name = methodName?.toLowerCase() || "";
+
+        if (name.includes("stripe")) return FaCreditCard;
+        if (name.includes("paypal")) return FaPaypal;
+        if (
+            name.includes("cod") ||
+            name.includes("cash") ||
+            name.includes("delivery")
+        )
+            return FaMoneyBillWave;
+        if (name.includes("bank") || name.includes("transfer"))
+            return FaBuildingColumns;
+
+        return FaCreditCard;
+    };
+
     // ─── Method cards ─────────────────────────────────────────────────────
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {paymentMethods.map((method) => {
                 const isSelected =
                     selectedMethod?.toLowerCase() === method.name?.toLowerCase();
+                const IconComponent = getPaymentIcon(method.name);
 
                 return (
                     <FaderInAnimation key={method.id} direction="up" delay={0.05}>
                         <button
                             type="button"
                             onClick={() => onSelect(method)}
-                            className={`w-full flex flex-col items-center gap-3 p-6 rounded-2xl border-2 transition-all ${
-                                isSelected
-                                    ? "border-accent bg-accent/5 ring-4 ring-accent/10"
-                                    : "border-divider bg-white dark:bg-white/5 hover:border-accent/50"
-                            }`}
+                            className={`w-full flex flex-col items-center gap-3 p-6 rounded-2xl border-2 transition-all group ${isSelected
+                                ? "border-accent bg-accent/5 ring-4 ring-accent/10"
+                                : "border-divider bg-white dark:bg-white/5 hover:border-accent/50"
+                                }`}
                         >
-                            {/* Icon / image */}
-                            {method.imageUrl ? (
-                                <div
-                                    className={`size-12 rounded-full flex items-center justify-center overflow-hidden ${
-                                        isSelected
-                                            ? "ring-2 ring-accent"
-                                            : ""
+                            <div
+                                className={`size-14 rounded-full flex items-center justify-center transition-all ${isSelected
+                                    ? "bg-accent text-white"
+                                    : "bg-secondary text-primary group-hover:bg-accent/10 group-hover:text-accent"
                                     }`}
-                                >
-                                    <img
-                                        src={method.imageUrl}
-                                        alt={method.displayName}
-                                        className="size-full object-contain"
-                                    />
-                                </div>
-                            ) : (
-                                <div
-                                    className={`size-12 rounded-full flex items-center justify-center ${
-                                        isSelected
-                                            ? "bg-accent text-white"
-                                            : "bg-secondary text-primary"
-                                    }`}
-                                >
-                                    <HiOutlineCreditCard className="text-2xl" />
-                                </div>
-                            )}
+                            >
+                                <IconComponent className="text-2xl" />
+                            </div>
 
                             <span className="font-bold text-primary">
                                 {method.displayName || method.name}

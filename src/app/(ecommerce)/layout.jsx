@@ -1,6 +1,6 @@
 import MainFooter from '@/components/layout/Footer';
 import React from 'react';
-import Navbar from "@/components/layout/Navbar";
+import Navbar from "@/components/layout/NavbarWrapper";
 
 export const metadata = {
     title: 'PROLIXUS - Shop',

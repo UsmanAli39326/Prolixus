@@ -23,7 +23,7 @@ export default function ProductCard({ product }) {
       "
       prefetch={true}
     >
-      <div className="relative aspect-4/5 bg-(--secondary-color)">
+      <div className="relative aspect-square bg-(--secondary-color)">
         <img
           src={product.image}
           alt={product.title}
@@ -40,23 +40,23 @@ export default function ProductCard({ product }) {
         )}
       </div>
 
-      <div className="flex grow flex-col p-5">
-        <h3 className="font-accent text-lg font-semibold h-14 line-clamp-2 leading-snug text-(--primary-color)">
+      <div className="flex grow flex-col p-4">
+        <h3 className="font-accent text-base font-semibold h-11 line-clamp-2 leading-snug text-(--primary-color)">
           {product.title}
         </h3>
 
-        <div className="mt-2">
+        <div className="mt-1">
           {/* <Rating value={product.rating} count={product.reviews} /> */}
         </div>
 
-        <div className="relative mt-2 h-12">
-          <p className="line-clamp-2 text-sm leading-relaxed text-(--text-color)/75 transition-all duration-300 group-hover:line-clamp-none group-hover:absolute group-hover:z-10 group-hover:bg-(--white-color) group-hover:shadow-sm">
+        <div className="relative mt-1 h-10">
+          <p className="line-clamp-2 text-xs leading-relaxed text-(--text-color)/75 transition-all duration-300 group-hover:line-clamp-none group-hover:absolute group-hover:z-10 group-hover:bg-(--white-color) group-hover:shadow-sm group-hover:p-1 group-hover:rounded">
             {stripHtmlTags(product.description)}
           </p>
         </div>
 
-        <div className="mt-auto pt-4 flex items-center justify-between gap-3">
-          <span className="text-lg font-semibold text-(--primary-color)">
+        <div className="mt-auto pt-3 flex items-center justify-between gap-3">
+          <span className="text-base font-semibold text-(--primary-color)">
             {formatPrice(product.price)}
           </span>
 

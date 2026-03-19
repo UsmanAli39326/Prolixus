@@ -258,13 +258,19 @@ export default function PartnerProgramPage() {
                     {walletData?.walletEntries?.length > 0 ? (
                         <DataTable
                             columns={columns}
-                            data={walletData.walletEntries.map(entry => ({
-                                id: entry.orderId ? `#ORD-${entry.orderId}` : "N/A",
-                                date: new Date(entry.transactionDate).toLocaleDateString(),
-                                status: entry.transactionType === 1 ? "Earnings" : "Used",
-                                earnings: `${entry.amount.toFixed(2)}`,
-                                variant: entry.transactionType === 1 ? "success" : "info",
-                            }))}
+                            data={walletData.walletEntries.map(entry => {
+                                const isEarnings = entry.transactionType === 1 || (entry.affiliatePercentageAmount > 0 || entry.affiliateAbsoluteAmount > 0);
+                                const totalAmount = (entry.totalAffiliateAmount ?? (entry.affiliatePercentageAmount + (entry.affiliateAbsoluteAmount || 0))) || 0;
+                                
+                                return {
+                                    id: entry.orderId ? `#ORD-${entry.orderId}` : (entry.id ? `#TRX-${entry.id}` : "N/A"),
+                                    date: new Date(entry.createdDateTime || entry.transactionDate).toLocaleDateString(),
+                                    status: isEarnings ? "Earnings" : "Used",
+                                    earnings: `${totalAmount.toFixed(2)}`,
+                                    variant: isEarnings ? "success" : "info",
+                                    canceled: entry.orderStatus === "Canceled",
+                                };
+                            })}
                             pagination={pagination}
                         />
                     ) : (
@@ -279,7 +285,7 @@ export default function PartnerProgramPage() {
             {/* Footer Links */}
             <FaderInAnimation direction="up" delay={0.8}>
                 <div className="mt-4 flex flex-wrap justify-center md:justify-start gap-6 text-sm text-text/50">
-                    <a className="hover:text-accent transition-colors underline decoration-divider underline-offset-4" href="#">Terms & Conditions</a>
+                    <a className="hover:text-accent transition-colors underline decoration-divider underline-offset-4" href="/terms">Terms & Conditions</a>
                     <a className="hover:text-accent transition-colors underline decoration-divider underline-offset-4" href="#">Payout Settings</a>
                     <a className="hover:text-accent transition-colors underline decoration-divider underline-offset-4" href="#">Contact Support</a>
                 </div>

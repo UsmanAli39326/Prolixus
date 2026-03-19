@@ -92,7 +92,6 @@ export default function ProfileSettingsPage() {
                         shippingCity: data.shippingCity ?? "",
                         shippingStreet: data.shippingStreet ?? "",
                     });
-                    console.log("Profile Data from api", data);
                 }
             } catch (err) {
                 if (!cancelled) {

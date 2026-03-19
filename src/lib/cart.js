@@ -30,18 +30,30 @@ export function calcCartTotals(cartItems = []) {
 
     const subtotal = r(cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0));
 
-    // Calculate VAT per item using the normalized rate
-    const vatAmount = r(
-        cartItems.reduce((sum, item) => {
-            const rate = normalizeVatRate(item.vatPercentage);
-            return sum + item.price * item.quantity * rate;
-        }, 0)
-    );
+    // Calculate VAT per rate
+    const vatMap = cartItems.reduce((acc, item) => {
+        const rate = normalizeVatRate(item.vatPercentage);
+        const percentage = r(rate * 100);
+        const amount = item.price * item.quantity * rate;
+        
+        if (!acc[percentage]) {
+            acc[percentage] = 0;
+        }
+        acc[percentage] += amount;
+        return acc;
+    }, {});
+
+    const vatDetails = Object.entries(vatMap)
+        .map(([percentage, amount]) => ({
+            percentage: parseFloat(percentage),
+            amount: r(amount),
+        }))
+        .sort((a, b) => a.percentage - b.percentage);
+
+    const vatAmount = r(vatDetails.reduce((sum, v) => sum + v.amount, 0));
 
     // Collect all unique VAT percentages (as whole numbers)
-    const allVatPercentages = [...new Set(
-        cartItems.map(item => r(normalizeVatRate(item.vatPercentage) * 100))
-    )].sort((a, b) => a - b);
+    const allVatPercentages = vatDetails.map(v => v.percentage);
 
     // Combined VAT percentage (sum of unique percentages as per user request)
     const combinedVatPercentage = allVatPercentages.reduce((sum, p) => sum + p, 0);
@@ -60,5 +72,6 @@ export function calcCartTotals(cartItems = []) {
         vatPercentage,
         allVatPercentages,
         combinedVatPercentage,
+        vatDetails,
     };
 }

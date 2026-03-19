@@ -9,7 +9,7 @@ import FaderInAnimation from "@/Hooks/FaderInAnimation";
 import RevealInAnimation from "@/Hooks/RevealInAnimation";
 import { getCountries } from "@/app/api/products/countries";
 
-export default function CheckoutForm({ nextStep, goToStep, formData, updateFormData, isAuthenticated }) {
+export default function CheckoutForm({ nextStep, goToStep, formData, updateFormData, isAuthenticated, total, onDirectComplete, isSubmitting }) {
     const [errors, setErrors] = useState({});
 
     const inputStyles = {
@@ -49,7 +49,11 @@ export default function CheckoutForm({ nextStep, goToStep, formData, updateFormD
 
     const handleNext = () => {
         if (validate()) {
-            nextStep();
+            if (total === 0) {
+                onDirectComplete();
+            } else {
+                nextStep();
+            }
         }
     };
 
@@ -211,9 +215,11 @@ export default function CheckoutForm({ nextStep, goToStep, formData, updateFormD
 
                         <Button
                             onClick={handleNext}
+                            loading={isSubmitting}
+                            disabled={isSubmitting}
                             className="w-full sm:w-auto h-14 bg-accent! hover:bg-accent! text-white! font-bold text-lg rounded-full! shadow-lg shadow-accent/10 px-10"
                         >
-                            Continue to Payment
+                            {total === 0 ? "Complete Order" : "Continue to Payment"}
                         </Button>
                     </div>
                 </FaderInAnimation>

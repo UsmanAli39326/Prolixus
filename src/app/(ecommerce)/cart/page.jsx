@@ -14,7 +14,7 @@ export default function CartPage() {
   const { formatPrice } = useCurrency();
 
   // Calculate totals — single source of truth via shared utility
-  const { subtotal, vatAmount, shipping, total, vatPercentage, allVatPercentages, combinedVatPercentage } = calcCartTotals(cartItems);
+  const { subtotal, vatAmount, shipping, total, vatPercentage, allVatPercentages, combinedVatPercentage, vatDetails } = calcCartTotals(cartItems);
 
   return (
     <FaderInAnimation direction="up">
@@ -25,10 +25,10 @@ export default function CartPage() {
             <div className="mb-8 md:mb-12">
               <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-divider">
                 <div>
-                  <h1 className="text-3xl md:text-4xl lg:text-5xl font-accent font-semibold text-primary">
+                  <h1 className="font-accent italic text-5xl font-light leading-[1.05] tracking-[-0.02em] text-primary lg:text-6xl">
                     Shopping Cart
                   </h1>
-                  <p className="text-text mt-2">
+                  <p className="max-w-[620px] font-default text-base leading-relaxed text-text mt-2 lg:text-lg">
                     {cartItems.length} {cartItems.length === 1 ? "item" : "items"} in your cart
                   </p>
                 </div>
@@ -186,11 +186,12 @@ export default function CartPage() {
                           <span className="font-medium text-accent">Free</span>
                         </div>
 
-                        <div className="flex justify-between items-center text-sm">
-                          {/* <span className="text-text">VAT ({allVatPercentages?.join(" % & ") || vatPercentage}%)</span> */}
-                          <span className="text-text">VAT ({combinedVatPercentage}%)</span>
-                          <span className="font-medium text-primary">{formatPrice(vatAmount)}</span>
-                        </div>
+                        {vatDetails?.map((vat) => (
+                          <div key={vat.percentage} className="flex justify-between items-center text-sm">
+                            <span className="text-text">VAT ({vat.percentage}%)</span>
+                            <span className="font-medium text-primary">{formatPrice(vat.amount)}</span>
+                          </div>
+                        ))}
 
                         <div className="h-px bg-divider my-4" />
 

@@ -2,6 +2,7 @@ import { FaMapMarkerAlt, FaPhoneAlt, FaEnvelope, FaArrowRight, FaAt } from "reac
 import { getAboutPayload } from "@/app/api/about/about";
 import Button from "@/components/ui/Button";
 import Image from "next/image";
+import Link from "next/link";
 
 export default async function MainFooter() {
   const about = await getAboutPayload();
@@ -35,19 +36,19 @@ export default async function MainFooter() {
             <h3 className="text-(--white-color) font-accent font-bold text-xl mb-8">Quick Links</h3>
             <ul className="space-y-4">
               {[
-                "Login",
-                "Terms & Conditions",
-                "Privacy Policy",
-                "Return & Refund Policy",
-                "FAQ's",
+                { name: "Login", href: "/login" },
+                { name: "Terms & Conditions", href: "/terms" },
+                { name: "Privacy Policy", href: "/privacy-policy" },
+                { name: "Return & Refund Policy", href: "/return-and-refund" },
+                { name: "FAQ's", href: "/faqs" },
               ].map((item, index) => (
                 <li key={index}>
-                  <a
-                    href="#"
+                  <Link
+                    href={item.href}
                     className="text-(--white-color)/60 hover:text-(--accent-color) transition duration-300 font-default text-[15px]"
                   >
-                    {item}
-                  </a>
+                    {item.name}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -133,8 +134,8 @@ export default async function MainFooter() {
           </p>
 
           <div className="flex items-center gap-8 font-default">
-            <a href="#" className="text-(--white-color)/40 hover:text-(--white-color) transition text-sm">Privacy</a>
-            <a href="#" className="text-(--white-color)/40 hover:text-(--white-color) transition text-sm">Terms</a>
+            <Link href="/privacy-policy" className="text-(--white-color)/40 hover:text-(--white-color) transition text-sm">Privacy</Link>
+            <Link href="/terms" className="text-(--white-color)/40 hover:text-(--white-color) transition text-sm">Terms</Link>
           </div>
         </div>
 

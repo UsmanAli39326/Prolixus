@@ -9,7 +9,6 @@ let postsArray = [];
 async function fetchPosts() {
   try {
     const res = await apiService.get("/Configuration/blogs");
-    console.log("blog res.data:", res.data);
     debugger
     if (res?.success && Array.isArray(res.data)) {
       postsArray = res.data.map((blog) => ({
@@ -28,7 +27,6 @@ async function fetchPosts() {
       }));
     }
 
-    console.log("blog postsArray:", postsArray);
 
 
   } catch (err) {

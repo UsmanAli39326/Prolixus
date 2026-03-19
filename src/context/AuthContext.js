@@ -72,7 +72,6 @@ export const AuthProvider = ({ children }) => {
         // Set up automatic logout timer
         const remainingTime = (decoded.exp - currentTime) * 1000;
         const timer = setTimeout(() => {
-            console.log("Token expired, logging out automatically...");
             logout();
         }, remainingTime);
 

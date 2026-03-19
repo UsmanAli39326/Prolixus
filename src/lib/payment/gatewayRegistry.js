@@ -6,7 +6,7 @@
  *   - ProviderComponent: React component  — wraps children with the payment SDK context
  *   - CheckoutComponent: React component  — renders the payment form UI
  *
- * ProviderComponent receives:   { publishableKey, currency, children }
+ * ProviderComponent receives: { publishableKey, amount, currency, children }
  * CheckoutComponent receives:   { formData, updateFormData, buildGuestOrderPayload, cartItems,
  *                                  currency, onSuccess, onError, loading, setLoading }
  */
