@@ -127,59 +127,62 @@ export default function OrderDetailContent() {
     const orderId = searchParams.get("orderId");
 
     const handleDownloadInvoice = async () => {
-    if (!orderData) return;
+        if (!orderData) return;
 
-    // ✅ dynamic imports (THIS FIXES YOUR ERROR)
-    const { jsPDF } = await import("jspdf");
-    const autoTable = (await import("jspdf-autotable")).default;
+        // ✅ Only run in browser
+        if (typeof window === "undefined") return;
 
-    const doc = new jsPDF();
+        const jsPDFModule = await import("jspdf");
+        const jsPDF = jsPDFModule.jsPDF || jsPDFModule.default;
 
-    // Header
-    doc.setFontSize(22);
-    doc.setTextColor(41, 128, 185);
-    doc.text("INVOICE", 14, 22);
+        const autoTable = (await import("jspdf-autotable")).default;
 
-    doc.setFontSize(10);
-    doc.setTextColor(100);
+        const doc = new jsPDF();
+        // Header
+        doc.setFontSize(22);
+        doc.setTextColor(41, 128, 185);
+        doc.text("INVOICE", 14, 22);
 
-    const invoiceNum = orderData?.order?.invoiceNumber || "N/A";
-    const orderIdVal = orderData?.order?.id || "N/A";
-    const dateVal = orderData?.order?.transactionDate
-        ? new Date(orderData.order.transactionDate).toLocaleString()
-        : "N/A";
+        doc.setFontSize(10);
+        doc.setTextColor(100);
 
-    doc.text(`Invoice Number: ${invoiceNum}`, 14, 32);
-    doc.text(`Order ID: #${orderIdVal}`, 14, 38);
-    doc.text(`Date: ${dateVal}`, 14, 44);
+        const invoiceNum = orderData?.order?.invoiceNumber || "N/A";
+        const orderIdVal = orderData?.order?.id || "N/A";
+        const dateVal = orderData?.order?.transactionDate
+            ? new Date(orderData.order.transactionDate).toLocaleString()
+            : "N/A";
 
-    // Table
-    const tableColumn = ["Product", "Brand", "Qty", "Unit Price", "Total"];
-    const tableRows = [];
+        doc.text(`Invoice Number: ${invoiceNum}`, 14, 32);
+        doc.text(`Order ID: #${orderIdVal}`, 14, 38);
+        doc.text(`Date: ${dateVal}`, 14, 44);
 
-    orderData?.orderDetails?.forEach(item => {
-        const productInfo = item.item || {};
+        // Table
+        const tableColumn = ["Product", "Brand", "Qty", "Unit Price", "Total"];
+        const tableRows = [];
 
-        const unitPriceStr = formatPrice(item.unitPrice || 0).replace(/&nbsp;/g, ' ');
-        const totalPriceStr = formatPrice(item.totalPrice || item.totalNetPrice || 0).replace(/&nbsp;/g, ' ');
+        orderData?.orderDetails?.forEach(item => {
+            const productInfo = item.item || {};
 
-        tableRows.push([
-            productInfo.name || "Unknown Product",
-            productInfo.brandName || "N/A",
-            item.quantity || 1,
-            unitPriceStr,
-            totalPriceStr
-        ]);
-    });
+            const unitPriceStr = formatPrice(item.unitPrice || 0).replace(/&nbsp;/g, ' ');
+            const totalPriceStr = formatPrice(item.totalPrice || item.totalNetPrice || 0).replace(/&nbsp;/g, ' ');
 
-    autoTable(doc, {
-        head: [tableColumn],
-        body: tableRows,
-        startY: 60
-    });
+            tableRows.push([
+                productInfo.name || "Unknown Product",
+                productInfo.brandName || "N/A",
+                item.quantity || 1,
+                unitPriceStr,
+                totalPriceStr
+            ]);
+        });
 
-    doc.save(`Invoice_${invoiceNum}.pdf`);
-};
+        autoTable(doc, {
+            head: [tableColumn],
+            body: tableRows,
+            startY: 60
+        });
+
+        doc.save(`Invoice_${invoiceNum}.pdf`);
+    };
 
     useEffect(() => {
 
@@ -303,7 +306,7 @@ export default function OrderDetailContent() {
                 <RevealInAnimation direction="up">
 
                     <div className="size-20 rounded-2xl bg-accent/10 flex items-center justify-center shadow-lg shadow-accent/5 ring-1 ring-accent/20 relative group">
-                        
+
                         <div className="absolute inset-0 bg-accent/5 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500 opacity-50"></div>
 
                         <FaCircleCheck className="text-accent text-4xl relative z-10" />
@@ -319,7 +322,7 @@ export default function OrderDetailContent() {
                     </h1>
 
                     <p className="text-lg text-text/60 font-medium">
-                        We've received your order 
+                        We've received your order
                         <span className="text-accent font-bold ml-1.5">
                             #{orderData?.order?.id || "N/A"}
                         </span>
