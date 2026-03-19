@@ -276,6 +276,7 @@ export default function OrderDetailContent() {
 
         doc.save(`Invoice_${invoiceNum !== "N/A" ? invoiceNum : orderIdVal}.pdf`);
     };
+    
     useEffect(() => {
 
         const fetchOrder = async () => {
