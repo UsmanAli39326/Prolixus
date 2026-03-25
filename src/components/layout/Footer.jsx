@@ -1,8 +1,8 @@
-import { FaMapMarkerAlt, FaPhoneAlt, FaEnvelope, FaArrowRight, FaAt } from "react-icons/fa";
+import { FaMapMarkerAlt, FaPhoneAlt, FaEnvelope } from "react-icons/fa";
 import { getAboutPayload } from "@/app/api/about/about";
-import Button from "@/components/ui/Button";
 import Image from "next/image";
 import Link from "next/link";
+import NewsletterForm from "./NewsletterForm";
 
 export default async function MainFooter() {
   const about = await getAboutPayload();
@@ -100,28 +100,7 @@ export default async function MainFooter() {
                 Join our newsletter to receive the latest updates and health insights.
               </p>
 
-              <form className="space-y-4">
-                <div className="relative group">
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-(--white-color)/40 group-focus-within:text-(--accent-color) transition">
-                    <FaAt size={18} />
-                  </div>
-                  <input
-                    type="email"
-                    placeholder="Enter your email"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl py-4 pl-12 pr-4 text-(--white-color) font-default text-[15px] focus:outline-none focus:border-(--accent-color)/50 transition"
-                    required
-                  />
-                </div>
-
-                <Button
-                  type="submit"
-                  variant="accent"
-                  className="w-full rounded-xl! font-default tracking-wide group"
-                  rightIcon={<FaArrowRight size={14} className="group-hover:translate-x-1 transition" />}
-                >
-                  Subscribe Now
-                </Button>
-              </form>
+              <NewsletterForm />
             </div>
           </div>
 

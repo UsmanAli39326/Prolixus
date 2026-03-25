@@ -78,7 +78,7 @@ export async function getAllProducts(page = 1, size = 20) {
     const response = await apiService.get(
       `/Configuration/items?pageNumber=${page}&pageSize=${size}`,
       {},
-      { next: { revalidate: 3600 } }
+      // { next: { revalidate: 3600 } }
     );
     if (!response?.success || !response?.data) {
       return { products: [], pagination: null };
@@ -125,7 +125,7 @@ export async function getProductById(id) {
     const response = await apiService.get(
       `/Configuration/items/${id}`,
       {},
-      { next: { revalidate: 600 } }
+      // { next: { revalidate: 600 } }
     );
     if (!response?.success || !response?.data) return null;
 

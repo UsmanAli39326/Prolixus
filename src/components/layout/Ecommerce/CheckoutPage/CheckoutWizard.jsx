@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import { useRouter } from "next/navigation";
 import useCart from "@/Hooks/useCart";
 import usePaymentMethods from "@/Hooks/usePaymentMethods";
 import OrderForm from "./CheckoutForm";
@@ -81,7 +82,8 @@ export function buildGuestOrderPayload(formData, cartItems, currency = "EURO", t
 // WIZARD
 // ---------------------------------------------------------------------------
 export default function CheckoutWizard() {
-    const { cartItems } = useCart();
+    const router = useRouter();
+    const { cartItems, isInitialized } = useCart();
     const { currency, formatPrice } = useCurrency();
     const { formData, updateFormData, totals, user, isAuthenticated, setOrderCompleted } = useCheckout();
     const [currentStep, setCurrentStep] = useState(0);
@@ -97,9 +99,16 @@ export default function CheckoutWizard() {
 
     // Track selected payment method object (contains publishableKey)
     const [selectedMethod, setSelectedMethod] = useState(null);
+    const hasAutoSelected = useRef(false);
+
+    // Redirect to cart if empty (only after initialization)
+    useEffect(() => {
+        if (isInitialized && cartItems.length === 0) {
+            router.push("/cart");
+        }
+    }, [isInitialized, cartItems, router]);
 
     // When methods load, auto-select the first one if none selected
-    const hasAutoSelected = useRef(false);
     useEffect(() => {
         if (!hasAutoSelected.current && paymentMethods.length > 0 && !selectedMethod) {
             const defaultMethod = paymentMethods[0];

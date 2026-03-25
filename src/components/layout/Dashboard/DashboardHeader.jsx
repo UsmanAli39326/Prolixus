@@ -13,7 +13,7 @@ export default function DashboardHeader({
                 }`}
         >
             <div className="flex flex-col gap-2">
-                <h1 className="font-accent italic text-5xl font-light leading-[1.05] tracking-[-0.02em] text-primary lg:text-6xl">
+                <h1 className="font-accent italic text-3xl sm:text-4xl md:text-5xl font-light leading-[1.05] tracking-[-0.02em] text-primary lg:text-6xl">
                     {title}
                 </h1>
 

@@ -7,7 +7,7 @@ import {
 } from "@/components/layout/Ecommerce/ProductPage";
 import FaderInAnimation from "@/Hooks/FaderInAnimation";
 
-export const revalidate = 600; // ISR: revalidate product page every 10 minutes
+// export const revalidate = 600; // ISR: revalidate product page every 10 minutes
 
 export async function generateStaticParams() {
   // Fetch the first few pages or a high limit to prerender popular ones

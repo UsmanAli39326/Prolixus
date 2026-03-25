@@ -30,7 +30,7 @@ const DataTable = ({
                                 {columns.map((column, index) => (
                                     <th
                                         key={index}
-                                        className={`px-6 py-5 text-primary text-xs uppercase tracking-wider font-bold ${column.className || ""}`}
+                                        className={`px-3 sm:px-6 py-3 sm:py-5 text-primary text-xs uppercase tracking-wider font-bold ${column.className || ""}`}
                                     >
                                         {column.header}
                                     </th>
@@ -47,7 +47,7 @@ const DataTable = ({
                                         {columns.map((column, colIndex) => (
                                             <td
                                                 key={colIndex}
-                                                className={`px-6 py-5 text-sm ${column.cellClassName || ""}`}
+                                                className={`px-3 sm:px-6 py-3 sm:py-5 text-sm ${column.cellClassName || ""}`}
                                             >
                                                 {column.cell ? column.cell(row) : row[column.accessor]}
                                             </td>

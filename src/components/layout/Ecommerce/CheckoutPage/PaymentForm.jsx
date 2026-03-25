@@ -60,9 +60,10 @@ export default function PaymentForm({
     // Submit handler — delegates to the active gateway's payment handler
     const handleSubmit = async (e) => {
         if (e) e.preventDefault();
-
-        if (!selectedMethod) {
-            setError("Please select a payment method.");
+        
+        // Final sanity check before processing payment
+        if (!cartItems || cartItems.length === 0) {
+            setError("Your cart is empty. Please add items to your cart before proceeding.");
             return;
         }
 

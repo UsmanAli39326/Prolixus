@@ -64,7 +64,7 @@ export default function DashboardOverviewPage() {
     }, []);
 
     return (
-        <div className="flex flex-col gap-10">
+        <div className="flex flex-col gap-6 sm:gap-8 md:gap-10">
             <RevealInAnimation direction="up">
                 <DashboardHeader
                     title={`Welcome back, ${user.name}`}

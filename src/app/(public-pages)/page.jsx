@@ -9,7 +9,7 @@ import CtaBox from "@/components/layout/Home/CtaBox";
 import YouTubeGallery from "@/components/layout/Home/YouTubeGallery";
 import getAllProducts from "@/app/api/products/products";
 
-export const revalidate = 3600; // ISR: revalidate homepage every 1 hour
+// export const revalidate = 3600; // ISR: revalidate homepage every 1 hour
 
 export const metadata = {
   title: "Prolixus - Premium Organic Products",

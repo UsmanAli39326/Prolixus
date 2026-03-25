@@ -1,8 +1,8 @@
 import { apiService } from "@/lib/api";
 
-export  async function getAboutPayload() {
+export async function getAboutPayload() {
   try {
-    const response = await apiService.get("/Configuration/about", {}, { next: { revalidate: 3600 } });
+    const response = await apiService.get("/Configuration/about", {}, /* { next: { revalidate: 3600 } } */);
 
     if (!response?.success || !response?.data) return null;
 
@@ -12,7 +12,7 @@ export  async function getAboutPayload() {
       companyName: about.companyName,
       title: about.title,
       shortDescription: about.shortDescription,
-      description:about.description,
+      description: about.description,
       address: about.address,
       email: about.email,
       mobile: about.mobile,

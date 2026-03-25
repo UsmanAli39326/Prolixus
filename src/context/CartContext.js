@@ -71,6 +71,7 @@ export const CartProvider = ({ children }) => {
                 removeFromCart,
                 updateQuantity,
                 clearCart,
+                isInitialized,
                 itemCount: cartItems.reduce((total, item) => total + item.quantity, 0),
             }}
         >

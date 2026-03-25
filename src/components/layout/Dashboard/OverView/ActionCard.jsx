@@ -13,9 +13,9 @@ export default function ActionCard({
     return (
         <Link href={href} className="block group">
             <div className="bg-white rounded-xl p-6 shadow-sm border border-divider group-hover:shadow-md transition-all group-hover:border-accent/30 overflow-hidden relative h-full flex flex-col">
-                <div className="flex items-start gap-4 mb-4">
-                    <div className="p-3 bg-secondary rounded-lg text-primary group-hover:bg-accent group-hover:text-white transition-colors duration-300">
-                        <span className="text-xl flex items-center justify-center size-6">{icon}</span>
+                <div className="flex items-start gap-3 sm:gap-4 mb-4">
+                    <div className="p-2.5 sm:p-3 bg-secondary rounded-lg text-primary group-hover:bg-accent group-hover:text-white transition-colors duration-300">
+                        <span className="text-lg sm:text-xl flex items-center justify-center size-5 sm:size-6">{icon}</span>
                     </div>
 
                     <div className="flex-1">
