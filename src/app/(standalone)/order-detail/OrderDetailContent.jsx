@@ -25,12 +25,8 @@ import {
     FaBoxOpen
 } from "react-icons/fa6";
 
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
-
 import { useCurrency } from "@/context/CurrencyContext";
 import FaderInAnimation from "@/Hooks/FaderInAnimation";
-import RevealInAnimation from "@/Hooks/RevealInAnimation";
 import Button from "@/components/ui/Button";
 import { getOrderDetails } from "@/lib/OrderService";
 import DataTable from "@/components/ui/DataTable";
@@ -155,160 +151,161 @@ export default function OrderDetailContent() {
 
     const orderId = searchParams.get("orderId");
 
-    const handleDownloadInvoice = () => {
-        if (!orderData) return;
+    const handleDownloadInvoice = async () => {
+    if (!orderData) return;
 
-        const doc = new jsPDF();
+    // ✅ dynamic imports (fix build issue)
+    const jsPDFModule = await import("jspdf");
+    const autoTableModule = await import("jspdf-autotable");
 
-        // Header
-        doc.setFontSize(22);
-        doc.setTextColor(41, 128, 185);
-        doc.text("INVOICE", 14, 22);
+    const jsPDF = jsPDFModule.default;
+    const autoTable = autoTableModule.default;
 
-        doc.setFontSize(10);
-        doc.setTextColor(100);
+    const doc = new jsPDF();
 
-        const invoiceNum = orderData?.order?.invoiceNumber || "N/A";
-        const orderIdVal = orderData?.order?.id || "N/A";
-        const dateVal = orderData?.order?.transactionDate
-            ? new Date(orderData.order.transactionDate).toLocaleString()
-            : "N/A";
+    // Header
+    doc.setFontSize(22);
+    doc.setTextColor(41, 128, 185);
+    doc.text("INVOICE", 14, 22);
 
-        doc.text(`Invoice Number: ${invoiceNum} `, 14, 32);
-        doc.text(`Order ID: #${orderIdVal} `, 14, 38);
-        doc.text(`Date: ${dateVal} `, 14, 44);
+    doc.setFontSize(10);
+    doc.setTextColor(100);
 
-        // Seller Details
-        if (aboutData) {
-            doc.setFontSize(12);
-            doc.setTextColor(0);
-            doc.text("Seller Information:", 100, 22);
-            doc.setFontSize(10);
-            doc.setTextColor(100);
-            doc.text(`${aboutData.companyName || "Prolixus"} `, 100, 32);
-            const aboutAddress = doc.splitTextToSize(aboutData.address || "N/A", 90);
-            doc.text(aboutAddress, 100, 38);
-            const addressHeight = aboutAddress.length * 5;
-            doc.text(`Email: ${aboutData.email || "N/A"} `, 100, 38 + addressHeight);
-            doc.text(`Phone: ${aboutData.phone || aboutData.mobile || "N/A"} `, 100, 44 + addressHeight);
-        }
+    const invoiceNum = orderData?.order?.invoiceNumber || "N/A";
+    const orderIdVal = orderData?.order?.id || "N/A";
+    const dateVal = orderData?.order?.transactionDate
+        ? new Date(orderData.order.transactionDate).toLocaleString()
+        : "N/A";
 
-        // Customer Details
+    doc.text(`Invoice Number: ${invoiceNum}`, 14, 32);
+    doc.text(`Order ID: #${orderIdVal}`, 14, 38);
+    doc.text(`Date: ${dateVal}`, 14, 44);
+
+    // Seller Details
+    if (aboutData) {
         doc.setFontSize(12);
         doc.setTextColor(0);
-        doc.text("Customer Details:", 14, 56);
+        doc.text("Seller Information:", 100, 22);
         doc.setFontSize(10);
         doc.setTextColor(100);
-        doc.text(`Name: ${orderData?.customer?.name || "N/A"} `, 14, 64);
-        doc.text(`Email: ${orderData?.customer?.email || "N/A"} `, 14, 70);
+        doc.text(`${aboutData.companyName || "Prolixus"}`, 100, 32);
+        const aboutAddress = doc.splitTextToSize(aboutData.address || "N/A", 90);
+        doc.text(aboutAddress, 100, 38);
+        const addressHeight = aboutAddress.length * 5;
+        doc.text(`Email: ${aboutData.email || "N/A"}`, 100, 38 + addressHeight);
+        doc.text(`Phone: ${aboutData.phone || aboutData.mobile || "N/A"}`, 100, 44 + addressHeight);
+    }
 
-        let promoY = 76;
-        if (orderData?.order?.couponCode) {
-            doc.text(`Promo Code: ${orderData.order.couponCode} `, 14, promoY);
-            promoY += 6;
-        }
-        if (orderData?.order?.affiliateCustomerCode) {
-            doc.text(`Affiliate Code: ${orderData.order.affiliateCustomerCode} `, 14, promoY);
-            promoY += 6;
-        }
-        if (orderData?.order?.walletAmount > 0) {
-            const walletStr = formatPrice(orderData.order.walletAmount).replace(/&nbsp;/g, ' ');
-            doc.text(`Paid via Wallet: ${walletStr} `, 14, promoY);
-        }
+    // Customer Details
+    doc.setFontSize(12);
+    doc.setTextColor(0);
+    doc.text("Customer Details:", 14, 56);
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text(`Name: ${orderData?.customer?.name || "N/A"}`, 14, 64);
+    doc.text(`Email: ${orderData?.customer?.email || "N/A"}`, 14, 70);
 
-        // Delivery Address
-        doc.setFontSize(12);
-        doc.setTextColor(0);
-        doc.text("Delivery Address:", 100, 56);
-        doc.setFontSize(10);
-        doc.setTextColor(100);
+    let promoY = 76;
+    if (orderData?.order?.couponCode) {
+        doc.text(`Promo Code: ${orderData.order.couponCode}`, 14, promoY);
+        promoY += 6;
+    }
+    if (orderData?.order?.affiliateCustomerCode) {
+        doc.text(`Affiliate Code: ${orderData.order.affiliateCustomerCode}`, 14, promoY);
+        promoY += 6;
+    }
+    if (orderData?.order?.walletAmount > 0) {
+        const walletStr = formatPrice(orderData.order.walletAmount).replace(/&nbsp;/g, ' ');
+        doc.text(`Paid via Wallet: ${walletStr}`, 14, promoY);
+    }
 
-        let addressText = "N/A";
-        const dStreet = orderData?.order?.deliveryStreet || orderData?.deliveryStreet;
-        const dCity = orderData?.order?.deliveryCity || orderData?.deliveryCity;
-        const dPostCode = orderData?.order?.deliveryPostCode || orderData?.deliveryPostCode;
-        const dCountryName = orderData?.deliveryCountry?.name || "";
+    // Delivery Address
+    doc.setFontSize(12);
+    doc.setTextColor(0);
+    doc.text("Delivery Address:", 100, 56);
+    doc.setFontSize(10);
+    doc.setTextColor(100);
 
-        const parts = [
-            dStreet,
-            dCity,
-            dPostCode,
-            dCountryName
-        ].filter(Boolean);
+    let addressText = "N/A";
+    const dStreet = orderData?.order?.deliveryStreet || orderData?.deliveryStreet;
+    const dCity = orderData?.order?.deliveryCity || orderData?.deliveryCity;
+    const dPostCode = orderData?.order?.deliveryPostCode || orderData?.deliveryPostCode;
+    const dCountryName = orderData?.deliveryCountry?.name || "";
 
-        if (parts.length > 0) {
-            addressText = parts.join(", ");
-        } else {
-            const addrObj = orderData?.deliveryAddress || orderData?.order?.deliveryAddress || orderData?.customer?.address || orderData?.order?.shippingAddress || orderData?.shippingAddress;
-            if (typeof addrObj === 'string') {
-                addressText = addrObj;
-            } else if (addrObj && typeof addrObj === 'object') {
-                const legacyParts = [
-                    addrObj.firstName ? `${addrObj.firstName} ${addrObj.lastName || ''} `.trim() : null,
-                    addrObj.street,
-                    addrObj.addressLine1,
-                    addrObj.addressLine2,
-                    addrObj.city,
-                    addrObj.state,
-                    addrObj.zipCode,
-                    addrObj.country
-                ].filter(Boolean);
-                if (legacyParts.length > 0) {
-                    addressText = legacyParts.join(", ");
-                }
+    const parts = [dStreet, dCity, dPostCode, dCountryName].filter(Boolean);
+
+    if (parts.length > 0) {
+        addressText = parts.join(", ");
+    } else {
+        const addrObj = orderData?.deliveryAddress || orderData?.order?.deliveryAddress || orderData?.customer?.address || orderData?.order?.shippingAddress || orderData?.shippingAddress;
+
+        if (typeof addrObj === 'string') {
+            addressText = addrObj;
+        } else if (addrObj && typeof addrObj === 'object') {
+            const legacyParts = [
+                addrObj.firstName ? `${addrObj.firstName} ${addrObj.lastName || ''}`.trim() : null,
+                addrObj.street,
+                addrObj.addressLine1,
+                addrObj.addressLine2,
+                addrObj.city,
+                addrObj.state,
+                addrObj.zipCode,
+                addrObj.country
+            ].filter(Boolean);
+
+            if (legacyParts.length > 0) {
+                addressText = legacyParts.join(", ");
             }
         }
+    }
 
-        const splitAddress = doc.splitTextToSize(addressText, 90);
-        doc.text(splitAddress, 100, 64);
+    const splitAddress = doc.splitTextToSize(addressText, 90);
+    doc.text(splitAddress, 100, 64);
 
-        // Table
-        const tableColumn = ["Product", "Brand", "Qty", "Unit Price", "Tax", "Total"];
-        const tableRows = [];
+    // Table
+    const tableColumn = ["Product", "Brand", "Qty", "Unit Price", "Tax", "Total"];
+    const tableRows = [];
 
-        orderData?.orderDetails?.forEach(item => {
-            const productInfo = item.item || {};
+    orderData?.orderDetails?.forEach(item => {
+        const productInfo = item.item || {};
 
-            // Calculate Unit Price before tax
-            const netUnitPrice = item.totalNetPrice && item.quantity
-                ? item.totalNetPrice / item.quantity
-                : item.unitPrice || 0;
+        const netUnitPrice = item.totalNetPrice && item.quantity
+            ? item.totalNetPrice / item.quantity
+            : item.unitPrice || 0;
 
-            // Basic cleanup of HTML spaces
-            const unitPriceStr = formatPrice(netUnitPrice).replace(/&nbsp;/g, ' ');
-            const taxStr = formatPrice(item.vatAmount || 0).replace(/&nbsp;/g, ' ');
-            const totalPriceStr = formatPrice(item.totalPrice || item.totalNetPrice || 0).replace(/&nbsp;/g, ' ');
+        const unitPriceStr = formatPrice(netUnitPrice).replace(/&nbsp;/g, ' ');
+        const taxStr = formatPrice(item.vatAmount || 0).replace(/&nbsp;/g, ' ');
+        const totalPriceStr = formatPrice(item.totalPrice || item.totalNetPrice || 0).replace(/&nbsp;/g, ' ');
 
-            const productData = [
-                productInfo.name || "Unknown Product",
-                productInfo.brandName || "N/A",
-                item.quantity || 1,
-                unitPriceStr,
-                taxStr,
-                totalPriceStr
-            ];
-            tableRows.push(productData);
-        });
+        tableRows.push([
+            productInfo.name || "Unknown Product",
+            productInfo.brandName || "N/A",
+            item.quantity || 1,
+            unitPriceStr,
+            taxStr,
+            totalPriceStr
+        ]);
+    });
 
-        autoTable(doc, {
-            head: [tableColumn],
-            body: tableRows,
-            startY: Math.max(85, 64 + (splitAddress.length * 5)),
-            headStyles: { fillColor: [41, 128, 185], textColor: 255 },
-            alternateRowStyles: { fillColor: [245, 245, 245] },
-            styles: { fontSize: 10, cellPadding: 5 }
-        });
+    autoTable(doc, {
+        head: [tableColumn],
+        body: tableRows,
+        startY: Math.max(85, 64 + (splitAddress.length * 5)),
+        headStyles: { fillColor: [41, 128, 185], textColor: 255 },
+        alternateRowStyles: { fillColor: [245, 245, 245] },
+        styles: { fontSize: 10, cellPadding: 5 }
+    });
 
-        const finalY = doc.lastAutoTable.finalY + 10;
+    const finalY = doc.lastAutoTable.finalY + 10;
 
-        // Total
-        doc.setFontSize(12);
-        doc.setTextColor(0);
-        const finalTotalStr = formatPrice(orderData?.order?.totalNetAmount || 0).replace(/&nbsp;/g, ' ');
-        doc.text(`Total Amount: ${finalTotalStr} `, 14, finalY);
+    // Total
+    doc.setFontSize(12);
+    doc.setTextColor(0);
+    const finalTotalStr = formatPrice(orderData?.order?.totalNetAmount || 0).replace(/&nbsp;/g, ' ');
+    doc.text(`Total Amount: ${finalTotalStr}`, 14, finalY);
 
-        doc.save(`Invoice_${invoiceNum !== "N/A" ? invoiceNum : orderIdVal}.pdf`);
-    };
+    doc.save(`Invoice_${invoiceNum !== "N/A" ? invoiceNum : orderIdVal}.pdf`);
+};
 
     useEffect(() => {
 
