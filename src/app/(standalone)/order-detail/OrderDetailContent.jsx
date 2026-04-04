@@ -23,9 +23,6 @@ import {
     FaBoxOpen
 } from "react-icons/fa6";
 
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
-
 import { useCurrency } from "@/context/CurrencyContext";
 import FaderInAnimation from "@/Hooks/FaderInAnimation";
 import Button from "@/components/ui/Button";
@@ -152,8 +149,11 @@ export default function OrderDetailContent() {
 
     const orderId = searchParams.get("orderId");
 
-    const handleDownloadInvoice = () => {
+    const handleDownloadInvoice = async () => {
         if (!orderData) return;
+
+        const { default: jsPDF } = await import("jspdf");
+        const { default: autoTable } = await import("jspdf-autotable");
 
         const doc = new jsPDF();
 
