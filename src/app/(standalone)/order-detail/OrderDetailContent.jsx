@@ -150,14 +150,16 @@ export default function OrderDetailContent() {
     const orderId = searchParams.get("orderId");
 
     const handleDownloadInvoice = async () => {
-        if (!orderData) return;
+    if (!orderData) return;
 
+    try {
+        // Dynamically import libraries to prevent SSR "Node.js" module errors
         const { default: jsPDF } = await import("jspdf");
         const { default: autoTable } = await import("jspdf-autotable");
 
         const doc = new jsPDF();
 
-        // Header
+        // --- Header ---
         doc.setFontSize(22);
         doc.setTextColor(41, 128, 185);
         doc.text("INVOICE", 14, 22);
@@ -171,48 +173,50 @@ export default function OrderDetailContent() {
             ? new Date(orderData.order.transactionDate).toLocaleString()
             : "N/A";
 
-        doc.text(`Invoice Number: #${invoiceNum} `, 14, 32);
-        doc.text(`Date: ${dateVal} `, 14, 38);
+        doc.text(`Invoice Number: #${invoiceNum}`, 14, 32);
+        doc.text(`Date: ${dateVal}`, 14, 38);
 
-        // Seller Details
+        // --- Seller Details ---
         if (aboutData) {
             doc.setFontSize(12);
             doc.setTextColor(0);
             doc.text("Seller Information:", 100, 22);
             doc.setFontSize(10);
             doc.setTextColor(100);
-            doc.text(`${aboutData.companyName || "Prolixus"} `, 100, 32);
+            doc.text(`${aboutData.companyName || "Prolixus"}`, 100, 32);
+            
             const aboutAddress = doc.splitTextToSize(aboutData.address || "N/A", 90);
             doc.text(aboutAddress, 100, 38);
+            
             const addressHeight = aboutAddress.length * 5;
-            doc.text(`Email: ${aboutData.email || "N/A"} `, 100, 38 + addressHeight);
-            doc.text(`Phone: ${aboutData.phone || aboutData.mobile || "N/A"} `, 100, 44 + addressHeight);
+            doc.text(`Email: ${aboutData.email || "N/A"}`, 100, 38 + addressHeight);
+            doc.text(`Phone: ${aboutData.phone || aboutData.mobile || "N/A"}`, 100, 44 + addressHeight);
         }
 
-        // Customer Details
+        // --- Customer Details ---
         doc.setFontSize(12);
         doc.setTextColor(0);
         doc.text("Customer Details:", 14, 56);
         doc.setFontSize(10);
         doc.setTextColor(100);
-        doc.text(`Name: ${orderData?.customer?.name || "N/A"} `, 14, 64);
-        doc.text(`Email: ${orderData?.customer?.email || "N/A"} `, 14, 70);
+        doc.text(`Name: ${orderData?.customer?.name || "N/A"}`, 14, 64);
+        doc.text(`Email: ${orderData?.customer?.email || "N/A"}`, 14, 70);
 
         let promoY = 76;
         if (orderData?.order?.couponCode) {
-            doc.text(`Promo Code: ${orderData.order.couponCode} `, 14, promoY);
+            doc.text(`Promo Code: ${orderData.order.couponCode}`, 14, promoY);
             promoY += 6;
         }
         if (orderData?.order?.affiliateCustomerCode) {
-            doc.text(`Affiliate Code: ${orderData.order.affiliateCustomerCode} `, 14, promoY);
+            doc.text(`Affiliate Code: ${orderData.order.affiliateCustomerCode}`, 14, promoY);
             promoY += 6;
         }
         if (orderData?.order?.walletAmount > 0) {
             const walletStr = formatPrice(orderData.order.walletAmount).replace(/&nbsp;/g, ' ');
-            doc.text(`Paid via Wallet: ${walletStr} `, 14, promoY);
+            doc.text(`Paid via Wallet: ${walletStr}`, 14, promoY);
         }
 
-        // Delivery Address
+        // --- Delivery Address ---
         doc.setFontSize(12);
         doc.setTextColor(0);
         doc.text("Delivery Address:", 100, 56);
@@ -225,12 +229,7 @@ export default function OrderDetailContent() {
         const dPostCode = orderData?.order?.deliveryPostCode || orderData?.deliveryPostCode;
         const dCountryName = orderData?.deliveryCountry?.name || "";
 
-        const parts = [
-            dStreet,
-            dCity,
-            dPostCode,
-            dCountryName
-        ].filter(Boolean);
+        const parts = [dStreet, dCity, dPostCode, dCountryName].filter(Boolean);
 
         if (parts.length > 0) {
             addressText = parts.join(", ");
@@ -240,7 +239,7 @@ export default function OrderDetailContent() {
                 addressText = addrObj;
             } else if (addrObj && typeof addrObj === 'object') {
                 const legacyParts = [
-                    addrObj.firstName ? `${addrObj.firstName} ${addrObj.lastName || ''} `.trim() : null,
+                    addrObj.firstName ? `${addrObj.firstName} ${addrObj.lastName || ''}`.trim() : null,
                     addrObj.street,
                     addrObj.addressLine1,
                     addrObj.addressLine2,
@@ -258,34 +257,31 @@ export default function OrderDetailContent() {
         const splitAddress = doc.splitTextToSize(addressText, 90);
         doc.text(splitAddress, 100, 64);
 
-        // Table
+        // --- Table Data Preparation ---
         const tableColumn = ["Product", "Brand", "Qty", "Unit Price", "VAT", "Total"];
         const tableRows = [];
 
         orderData?.orderDetails?.forEach(item => {
             const productInfo = item.item || {};
-
-            // Calculate Unit Price before tax
             const netUnitPrice = item.totalNetPrice && item.quantity
                 ? item.totalNetPrice / item.quantity
                 : item.unitPrice || 0;
 
-            // Basic cleanup of HTML spaces
             const unitPriceStr = formatPrice(netUnitPrice).replace(/&nbsp;/g, ' ');
             const taxStr = formatPrice(item.vatAmount || 0).replace(/&nbsp;/g, ' ');
             const totalPriceStr = formatPrice(item.totalPrice || item.totalNetPrice || 0).replace(/&nbsp;/g, ' ');
 
-            const productData = [
+            tableRows.push([
                 productInfo.name || "Unknown Product",
                 productInfo.brandName || "N/A",
                 item.quantity || 1,
                 unitPriceStr,
                 taxStr,
                 totalPriceStr
-            ];
-            tableRows.push(productData);
+            ]);
         });
 
+        // --- Render Table ---
         autoTable(doc, {
             head: [tableColumn],
             body: tableRows,
@@ -295,16 +291,20 @@ export default function OrderDetailContent() {
             styles: { fontSize: 10, cellPadding: 5 }
         });
 
+        // --- Footer / Totals ---
         const finalY = doc.lastAutoTable.finalY + 10;
-
-        // Total
         doc.setFontSize(12);
         doc.setTextColor(0);
         const finalTotalStr = formatPrice(orderData?.order?.totalNetAmount || orderData?.order?.grossAmount || 0).replace(/&nbsp;/g, ' ');
-        doc.text(`Total Amount: ${finalTotalStr} `, 14, finalY);
+        doc.text(`Total Amount: ${finalTotalStr}`, 14, finalY);
 
+        // --- Save PDF ---
         doc.save(`Invoice_${invoiceNum !== "N/A" ? invoiceNum : orderIdVal}.pdf`);
-    };
+
+    } catch (error) {
+        console.error("Error generating PDF:", error);
+    }
+};
 
     useEffect(() => {
         const fetchOrder = async () => {
