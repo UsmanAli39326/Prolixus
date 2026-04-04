@@ -61,34 +61,54 @@ export default function Header({ menus = [] }) {
             ))}
           </ul>
 
-          {/* Right Side: Shop Button + Cart + Account */}
-          <div className="flex items-center gap-6 pl-6 border-l border-divider">
-            <Link href={shopButton?.url || "/products"}>
-              <Button variant="accent" className="rounded-full">
-                {shopButton?.label || "Shop Now"}
-              </Button>
-            </Link>
-
+          <div className="flex items-center gap-6">
+            {/* Google Rating Badge */}
             <div className="flex items-center gap-3">
-              <Link
-                href="/cart"
-                className="relative flex items-center justify-center h-10 w-10 rounded-full border border-white text-white transition hover:bg-white hover:text-accent"
-              >
-                <FaCartArrowDown />
-                {itemCount > 0 && (
-                  <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-accent text-[11px] font-bold text-white shadow-sm ring-2 ring-primary">
-                    {itemCount}
-                  </span>
-                )}
+              <Image
+                src="/images/new/Google.svg"
+                alt="Google Rating"
+                width={70}
+                height={30}
+
+              />
+              <Image
+                src="/images/new/Stars-01.svg"
+                alt="5 Stars"
+                width={80}
+                height={18}
+                className="h-auto w-auto"
+              />
+            </div>
+
+            {/* Right Side: Shop Button + Cart + Account */}
+            <div className="flex items-center gap-6 pl-6 border-l border-divider">
+              <Link href={shopButton?.url || "/products"}>
+                <Button variant="accent" className="rounded-full">
+                  {shopButton?.label || "Shop Now"}
+                </Button>
               </Link>
 
-              <button
-                onClick={handleUserIconClick}
-                aria-label={isLoggedIn ? "Go to Dashboard" : "Login"}
-                className="flex items-center justify-center h-10 w-10 rounded-full border border-white text-white transition hover:bg-white hover:text-accent cursor-pointer"
-              >
-                <FaCircleUser />
-              </button>
+              <div className="flex items-center gap-3">
+                <Link
+                  href="/cart"
+                  className="relative flex items-center justify-center h-10 w-10 rounded-full border border-white text-white transition hover:bg-white hover:text-accent"
+                >
+                  <FaCartArrowDown />
+                  {itemCount > 0 && (
+                    <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-accent text-[11px] font-bold text-white shadow-sm ring-2 ring-primary">
+                      {itemCount}
+                    </span>
+                  )}
+                </Link>
+
+                <button
+                  onClick={handleUserIconClick}
+                  aria-label={isLoggedIn ? "Go to Dashboard" : "Login"}
+                  className="flex items-center justify-center h-10 w-10 rounded-full border border-white text-white transition hover:bg-white hover:text-accent cursor-pointer"
+                >
+                  <FaCircleUser />
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -125,6 +145,24 @@ export default function Header({ menus = [] }) {
               {/* Mobile bottom row: Shop + Cart + Account */}
               <li className="mt-3 border-t border-white/20 pt-4">
                 <div className="flex items-center justify-between">
+                  {/* Google Rating Badge - Mobile */}
+                  <div className="flex items-center gap-3">
+                    <Image
+                      src="/images/new/Google.svg"
+                      alt="Google Rating"
+                      width={65}
+                      height={20}
+                      className="h-auto w-auto"
+                    />
+                    <Image
+                      src="/images/new/Stars-01.svg"
+                      alt="5 Stars"
+                      width={60}
+                      height={10}
+                      className="h-auto w-auto"
+                    />
+                  </div>
+
                   <Link href={shopButton?.url || "/products"}>
                     <Button variant="primary" className="rounded-full">
                       {shopButton?.label || "Shop Now"}

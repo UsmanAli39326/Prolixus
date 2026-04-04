@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import OrderClientWrapper from "./OrderClientWrapper";
+import OrderDetailContent from "./OrderDetailContent";
 
 export async function generateMetadata({ searchParams }) {
     const { orderId } = await searchParams;
@@ -23,7 +23,7 @@ export default function OrderDetailPage() {
                 </div>
             }
         >
-            <OrderClientWrapper />
+            <OrderDetailContent />
         </Suspense>
     );
 }

@@ -10,7 +10,6 @@ import {
     FaCheckCircle,
     FaExclamationTriangle
 } from "react-icons/fa";
-import { MdTrendingUp } from "react-icons/md";
 
 import DashboardHeader from "@/components/layout/Dashboard/DashboardHeader";
 import Button from "@/components/ui/Button";
@@ -115,7 +114,7 @@ export default function PartnerProgramPage() {
             cellClassName: "text-text/80 dark:text-white/80 font-medium"
         },
         {
-            header: "Order ID",
+            header: "Invoice No",
             accessor: "id",
             cellClassName: "text-text/60 dark:text-white/60 font-mono text-xs"
         },
@@ -261,9 +260,9 @@ export default function PartnerProgramPage() {
                             data={walletData.walletEntries.map(entry => {
                                 const isEarnings = entry.transactionType === 1 || (entry.affiliatePercentageAmount > 0 || entry.affiliateAbsoluteAmount > 0);
                                 const totalAmount = (entry.totalAffiliateAmount ?? (entry.affiliatePercentageAmount + (entry.affiliateAbsoluteAmount || 0))) || 0;
-                                
+
                                 return {
-                                    id: entry.orderId ? `#ORD-${entry.orderId}` : (entry.id ? `#TRX-${entry.id}` : "N/A"),
+                                    id: entry.invoiceNumber ? `#${entry.invoiceNumber}` : (entry.orderId ? `#ORD-${entry.orderId}` : (entry.id ? `#TRX-${entry.id}` : "N/A")),
                                     date: new Date(entry.createdDateTime || entry.transactionDate).toLocaleDateString(),
                                     status: isEarnings ? "Earnings" : "Used",
                                     earnings: `${totalAmount.toFixed(2)}`,

@@ -64,7 +64,7 @@ async function renderContent(blocks) {
 }
 
 export default async function BlogDetail({ post }) {
-    const relatedPosts = getRelatedPostsById(post.id, 3);
+    const relatedPosts = await getRelatedPostsById(post.id, 3);
 
     return (
         <div className="blog-detail-page pt-16 pb-24">
@@ -76,6 +76,19 @@ export default async function BlogDetail({ post }) {
 
                         {/* ── Article ── */}
                         <article className="flex-1 min-w-0">
+
+                            {/* Back to Blogs link (Top) */}
+                            <FaderInAnimation direction="up" delay={0} duration={0.6}>
+                                <div className="mb-6">
+                                    <Link
+                                        href="/blog"
+                                        className="inline-flex items-center gap-2 text-sm font-semibold text-(--accent-color) hover:text-(--primary-color) transition-colors duration-200"
+                                    >
+                                        <i className="fa-solid fa-arrow-left text-xs" />
+                                        Back to Blogs
+                                    </Link>
+                                </div>
+                            </FaderInAnimation>
 
                             {/* Category & meta */}
                             <FaderInAnimation direction="up" delay={0} duration={0.6}>
@@ -115,7 +128,7 @@ export default async function BlogDetail({ post }) {
                                         alt={post.title}
                                         // fill
                                         className=" w-full h-full"
-                                        // sizes="(max-width: 768px) 100vw, (max-width: 1200px) 70vw, 900px"
+                                    // sizes="(max-width: 768px) 100vw, (max-width: 1200px) 70vw, 900px"
                                     />
                                 </figure>
                             </FaderInAnimation>
@@ -133,17 +146,17 @@ export default async function BlogDetail({ post }) {
                             </div>
 
                             {/* Back link */}
-                            {/* <FaderInAnimation direction="up" delay={0.1} duration={0.6}>
+                            <FaderInAnimation direction="up" delay={0.1} duration={0.6}>
                                 <div className="mt-12 pt-8 border-t border-(--divider-color) flex items-center justify-between flex-wrap gap-4">
                                     <Link
                                         href="/blog"
                                         className="inline-flex items-center gap-2 text-sm font-semibold text-(--accent-color) hover:text-(--primary-color) transition-colors duration-200"
                                     >
                                         <i className="fa-solid fa-arrow-left text-xs" />
-                                        Zurück zum Blog
+                                        Back to Blogs
                                     </Link>
                                     <div className="flex items-center gap-3">
-                                        <span className="text-sm text-(--text-color)/50">Teilen:</span>
+                                        <span className="text-sm text-(--text-color)/50">Share:</span>
                                         <a
                                             href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent("https://prolixus.de" + post.href)}`}
                                             target="_blank"
@@ -164,14 +177,14 @@ export default async function BlogDetail({ post }) {
                                         </a>
                                     </div>
                                 </div>
-                            </FaderInAnimation> */}
+                            </FaderInAnimation>
                         </article>
 
                         {/* ── Sidebar ── */}
                         {/* <aside className="w-full lg:w-80 shrink-0 space-y-8"> */}
 
-                            {/* Author card */}
-                            {/* <FaderInAnimation direction="right" delay={0.1} duration={0.7}>
+                        {/* Author card */}
+                        {/* <FaderInAnimation direction="right" delay={0.1} duration={0.7}>
                                 <div className="rounded-2xl border border-(--divider-color) bg-(--white-color) p-6 shadow-[0_0_30px_0_rgba(0,0,0,0.05)]">
                                     <h3 className="text-sm font-semibold uppercase tracking-widest text-(--primary-color)/50 mb-4">
                                         Autor
@@ -183,8 +196,8 @@ export default async function BlogDetail({ post }) {
                                 </div>
                             </FaderInAnimation> */}
 
-                            {/* Share */}
-                            {/* <FaderInAnimation direction="right" delay={0.3} duration={0.7}>
+                        {/* Share */}
+                        {/* <FaderInAnimation direction="right" delay={0.3} duration={0.7}>
                                 <div className="rounded-2xl border border-(--divider-color) bg-(--white-color) p-6 shadow-[0_0_30px_0_rgba(0,0,0,0.05)]">
                                     <h3 className="text-sm font-semibold uppercase tracking-widest text-(--primary-color)/50 mb-4">
                                         Artikel teilen
@@ -210,8 +223,8 @@ export default async function BlogDetail({ post }) {
                                 </div>
                             </FaderInAnimation> */}
 
-                            {/* CTA */}
-                            {/* <FaderInAnimation direction="right" delay={0.4} duration={0.7}>
+                        {/* CTA */}
+                        {/* <FaderInAnimation direction="right" delay={0.4} duration={0.7}>
                                 <div className="rounded-2xl bg-(--primary-color) p-6 text-(--white-color)">
                                     <h3 className="text-lg font-bold font-default mb-2 leading-snug">
                                         Prolixus entdecken

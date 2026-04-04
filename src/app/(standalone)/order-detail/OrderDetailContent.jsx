@@ -11,7 +11,6 @@ import {
     FaTruck,
     FaBagShopping,
     FaRegImage,
-    FaArrowRight,
     FaArrowLeft,
     FaDownload,
     FaPhone,
@@ -20,10 +19,12 @@ import {
     FaWallet,
     FaCircleInfo,
     FaBuilding,
-    FaCalendarDays,
     FaTag,
     FaBoxOpen
 } from "react-icons/fa6";
+
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 import { useCurrency } from "@/context/CurrencyContext";
 import FaderInAnimation from "@/Hooks/FaderInAnimation";
@@ -117,7 +118,7 @@ export default function OrderDetailContent() {
             cellClassName: "text-right"
         },
         {
-            header: "Tax",
+            header: "VAT",
             cell: (item) => (
                 <div className="flex flex-col items-end">
                     <span className="text-text/80 text-sm sm:text-base font-medium">
@@ -151,191 +152,164 @@ export default function OrderDetailContent() {
 
     const orderId = searchParams.get("orderId");
 
-    const handleDownloadInvoice = async () => {
-    if (!orderData) return;
+    const handleDownloadInvoice = () => {
+        if (!orderData) return;
 
-    // ✅ dynamic imports (fix build issue)
-    const jsPDFModule = await import("jspdf");
-    const autoTableModule = await import("jspdf-autotable");
+        const doc = new jsPDF();
 
-    const jsPDF = jsPDFModule.default;
-    const autoTable = autoTableModule.default;
+        // Header
+        doc.setFontSize(22);
+        doc.setTextColor(41, 128, 185);
+        doc.text("INVOICE", 14, 22);
 
-    const doc = new jsPDF();
-
-    // Header
-    doc.setFontSize(22);
-    doc.setTextColor(41, 128, 185);
-    doc.text("INVOICE", 14, 22);
-
-    doc.setFontSize(10);
-    doc.setTextColor(100);
-
-    const invoiceNum = orderData?.order?.invoiceNumber || "N/A";
-    const orderIdVal = orderData?.order?.id || "N/A";
-    const dateVal = orderData?.order?.transactionDate
-        ? new Date(orderData.order.transactionDate).toLocaleString()
-        : "N/A";
-
-    doc.text(`Invoice Number: ${invoiceNum}`, 14, 32);
-    doc.text(`Order ID: #${orderIdVal}`, 14, 38);
-    doc.text(`Date: ${dateVal}`, 14, 44);
-
-    // Seller Details
-    if (aboutData) {
-        doc.setFontSize(12);
-        doc.setTextColor(0);
-        doc.text("Seller Information:", 100, 22);
         doc.setFontSize(10);
         doc.setTextColor(100);
-        doc.text(`${aboutData.companyName || "Prolixus"}`, 100, 32);
-        const aboutAddress = doc.splitTextToSize(aboutData.address || "N/A", 90);
-        doc.text(aboutAddress, 100, 38);
-        const addressHeight = aboutAddress.length * 5;
-        doc.text(`Email: ${aboutData.email || "N/A"}`, 100, 38 + addressHeight);
-        doc.text(`Phone: ${aboutData.phone || aboutData.mobile || "N/A"}`, 100, 44 + addressHeight);
-    }
 
-    // Customer Details
-    doc.setFontSize(12);
-    doc.setTextColor(0);
-    doc.text("Customer Details:", 14, 56);
-    doc.setFontSize(10);
-    doc.setTextColor(100);
-    doc.text(`Name: ${orderData?.customer?.name || "N/A"}`, 14, 64);
-    doc.text(`Email: ${orderData?.customer?.email || "N/A"}`, 14, 70);
+        const invoiceNum = orderData?.order?.invoiceNumber || "N/A";
+        const orderIdVal = orderData?.order?.id || "N/A";
+        const dateVal = orderData?.order?.transactionDate
+            ? new Date(orderData.order.transactionDate).toLocaleString()
+            : "N/A";
 
-    let promoY = 76;
-    if (orderData?.order?.couponCode) {
-        doc.text(`Promo Code: ${orderData.order.couponCode}`, 14, promoY);
-        promoY += 6;
-    }
-    if (orderData?.order?.affiliateCustomerCode) {
-        doc.text(`Affiliate Code: ${orderData.order.affiliateCustomerCode}`, 14, promoY);
-        promoY += 6;
-    }
-    if (orderData?.order?.walletAmount > 0) {
-        const walletStr = formatPrice(orderData.order.walletAmount).replace(/&nbsp;/g, ' ');
-        doc.text(`Paid via Wallet: ${walletStr}`, 14, promoY);
-    }
+        doc.text(`Invoice Number: #${invoiceNum} `, 14, 32);
+        doc.text(`Date: ${dateVal} `, 14, 38);
 
-    // Delivery Address
-    doc.setFontSize(12);
-    doc.setTextColor(0);
-    doc.text("Delivery Address:", 100, 56);
-    doc.setFontSize(10);
-    doc.setTextColor(100);
+        // Seller Details
+        if (aboutData) {
+            doc.setFontSize(12);
+            doc.setTextColor(0);
+            doc.text("Seller Information:", 100, 22);
+            doc.setFontSize(10);
+            doc.setTextColor(100);
+            doc.text(`${aboutData.companyName || "Prolixus"} `, 100, 32);
+            const aboutAddress = doc.splitTextToSize(aboutData.address || "N/A", 90);
+            doc.text(aboutAddress, 100, 38);
+            const addressHeight = aboutAddress.length * 5;
+            doc.text(`Email: ${aboutData.email || "N/A"} `, 100, 38 + addressHeight);
+            doc.text(`Phone: ${aboutData.phone || aboutData.mobile || "N/A"} `, 100, 44 + addressHeight);
+        }
 
-    let addressText = "N/A";
-    const dStreet = orderData?.order?.deliveryStreet || orderData?.deliveryStreet;
-    const dCity = orderData?.order?.deliveryCity || orderData?.deliveryCity;
-    const dPostCode = orderData?.order?.deliveryPostCode || orderData?.deliveryPostCode;
-    const dCountryName = orderData?.deliveryCountry?.name || "";
+        // Customer Details
+        doc.setFontSize(12);
+        doc.setTextColor(0);
+        doc.text("Customer Details:", 14, 56);
+        doc.setFontSize(10);
+        doc.setTextColor(100);
+        doc.text(`Name: ${orderData?.customer?.name || "N/A"} `, 14, 64);
+        doc.text(`Email: ${orderData?.customer?.email || "N/A"} `, 14, 70);
 
-    const parts = [dStreet, dCity, dPostCode, dCountryName].filter(Boolean);
+        let promoY = 76;
+        if (orderData?.order?.couponCode) {
+            doc.text(`Promo Code: ${orderData.order.couponCode} `, 14, promoY);
+            promoY += 6;
+        }
+        if (orderData?.order?.affiliateCustomerCode) {
+            doc.text(`Affiliate Code: ${orderData.order.affiliateCustomerCode} `, 14, promoY);
+            promoY += 6;
+        }
+        if (orderData?.order?.walletAmount > 0) {
+            const walletStr = formatPrice(orderData.order.walletAmount).replace(/&nbsp;/g, ' ');
+            doc.text(`Paid via Wallet: ${walletStr} `, 14, promoY);
+        }
 
-    if (parts.length > 0) {
-        addressText = parts.join(", ");
-    } else {
-        const addrObj = orderData?.deliveryAddress || orderData?.order?.deliveryAddress || orderData?.customer?.address || orderData?.order?.shippingAddress || orderData?.shippingAddress;
+        // Delivery Address
+        doc.setFontSize(12);
+        doc.setTextColor(0);
+        doc.text("Delivery Address:", 100, 56);
+        doc.setFontSize(10);
+        doc.setTextColor(100);
 
-        if (typeof addrObj === 'string') {
-            addressText = addrObj;
-        } else if (addrObj && typeof addrObj === 'object') {
-            const legacyParts = [
-                addrObj.firstName ? `${addrObj.firstName} ${addrObj.lastName || ''}`.trim() : null,
-                addrObj.street,
-                addrObj.addressLine1,
-                addrObj.addressLine2,
-                addrObj.city,
-                addrObj.state,
-                addrObj.zipCode,
-                addrObj.country
-            ].filter(Boolean);
+        let addressText = "N/A";
+        const dStreet = orderData?.order?.deliveryStreet || orderData?.deliveryStreet;
+        const dCity = orderData?.order?.deliveryCity || orderData?.deliveryCity;
+        const dPostCode = orderData?.order?.deliveryPostCode || orderData?.deliveryPostCode;
+        const dCountryName = orderData?.deliveryCountry?.name || "";
 
-            if (legacyParts.length > 0) {
-                addressText = legacyParts.join(", ");
+        const parts = [
+            dStreet,
+            dCity,
+            dPostCode,
+            dCountryName
+        ].filter(Boolean);
+
+        if (parts.length > 0) {
+            addressText = parts.join(", ");
+        } else {
+            const addrObj = orderData?.deliveryAddress || orderData?.order?.deliveryAddress || orderData?.customer?.address || orderData?.order?.shippingAddress || orderData?.shippingAddress;
+            if (typeof addrObj === 'string') {
+                addressText = addrObj;
+            } else if (addrObj && typeof addrObj === 'object') {
+                const legacyParts = [
+                    addrObj.firstName ? `${addrObj.firstName} ${addrObj.lastName || ''} `.trim() : null,
+                    addrObj.street,
+                    addrObj.addressLine1,
+                    addrObj.addressLine2,
+                    addrObj.city,
+                    addrObj.state,
+                    addrObj.zipCode,
+                    addrObj.country
+                ].filter(Boolean);
+                if (legacyParts.length > 0) {
+                    addressText = legacyParts.join(", ");
+                }
             }
         }
-    }
 
-    const splitAddress = doc.splitTextToSize(addressText, 90);
-    doc.text(splitAddress, 100, 64);
+        const splitAddress = doc.splitTextToSize(addressText, 90);
+        doc.text(splitAddress, 100, 64);
 
-    // Table
-    const tableColumn = ["Product", "Brand", "Qty", "Unit Price", "Tax", "Total"];
-    const tableRows = [];
+        // Table
+        const tableColumn = ["Product", "Brand", "Qty", "Unit Price", "VAT", "Total"];
+        const tableRows = [];
 
-    orderData?.orderDetails?.forEach(item => {
-        const productInfo = item.item || {};
+        orderData?.orderDetails?.forEach(item => {
+            const productInfo = item.item || {};
 
-        const netUnitPrice = item.totalNetPrice && item.quantity
-            ? item.totalNetPrice / item.quantity
-            : item.unitPrice || 0;
+            // Calculate Unit Price before tax
+            const netUnitPrice = item.totalNetPrice && item.quantity
+                ? item.totalNetPrice / item.quantity
+                : item.unitPrice || 0;
 
-        const unitPriceStr = formatPrice(netUnitPrice).replace(/&nbsp;/g, ' ');
-        const taxStr = formatPrice(item.vatAmount || 0).replace(/&nbsp;/g, ' ');
-        const totalPriceStr = formatPrice(item.totalPrice || item.totalNetPrice || 0).replace(/&nbsp;/g, ' ');
+            // Basic cleanup of HTML spaces
+            const unitPriceStr = formatPrice(netUnitPrice).replace(/&nbsp;/g, ' ');
+            const taxStr = formatPrice(item.vatAmount || 0).replace(/&nbsp;/g, ' ');
+            const totalPriceStr = formatPrice(item.totalPrice || item.totalNetPrice || 0).replace(/&nbsp;/g, ' ');
 
-        tableRows.push([
-            productInfo.name || "Unknown Product",
-            productInfo.brandName || "N/A",
-            item.quantity || 1,
-            unitPriceStr,
-            taxStr,
-            totalPriceStr
-        ]);
-    });
+            const productData = [
+                productInfo.name || "Unknown Product",
+                productInfo.brandName || "N/A",
+                item.quantity || 1,
+                unitPriceStr,
+                taxStr,
+                totalPriceStr
+            ];
+            tableRows.push(productData);
+        });
 
-    autoTable(doc, {
-        head: [tableColumn],
-        body: tableRows,
-        startY: Math.max(85, 64 + (splitAddress.length * 5)),
-        headStyles: { fillColor: [41, 128, 185], textColor: 255 },
-        alternateRowStyles: { fillColor: [245, 245, 245] },
-        styles: { fontSize: 10, cellPadding: 5 }
-    });
+        autoTable(doc, {
+            head: [tableColumn],
+            body: tableRows,
+            startY: Math.max(85, 64 + (splitAddress.length * 5)),
+            headStyles: { fillColor: [41, 128, 185], textColor: 255 },
+            alternateRowStyles: { fillColor: [245, 245, 245] },
+            styles: { fontSize: 10, cellPadding: 5 }
+        });
 
-    const finalY = doc.lastAutoTable.finalY + 10;
+        const finalY = doc.lastAutoTable.finalY + 10;
 
-    // Total
-    doc.setFontSize(12);
-    doc.setTextColor(0);
-    const finalTotalStr = formatPrice(orderData?.order?.totalNetAmount || 0).replace(/&nbsp;/g, ' ');
-    doc.text(`Total Amount: ${finalTotalStr}`, 14, finalY);
+        // Total
+        doc.setFontSize(12);
+        doc.setTextColor(0);
+        const finalTotalStr = formatPrice(orderData?.order?.totalNetAmount || orderData?.order?.grossAmount || 0).replace(/&nbsp;/g, ' ');
+        doc.text(`Total Amount: ${finalTotalStr} `, 14, finalY);
 
-    doc.save(`Invoice_${invoiceNum !== "N/A" ? invoiceNum : orderIdVal}.pdf`);
-};
+        doc.save(`Invoice_${invoiceNum !== "N/A" ? invoiceNum : orderIdVal}.pdf`);
+    };
 
     useEffect(() => {
-
         const fetchOrder = async () => {
-
-            if (!orderId) {
-
-                try {
-
-                    const stored = sessionStorage.getItem("orderData");
-
-                    if (stored) {
-                        setOrderData(JSON.parse(stored));
-                        sessionStorage.removeItem("orderData");
-                    } else {
-                        setError("No order details found.");
-                    }
-
-                } catch {
-                    setError("Failed to parse stored order data.");
-                }
-
-                setLoading(false);
-                return;
-            }
-
             try {
-
                 setLoading(true);
-
                 const [orderResponse, aboutResponse] = await Promise.all([
                     getOrderDetails(orderId),
                     getAboutPayload()
@@ -352,20 +326,41 @@ export default function OrderDetailContent() {
                 if (aboutResponse) {
                     setAboutData(aboutResponse);
                 }
-
             } catch (err) {
                 console.error("Fetch order error:", err);
                 setError(err.message || "An error occurred while fetching order details.");
-            }
-
-            finally {
+            } finally {
                 setLoading(false);
             }
-
         };
 
-        fetchOrder();
+        const fetchAboutOnly = async () => {
+            try {
+                const aboutResponse = await getAboutPayload();
+                if (aboutResponse) {
+                    setAboutData(aboutResponse);
+                }
+            } catch (err) {
+                console.error("Fetch about error:", err);
+            }
+        };
 
+        if (orderId) {
+            fetchOrder();
+        } else {
+            try {
+                const stored = sessionStorage.getItem("orderData");
+                if (stored) {
+                    setOrderData(JSON.parse(stored));
+                    sessionStorage.removeItem("orderData");
+                } else {
+                    setError("No order details found.");
+                }
+            } catch {
+                setError("Failed to parse stored order data.");
+            }
+            fetchAboutOnly().finally(() => setLoading(false));
+        }
     }, [orderId]);
 
     useEffect(() => {
@@ -421,6 +416,34 @@ export default function OrderDetailContent() {
     return (
         <div className="min-h-screen w-full bg-gradient-to-b from-secondary/40 to-transparent px-4 sm:px-6 py-8 sm:py-12 flex flex-col items-center">
 
+            {/* TOP ACTIONS */}
+            <FaderInAnimation>
+                <div className="w-full max-w-6xl mb-8 sm:mb-12 flex flex-col sm:flex-row justify-between items-center gap-6">
+
+                    <Button
+                        onClick={() => router.push("/dashboard")}
+                        variant="outline"
+                        size="lg"
+                        leftIcon={<FaArrowLeft size={16} />}
+                        className="w-full sm:w-auto rounded-2xl border-2 border-divider font-black hover:bg-secondary/50 transition-all shadow-sm hover:shadow-md active:scale-95 py-3 sm:py-4 px-6 sm:px-8 text-primary/70"
+                    >
+                        Dashboard
+                    </Button>
+
+                    <Link href="/products" className="w-full sm:w-auto">
+                        <Button
+                            variant="primary"
+                            size="lg"
+                            leftIcon={<FaBagShopping size={18} />}
+                            className="w-full sm:w-auto rounded-2xl bg-gradient-to-r from-accent to-accent/80 shadow-2xl shadow-accent/20 hover:shadow-accent/40 hover:scale-105 hover:-translate-y-0.5 active:scale-95 transition-all font-black py-4 sm:py-5 px-10 sm:px-14 text-lg"
+                        >
+                            Continue Shopping
+                        </Button>
+                    </Link>
+
+                </div>
+            </FaderInAnimation>
+
             {/* HEADER */}
             <FaderInAnimation>
                 <div className="w-full max-w-3xl text-center space-y-6">
@@ -437,9 +460,9 @@ export default function OrderDetailContent() {
                             Order Confirmed
                         </h1>
                         <p className="text-base sm:text-lg text-text/60 font-medium">
-                            Thank you! Your order
+                            Invoice
                             <span className="text-accent font-extrabold mx-1.5 px-2 py-0.5 bg-accent/5 rounded-lg">
-                                #{orderData?.order?.id}
+                                #{orderData?.order?.invoiceNumber || orderData?.order?.id}
                             </span>
                             has been successfully placed.
                         </p>
@@ -497,15 +520,11 @@ export default function OrderDetailContent() {
 
                         <div className="text-sm space-y-2.5">
                             <div className="flex justify-between items-center group/info">
-                                <span className="text-text/50">Order ID:</span>
-                                <span className="font-bold text-primary">#{orderData?.order?.id}</span>
+                                <span className="text-text/50">Invoice No:</span>
+                                <span className="font-bold text-primary">#{orderData?.order?.invoiceNumber || orderData?.order?.id}</span>
                             </div>
                             <div className="flex justify-between items-center group/info">
-                                <span className="text-text/50">Invoice:</span>
-                                <span className="font-medium">{orderData?.order?.invoiceNumber || "N/A"}</span>
-                            </div>
-                            <div className="flex justify-between items-center group/info">
-                                <span className="text-text/50">Tax:</span>
+                                <span className="text-text/50">VAT:</span>
                                 <span className="font-medium">{formatPrice(orderData?.order?.totalVatAmount)}</span>
                             </div>
 
@@ -513,7 +532,7 @@ export default function OrderDetailContent() {
                                 <div>
                                     <span className="text-text/40 text-[10px] font-bold uppercase tracking-widest block mb-0.5">Grand Total</span>
                                     <p className="text-accent font-black text-xl leading-none">
-                                        {formatPrice(orderData?.order?.totalNetAmount)}
+                                        {formatPrice(orderData?.order?.totalNetAmount || orderData?.order?.grossAmount)}
                                     </p>
                                 </div>
                                 <FaTag className="text-accent/20 mb-1" size={16} />
@@ -608,6 +627,10 @@ export default function OrderDetailContent() {
                                         <FaPhone size={10} className="text-primary/40" />
                                         <span>{aboutData.phone}</span>
                                     </p>
+                                    <p className="text-text/60 flex items-center gap-2 text-[11px]">
+                                        <FaIdCard size={10} className="text-primary/40" />
+                                        <span>Tax Number: {aboutData.taxNumber || "N/A"}</span>
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -638,34 +661,6 @@ export default function OrderDetailContent() {
                     </div>
 
                 </div>
-
-            </div>
-
-            {/* ACTIONS */}
-            <div className="w-full max-w-2xl mt-8 flex flex-col sm:flex-row gap-4">
-
-                <Link href="/products" className="flex-1">
-                    <Button
-                        variant="primary"
-                        fullWidth
-                        size="xl"
-                        leftIcon={<FaBagShopping size={18} />}
-                        className="rounded-2xl shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all font-bold"
-                    >
-                        Continue Shopping
-                    </Button>
-                </Link>
-
-                <Button
-                    onClick={() => router.push("/dashboard")}
-                    variant="outline"
-                    fullWidth
-                    size="xl"
-                    leftIcon={<FaArrowLeft size={18} />}
-                    className="rounded-2xl border-2 font-bold hover:bg-secondary/40 transition-all"
-                >
-                    Back to Dashboard
-                </Button>
 
             </div>
 

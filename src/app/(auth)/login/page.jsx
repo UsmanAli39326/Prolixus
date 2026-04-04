@@ -9,6 +9,8 @@ import Input from "@/components/ui/Input";
 import FaderInAnimation from "@/Hooks/FaderInAnimation";
 import { apiService } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
+import Image from "next/image";
+import Toast from "@/components/ui/Toast";
 
 export default function AuthPage() {
   const router = useRouter();
@@ -51,6 +53,11 @@ export default function AuthPage() {
   const [error, setError] = useState("");
   const [fieldErrors, setFieldErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState({
+    show: false,
+    message: "",
+    type: "success",
+  });
 
   // Clear a specific field error when user types
   const clearFieldError = (field) => {
@@ -98,7 +105,7 @@ export default function AuthPage() {
       if (response?.data) {
         login(response.data, response.data?.user || null);
       }
-      
+
       if (!response?.success) {
         throw new Error(response || "Login Failed")
       }
@@ -120,6 +127,11 @@ export default function AuthPage() {
       }
 
       setError(errorMessage);
+
+      // If error indicates unverified account, redirect to OTP page
+      if (errorMessage.toLowerCase().includes("verified") || errorMessage.toLowerCase().includes("verification")) {
+        router.push(`/verify-otp?email=${encodeURIComponent(cleanEmail)}&type=signup`);
+      }
     } finally {
       setLoading(false);
     }
@@ -157,6 +169,7 @@ export default function AuthPage() {
       errors.confirmPassword = "Passwords do not match";
     }
 
+
     if (!agreeTerms) {
       errors.agreeTerms = "You must agree to the terms and conditions";
     }
@@ -178,8 +191,9 @@ export default function AuthPage() {
       if (!response?.success) {
         throw new Error(response || "Registration Failed")
       }
-      setIsLogin(true);
-      setError("");
+
+      // Redirect to OTP verification instead of just showing success toast and staying
+      router.push(`/verify-otp?email=${encodeURIComponent(cleanRegEmail)}&type=signup`);
     } catch (err) {
       const raw = err.message || "";
       let friendly = "Registration failed. Please try again.";
@@ -254,7 +268,7 @@ export default function AuthPage() {
                   </div>
 
                   <Link href="/" className="flex justify-end w-full">
-                    <Button variant="ghost">Back To Home</Button>
+                    <Button variant="ghost">Back To Shop</Button>
                   </Link>
 
                   <h1 className="text-3xl font-bold font-accent text-center text-primary">
@@ -402,7 +416,7 @@ export default function AuthPage() {
                   </div>
 
                   <Link href="/" className="flex justify-end w-full">
-                    <Button variant="ghost">Back To Home</Button>
+                    <Button variant="ghost">Back To Shop</Button>
                   </Link>
 
                   <h1 className="text-3xl font-bold font-accent text-center text-primary">
@@ -586,7 +600,7 @@ export default function AuthPage() {
             >
               <div
                 className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-                style={{ backgroundImage: "url('/images/bg.jpg')" }}
+                style={{ backgroundImage: "url('/images/new/Deep navy paper texture close-up.png')" }}
               />
 
               {/* Overlay */}
@@ -601,9 +615,7 @@ export default function AuthPage() {
                 `}
               >
                 <div className={`flex items-center gap-3 ${!isLogin ? "flex-row-reverse" : ""}`}>
-                  <div className="w-10 h-10 rounded-xl border-2 border-dashed border-white/60 flex items-center justify-center bg-white/10">
-                    <span className="text-xs text-white/70">Logo</span>
-                  </div>
+                  <Image src="/images/new/Prolixus-Logo-white.png" alt="Logo" width={40} height={40} />
                   <div className={`leading-tight ${!isLogin ? "text-right" : ""}`}>
                     <div className="text-white font-semibold tracking-wide">Prolixus</div>
                     <div className="text-white/70 text-xs">Secure access portal</div>
@@ -641,6 +653,12 @@ export default function AuthPage() {
           </div>
         </div>
       </div>
+      <Toast
+        show={toast.show}
+        message={toast.message}
+        type={toast.type}
+        onClose={() => setToast((prev) => ({ ...prev, show: false }))}
+      />
     </FaderInAnimation>
   );
 }

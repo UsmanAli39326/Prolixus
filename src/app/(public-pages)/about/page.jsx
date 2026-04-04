@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import AboutPageHeader from '@/components/layout/PageHeader';
 
 export const metadata = {
@@ -14,8 +15,8 @@ import About from '@/components/layout/About Us/About';
 export default function AboutPage() {
   return (
     <>
-      <AboutPageHeader title="About" subtitle="us"/>
-      <About/>
+      <AboutPageHeader title="About" subtitle="us" />
+      <About />
       {/* <OurApproach/> */}
       {/* <OurKeyPoints/> */}
       {/* <OurBenefits/> */}

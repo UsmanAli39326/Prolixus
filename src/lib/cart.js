@@ -62,7 +62,7 @@ export function calcCartTotals(cartItems = []) {
     const vatPercentage = allVatPercentages.length > 0 ? allVatPercentages[0] : 0;
 
     const shipping = 0; // Shipping is always free
-    const total = r(subtotal + vatAmount + shipping);
+    const total = r(subtotal + shipping);
 
     return {
         subtotal,

@@ -1,4 +1,16 @@
-export default function PageHeader({ title, subtitle }) {
+import React from "react";
+import Link from "next/link";
+
+export default function PageHeader({ title, subtitle, breadcrumbs }) {
+  // If no breadcrumbs are provided, fallback to default Home / {title}
+  let displayBreadcrumbs = breadcrumbs || [
+    { label: "Home", href: "/" },
+    { label: title, href: null },
+  ];
+
+  // Filter out any breadcrumbs that don't have a label to prevent trailing separators
+  displayBreadcrumbs = displayBreadcrumbs.filter(crumb => crumb && crumb.label);
+
   return (
     <section className="page-header-section bg-(--primary-color) h-96 flex justify-center items-center  text-center bg-fixed bg-center bg-cover" style={{ backgroundImage: "url('/images/page-header-bg.jpg')" }}>
       <div className="container mx-auto px-4">
@@ -12,20 +24,27 @@ export default function PageHeader({ title, subtitle }) {
           </h1>
 
           {/* Breadcrumb */}
-          <nav className="mt-6 flex justify-center">
+          <nav className="mt-6 flex justify-center" aria-label="Breadcrumb">
             <ol className="flex items-center gap-2 text-sm font-default text-(--white-color)/80">
-              <li>
-                <a
-                  href="/"
-                  className="hover:text-(--accent-color) transition"
-                >
-                  Home
-                </a>
-              </li>
-              <li className="opacity-60">/</li>
-              <li className="text-(--accent-color) font-semibold">
-                {title}
-              </li>
+              {displayBreadcrumbs.map((crumb, index) => (
+                <React.Fragment key={index}>
+                  {index > 0 && <li className="opacity-60">/</li>}
+                  <li>
+                    {crumb.href ? (
+                      <Link
+                        href={crumb.href}
+                        className="hover:text-(--accent-color) transition"
+                      >
+                        {crumb.label}
+                      </Link>
+                    ) : (
+                      <span className="text-(--accent-color) font-semibold">
+                        {crumb.label}
+                      </span>
+                    )}
+                  </li>
+                </React.Fragment>
+              ))}
             </ol>
           </nav>
         </div>

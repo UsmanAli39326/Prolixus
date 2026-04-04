@@ -1,4 +1,4 @@
-import { getProductById, getAllProducts } from "@/app/api/products/products";
+import { getProductById } from "@/app/api/products/products";
 import {
   ProductImageGallery,
   ProductInfo,
@@ -7,19 +7,6 @@ import {
 } from "@/components/layout/Ecommerce/ProductPage";
 import FaderInAnimation from "@/Hooks/FaderInAnimation";
 
-// export const revalidate = 600; // ISR: revalidate product page every 10 minutes
-
-export async function generateStaticParams() {
-  // Fetch the first few pages or a high limit to prerender popular ones
-  // We will fetch up to 100 products for static generation
-  const { products } = await getAllProducts(1, 100);
-
-  if (!products || products.length === 0) return [];
-
-  return products.map((product) => ({
-    slug: String(product.id),
-  }));
-}
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
@@ -69,9 +56,11 @@ export default async function ProductPage({ params }) {
     badges: product.badge
       ? [{ label: product.badge, type: "default" }]
       : [],
-    images: product.image
-      ? [product.image]
-      : ["/images/new/prolixus-nutrients.jpeg"],
+    images: (() => {
+      const allImgs = [product.image, ...(product.itemImages || [])].filter(Boolean);
+      const unique = Array.from(new Set(allImgs));
+      return unique.length > 0 ? unique : ["/images/new/prolixus-nutrients.jpeg"];
+    })(),
     heroImage: product.image,
     accordionItems: [
       {
@@ -93,7 +82,7 @@ export default async function ProductPage({ params }) {
   return (
     <div className="bg-(--secondary-color) overflow-hidden">
       <div className="mx-auto max-w-7xl px-4 py-8">
-        <div className="grid gap-8 lg:grid-cols-2">
+        <div className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr] items-start">
           <FaderInAnimation direction="left" delay={0.1} distance={30}>
             <ProductImageGallery
               images={extendedProduct.images}

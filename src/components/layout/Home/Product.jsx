@@ -135,7 +135,7 @@ export default function ProductsSection({ products = [] }) {
 
         {/* Product Grid */}
         <FaderInAnimation direction="up" delay={0.2} duration={0.8}>
-          <ProductGrid products={products} />
+          <ProductGrid products={products} columns={4} />
         </FaderInAnimation>
 
       </div>

@@ -1,10 +1,12 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import FaderInAnimation from "@/Hooks/FaderInAnimation";
+import { apiService } from "@/lib/api";
+import Toast from "@/components/ui/Toast";
 
 export default function ResetPasswordPage() {
     const router = useRouter();
@@ -12,6 +14,21 @@ export default function ResetPasswordPage() {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+    const [toast, setToast] = useState({
+        show: false,
+        message: "",
+        type: "success",
+    });
+    const [hasToken, setHasToken] = useState(false);
+
+    useEffect(() => {
+        const token = sessionStorage.getItem("reset_token");
+        if (!token) {
+            router.replace("/login");
+        } else {
+            setHasToken(true);
+        }
+    }, [router]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -34,16 +51,45 @@ export default function ResetPasswordPage() {
 
         setLoading(true);
 
-        // Clear session storage
-        sessionStorage.removeItem("reset_method");
-        sessionStorage.removeItem("reset_value");
+        try {
+            const email = sessionStorage.getItem("reset_email");
+            const token = sessionStorage.getItem("reset_token");
 
-        // Simulate API call
-        setTimeout(() => {
+            if (!email || !token) {
+                throw new Error("Session expired. Please try the forgot password flow again.");
+            }
+
+            const response = await apiService.post("/Account/reset-password", {
+                email: email,
+                token: token,
+                newPassword: newPassword
+            });
+
+            if (response?.success || response) {
+                setToast({
+                    show: true,
+                    message: "Password reset successful! You can now login.",
+                    type: "success"
+                });
+
+                // Clear session storage
+                sessionStorage.removeItem("reset_email");
+                sessionStorage.removeItem("reset_token");
+
+                setTimeout(() => {
+                    router.push("/login");
+                }, 2000);
+            }
+        } catch (err) {
+            setError(err.message || "Failed to reset password. Please try again.");
+        } finally {
             setLoading(false);
-            router.push("/login");
-        }, 1000);
+        }
     };
+
+    if (!hasToken) {
+        return null;
+    }
 
     return (
         <FaderInAnimation direction="up">
@@ -166,6 +212,12 @@ export default function ResetPasswordPage() {
 
                     </div>
                 </div>
+                <Toast
+                    show={toast.show}
+                    message={toast.message}
+                    type={toast.type}
+                    onClose={() => setToast((prev) => ({ ...prev, show: false }))}
+                />
             </div>
         </FaderInAnimation>
     );

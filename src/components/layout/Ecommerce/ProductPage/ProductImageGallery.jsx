@@ -16,13 +16,13 @@ export default function ProductImageGallery({ images = [], productTitle = "" }) 
     const mainImage = displayImages[selectedIndex];
 
     return (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 max-w-[550px]">
             {/* Main Image */}
-            <div className="relative aspect-square overflow-hidden rounded-2xl bg-(--secondary-color)">
+            <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-(--secondary-color) max-h-[550px]">
                 <img
                     src={mainImage}
                     alt={productTitle}
-                    className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+                    className="h-full w-full object-contain transition-transform duration-500 hover:scale-105"
                 />
             </div>
 

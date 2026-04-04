@@ -1,10 +1,12 @@
 import BlogCard from "@/components/layout/Blog/BlogCard";
 import RevealInAnimation from "@/Hooks/RevealInAnimation";
 import FaderInAnimation from "@/Hooks/FaderInAnimation";
-import { ALL_POSTS } from "@/lib/blogData";
+import { getAllPosts } from "@/lib/blogData";
 
 
-export default function BlogListing() {
+export default async function BlogListing() {
+    const posts = await getAllPosts();
+
     return (
         <section className="blog-listing-section pt-16 pb-24">
             <div className="container mx-auto px-4">
@@ -34,7 +36,7 @@ export default function BlogListing() {
 
                 {/* Posts grid */}
                 <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                    {ALL_POSTS.map((post, idx) => (
+                    {posts.map((post, idx) => (
                         <BlogCard key={idx} post={post} index={idx} />
                     ))}
                 </div>

@@ -1,10 +1,11 @@
 import { notFound } from "next/navigation";
 import PageHeader from "@/components/layout/PageHeader";
 import BlogDetail from "@/components/layout/Blog/BlogDetail";
-import { getPostById, ALL_POSTS } from "@/lib/blogData";
+import { getPostById, getAllPosts } from "@/lib/blogData";
 
 export async function generateStaticParams() {
-    return await ALL_POSTS.map((post) => ({ id: String(post.id) }));
+    const posts = await getAllPosts();
+    return posts.map((post) => ({ id: String(post.id) }));
 }
 
 export async function generateMetadata({ params }) {
@@ -24,7 +25,15 @@ export default async function BlogDetailPage({ params }) {
 
     return (
         <>
-            <PageHeader title={post.category} subtitle="Artikel" />
+            <PageHeader 
+                title={post.category || "Blog"} 
+                subtitle="Artikel" 
+                breadcrumbs={[
+                    { label: "Home", href: "/" },
+                    { label: "Blog", href: "/blog" },
+                    { label: post.category || "Artikel", href: null }
+                ]}
+            />
             <BlogDetail post={post} />
         </>
     );

@@ -1,3 +1,5 @@
+
+
 // const products = [
 //   {
 //     id: "p1",
@@ -75,16 +77,21 @@ import { apiService } from "@/lib/api";
 // fetch all products
 export async function getAllProducts(page = 1, size = 20) {
   try {
+
+
     const response = await apiService.get(
       `/Configuration/items?pageNumber=${page}&pageSize=${size}`,
       {},
-      // { next: { revalidate: 3600 } }
+      { cache: 'no-store' }
     );
+
+    console.log(`[API] Fetching all products (Page: ${page}, Size: ${size}) - Cache: no-store`);
     if (!response?.success || !response?.data) {
       return { products: [], pagination: null };
     }
 
     const data = response.data;
+    console.log(data);
     const products = data.items.map((item) => ({
       id: item.itemId,
       title: item.itemName,
@@ -94,6 +101,7 @@ export async function getAllProducts(page = 1, size = 20) {
       description: item.itemDisplayName,
       badge: item.isItemOutOfStock ? "Out of Stock" : null,
       categoryId: item.categoryId,
+      categoryName: item.categoryName,
       vatPercentage: item.vatPercentage ?? 0,
 
       image: item.thumbnailUrl
@@ -125,7 +133,7 @@ export async function getProductById(id) {
     const response = await apiService.get(
       `/Configuration/items/${id}`,
       {},
-      // { next: { revalidate: 600 } }
+      { cache: 'no-store' }
     );
     if (!response?.success || !response?.data) return null;
 
@@ -140,11 +148,15 @@ export async function getProductById(id) {
       description: item.description ?? "No description available",
       badge: item.isItemOutOfStock ? "Out of Stock" : null,
       categoryId: item.categoryId,
+      categoryName: item.categoryName,
       vatPercentage: item.vatPercentage ?? 0,
       image:
         item.fileUrl
           ? `https://admin.aa-consultants.de${item.fileUrl}`
           : "/images/placeholder.png",
+      itemImages: item.itemImages
+        ? item.itemImages.map(img => `https://admin.aa-consultants.de${img.fileUrl}`)
+        : []
     };
   } catch (error) {
     console.error("Single Product API Error:", error);

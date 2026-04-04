@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import Link from "next/link";
-import { HiChevronLeft, HiLockClosed, HiCheckCircle } from "react-icons/hi";
+import { HiChevronLeft, HiLockClosed, HiCheckCircle, HiCreditCard } from "react-icons/hi";
 import Button from "@/components/ui/Button";
 import FaderInAnimation from "@/Hooks/FaderInAnimation";
 import RevealInAnimation from "@/Hooks/RevealInAnimation";
@@ -31,7 +31,7 @@ export default function PaymentForm({
     const { clearCart } = useCart();
     const { isLoggedIn } = useAuth();
     const { currency, formatPrice } = useCurrency();
-    const { setOrderCompleted, totals } = useCheckout();
+    const { setOrderCompleted, totals, walletBalance, isAuthenticated } = useCheckout();
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const [orderData, setOrderData] = useState(null);
@@ -55,6 +55,19 @@ export default function PaymentForm({
     // Called when the gateway's checkout component is ready
     const handleGatewayReady = (handler) => {
         paymentHandlerRef.current = handler;
+    };
+
+    const handleWalletToggle = (checked) => {
+        if (checked) {
+            updateFormData({
+                useWallet: true,
+                walletAmount: walletBalance,
+                couponCode: "",
+                discountAmount: 0,
+            });
+        } else {
+            updateFormData({ useWallet: false, walletAmount: 0 });
+        }
     };
 
     // Submit handler — delegates to the active gateway's payment handler
@@ -133,6 +146,43 @@ export default function PaymentForm({
                         </div>
                     </div>
                 </FaderInAnimation>
+
+                {/* Wallet Balance (only for authenticated users with a balance) */}
+                {isAuthenticated && walletBalance > 0 && (
+                    <FaderInAnimation direction="up" delay={0.15}>
+                        <div className="bg-accent/5 border border-accent/20 rounded-2xl p-6 mb-2">
+                            <label className="flex items-center gap-4 cursor-pointer group">
+                                <input
+                                    type="checkbox"
+                                    checked={formData.useWallet}
+                                    onChange={(e) => handleWalletToggle(e.target.checked)}
+                                    className="size-6 rounded-lg border-2 border-divider accent-accent cursor-pointer transition-all"
+                                />
+                                <div className="flex-1 flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <div className="size-10 rounded-full bg-accent/10 flex items-center justify-center text-accent">
+                                            <HiCreditCard className="text-xl" />
+                                        </div>
+                                        <div>
+                                            <span className="block font-bold text-primary text-lg group-hover:text-accent transition-colors">
+                                                Use Wallet Balance
+                                            </span>
+                                            <span className="text-xs text-text/50 font-accent">
+                                                Apply your available funds to this order
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div className="text-right">
+                                        <span className="block text-xl font-black text-accent">
+                                            {formatPrice(walletBalance)}
+                                        </span>
+                                        <span className="text-[10px] uppercase tracking-widest font-bold text-text/30">Available</span>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                    </FaderInAnimation>
+                )}
 
                 {/* Dynamic Payment Method Selector */}
                 <FaderInAnimation direction="up" delay={0.2}>

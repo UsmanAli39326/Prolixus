@@ -19,6 +19,8 @@ import { apiService } from "@/lib/api";
 // payload required by the backend API contract.
 // ---------------------------------------------------------------------------
 export function buildGuestOrderPayload(formData, cartItems, currency = "EURO", totals = {}, user = null) {
+
+    console.log("payload")
     // Helper: round a number to 2 decimal places
     const r = (n) => parseFloat((n ?? 0).toFixed(2));
 
@@ -85,7 +87,7 @@ export default function CheckoutWizard() {
     const router = useRouter();
     const { cartItems, isInitialized } = useCart();
     const { currency, formatPrice } = useCurrency();
-    const { formData, updateFormData, totals, user, isAuthenticated, setOrderCompleted } = useCheckout();
+    const { formData, updateFormData, totals, user, isAuthenticated, setOrderCompleted, orderCompleted } = useCheckout();
     const [currentStep, setCurrentStep] = useState(0);
     const [orderData, setOrderData] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -101,12 +103,17 @@ export default function CheckoutWizard() {
     const [selectedMethod, setSelectedMethod] = useState(null);
     const hasAutoSelected = useRef(false);
 
-    // Redirect to cart if empty (only after initialization)
+    // Reset order completion status when entering checkout
     useEffect(() => {
-        if (isInitialized && cartItems.length === 0) {
+        setOrderCompleted(false);
+    }, [setOrderCompleted]);
+
+    // Redirect to cart if empty (only after initialization and if order is not completed)
+    useEffect(() => {
+        if (isInitialized && cartItems.length === 0 && !orderCompleted) {
             router.push("/cart");
         }
-    }, [isInitialized, cartItems, router]);
+    }, [isInitialized, cartItems, router, orderCompleted]);
 
     // When methods load, auto-select the first one if none selected
     useEffect(() => {

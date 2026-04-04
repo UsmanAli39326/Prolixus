@@ -18,9 +18,9 @@ export default function ProductHeroImage({
     }
 
     return (
-        <section className="my-8 w-full">
+        <section className="my-8 w-full flex justify-center px-4">
             <div
-                className="relative overflow-hidden rounded-2xl bg-(--secondary-color)"
+                className="relative overflow-hidden rounded-2xl bg-(--secondary-color) w-full max-w-[1200px] max-h-[500px]"
                 style={{ aspectRatio }}
             >
                 <img

@@ -7,7 +7,7 @@ import { apiService } from "@/lib/api";
  */
 export async function getCountries() {
     try {
-        const response = await apiService.get("/Configuration/countries");
+        const response = await apiService.get("/Configuration/countries", {}, { cache: 'no-store' });
 
         if (!response?.success || !response?.data) return [];
 

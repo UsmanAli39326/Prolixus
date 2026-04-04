@@ -29,16 +29,12 @@ export default function OrderConfirmation({ orderData, formatPrice, isLoggedIn }
                     {/* Order Details */}
                     <div className="px-8 py-6 space-y-4">
                         <div className="flex justify-between items-center py-3 border-b border-divider">
-                            <span className="text-sm text-text/60 font-accent">Order ID</span>
-                            <span className="text-sm font-bold text-primary">#{orderData?.orderId}</span>
-                        </div>
-                        <div className="flex justify-between items-center py-3 border-b border-divider">
                             <span className="text-sm text-text/60 font-accent">Invoice Number</span>
-                            <span className="text-sm font-bold text-primary">{orderData?.invoiceNumber}</span>
+                            <span className="text-sm font-bold text-primary">#{orderData?.invoiceNumber || orderData?.orderId}</span>
                         </div>
                         <div className="flex justify-between items-center py-3 border-b border-divider">
                             <span className="text-sm text-text/60 font-accent">Total Amount</span>
-                            <span className="text-sm font-bold text-accent">{formatPrice(orderData?.grossAmount)}</span>
+                            <span className="text-sm font-bold text-accent">{formatPrice(orderData?.totalNetAmount || orderData?.grossAmount)}</span>
                         </div>
                         <div className="flex justify-between items-center py-3">
                             <span className="text-sm text-text/60 font-accent">Payment Status</span>

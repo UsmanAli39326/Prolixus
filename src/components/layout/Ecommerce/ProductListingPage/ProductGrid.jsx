@@ -2,15 +2,17 @@ import React from "react";
 import ProductCard from "./ProductCard";
 import FaderInAnimation from "@/Hooks/FaderInAnimation";
 
-export default function ProductGrid({ products = [] }) {
+export default function ProductGrid({ products = [], columns = 3 }) {
+  const gridCols = columns === 4 ? "lg:grid-cols-4" : "lg:grid-cols-3";
+
   return (
     <div
-      className="
+      className={`
         grid grid-cols-1 gap-4
         sm:grid-cols-2 sm:gap-5
-        lg:grid-cols-3 lg:gap-6
+        ${gridCols} lg:gap-6
         items-start
-      "
+      `}
     >
       {products.map((p, idx) => (
         <FaderInAnimation

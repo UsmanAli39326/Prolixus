@@ -34,11 +34,8 @@ export default function ForgotPasswordPage() {
         try {
             await apiService.post("/Account/forgot-password", { email: value });
 
-            // Store for OTP page   
-            sessionStorage.setItem("reset_method", "email");
-            sessionStorage.setItem("reset_value", value);
-
-            router.push("/forgot-password/verify-otp");
+            // Redirect to unified OTP verification page
+            router.push(`/verify-otp?email=${encodeURIComponent(value)}&type=reset`);
         } catch (err) {
             setError(err.message || "Failed to send verification code. Please try again.");
         } finally {

@@ -10,7 +10,14 @@ export const metadata = {
 export default function BlogPage() {
     return (
         <>
-            <PageHeader title="Unser" subtitle="Blog" />
+            <PageHeader 
+                title="Unser" 
+                subtitle="Blog" 
+                breadcrumbs={[
+                    { label: "Home", href: "/" },
+                    { label: "Blog", href: null }
+                ]}
+            />
             <BlogListing />
         </>
     );

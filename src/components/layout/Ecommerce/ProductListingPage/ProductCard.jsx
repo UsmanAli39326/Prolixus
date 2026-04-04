@@ -41,6 +41,11 @@ export default function ProductCard({ product }) {
       </div>
 
       <div className="flex grow flex-col p-4">
+        {product.categoryName && (
+          <span className="mb-1 text-[10px] font-bold uppercase tracking-wider text-(--accent-color)/80">
+            {product.categoryName}
+          </span>
+        )}
         <h3 className="font-accent text-base font-semibold h-11 line-clamp-2 leading-snug text-(--primary-color)">
           {product.title}
         </h3>

@@ -109,7 +109,7 @@ export default async function MainFooter() {
         {/* ================= BOTTOM BAR ================= */}
         <div className="pt-10 flex flex-col md:flex-row justify-between items-center gap-6">
           <p className="text-(--white-color)/40 font-default text-sm">
-            © {new Date().getFullYear()} {about?.companyName || "Prolixus"}. All rights reserved.
+            © {new Date().getFullYear()} {about?.companyName || "Prolixus"}. All rights reserved. | Powered by <Link href="https://devtechnoz.com/" target="_blank" className="hover:text-(--accent-color) transition-colors font-semibold">DevTechNoz</Link>
           </p>
 
           <div className="flex items-center gap-8 font-default">

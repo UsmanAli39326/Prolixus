@@ -4,9 +4,7 @@ export async function getShopMenus() {
   try {
     const response = await apiService.get("/Configuration/shopmenus");
 
-
     if (!response?.success) return [];
-
     // Filter + Sort + Clean Data
     const menus = response.data
       .filter((m) => m.isActive) // only active

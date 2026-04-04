@@ -9,10 +9,17 @@ function getToken() {
   return process.env.NEXT_PUBLIC_API_TOKEN;
 }
 
-async function request(endpoint, method = 'GET', body = null, headers = {}, isGuest = false, fetchOptions = {}) {
+async function request(endpoint, method = 'GET', body = null, headers = {}, isGuest = false, options = {}) {
   const token = isGuest ? process.env.NEXT_PUBLIC_API_TOKEN : getToken();
 
-  const response = await fetch(`${BASE_URL}${endpoint}`, {
+  // Add cache buster for GET requests, except for specific endpoints
+  const skipCacheBuster = endpoint.includes('/about') || endpoint.includes('/shopmenus');
+  const separator = endpoint.includes('?') ? '&' : '?';
+  const url = (method === 'GET' && !skipCacheBuster)
+    ? `${BASE_URL}${endpoint}${separator}t=${Date.now()}`
+    : `${BASE_URL}${endpoint}`;
+
+  const response = await fetch(url, {
     method,
     headers: {
       'Content-Type': 'application/json',
@@ -20,7 +27,7 @@ async function request(endpoint, method = 'GET', body = null, headers = {}, isGu
       ...headers,
     },
     body: body ? JSON.stringify(body) : null,
-    ...fetchOptions,
+    ...options,
   });
 
   if (!response.ok) {
@@ -36,18 +43,18 @@ async function request(endpoint, method = 'GET', body = null, headers = {}, isGu
    ===================== */
 
 export const apiService = {
-  get: (endpoint, headers, fetchOptions) =>
-    request(endpoint, 'GET', null, headers, false, fetchOptions),
+  get: (endpoint, headers, options) =>
+    request(endpoint, 'GET', null, headers, false, options),
 
-  post: (endpoint, data, headers, fetchOptions) =>
-    request(endpoint, 'POST', data, headers, false, fetchOptions),
+  post: (endpoint, data, headers, options) =>
+    request(endpoint, 'POST', data, headers, false, options),
 
-  postGuest: (endpoint, data, headers, fetchOptions) =>
-    request(endpoint, 'POST', data, headers, true, fetchOptions),
+  postGuest: (endpoint, data, headers, options) =>
+    request(endpoint, 'POST', data, headers, true, options),
 
-  put: (endpoint, data, headers, fetchOptions) =>
-    request(endpoint, 'PUT', data, headers, false, fetchOptions),
+  put: (endpoint, data, headers, options) =>
+    request(endpoint, 'PUT', data, headers, false, options),
 
-  delete: (endpoint, headers, fetchOptions) =>
-    request(endpoint, 'DELETE', null, headers, false, fetchOptions),
+  delete: (endpoint, headers, options) =>
+    request(endpoint, 'DELETE', null, headers, false, options),
 };
