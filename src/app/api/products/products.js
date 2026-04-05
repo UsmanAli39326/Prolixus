@@ -72,7 +72,11 @@
 // ];
 
 // export default products;
+export const dynamic = 'force-dynamic'
+export const fetchCache = 'default-no-store'
+
 import { apiService } from "@/lib/api";
+
 
 // fetch all products
 export async function getAllProducts(page = 1, size = 20) {
