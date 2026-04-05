@@ -81,8 +81,9 @@ export async function getAllProducts(page = 1, size = 20) {
 
     const response = await apiService.get(
       `/Configuration/items?pageNumber=${page}&pageSize=${size}`,
-      {},
-      { cache: 'no-store' }
+      {
+        cache: "no-store",
+      },
     );
 
     console.log(`[API] Fetching all products (Page: ${page}, Size: ${size}) - Cache: no-store`);
