@@ -72,7 +72,11 @@
 // ];
 
 // export default products;
+export const dynamic = 'force-dynamic'
+export const fetchCache = 'default-no-store'
+
 import { apiService } from "@/lib/api";
+
 
 // fetch all products
 export async function getAllProducts(page = 1, size = 20) {
@@ -81,6 +85,9 @@ export async function getAllProducts(page = 1, size = 20) {
 
     const response = await apiService.get(
       `/Configuration/items?pageNumber=${page}&pageSize=${size}`,
+      {
+        cache: "no-store",
+      },
       {
         cache: "no-store",
       },
