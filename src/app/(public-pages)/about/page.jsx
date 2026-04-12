@@ -6,6 +6,7 @@ export const metadata = {
   description: "Learn about our mission to provide sustainable, premium organic products.",
 };
 import About from '@/components/layout/About Us/About';
+import WhyChooseUs from '@/components/layout/Home/WhyChooseUs';
 // import OurApproach from '@/components/layout/About Us/OurApproach';
 // import OurKeyPoints from '@/components/layout/Home/OurKeyPoints';
 // import OurBenefits from '@/components/layout/Home/OurBenefits';
@@ -17,11 +18,12 @@ export default function AboutPage() {
     <>
       <AboutPageHeader title="About" subtitle="us" />
       <About />
-      {/* <OurApproach/> */}
-      {/* <OurKeyPoints/> */}
-      {/* <OurBenefits/> */}
-      {/* <OurFaqs/> */}
-      {/* <OurTestimonials/> */}
+      <WhyChooseUs/>
+      {/* <OurApproach /> */}
+      {/* <OurKeyPoints /> */}
+      {/* <OurBenefits /> */}
+      {/* <OurFaqs /> */}
+      {/* <OurTestimonials /> */}
     </>
   );
 }

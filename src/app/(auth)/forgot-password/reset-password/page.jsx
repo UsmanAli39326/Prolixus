@@ -170,6 +170,7 @@ export default function ResetPasswordPage() {
                                         name="newPassword"
                                         type="password"
                                         label="New Password"
+                                        inputClassName="w-full bg-transparent px-4 py-3 outline-none"
                                         className="w-full"
                                         placeholder="Enter new password"
                                         value={newPassword}
@@ -182,6 +183,7 @@ export default function ResetPasswordPage() {
                                         name="confirmPassword"
                                         type="password"
                                         label="Confirm Password"
+                                        inputClassName="w-full bg-transparent px-4 py-3 outline-none"
                                         className="w-full"
                                         placeholder="Re-enter new password"
                                         value={confirmPassword}
@@ -195,7 +197,7 @@ export default function ResetPasswordPage() {
                                         fullWidth
                                         loading={loading}
                                         loadingText="Updating password..."
-                                        className="mt-2"
+                                        className="mt-2 rounded-xl hover:bg-accent/90 transition-all duration-300"
                                     >
                                         Update Password
                                     </Button>

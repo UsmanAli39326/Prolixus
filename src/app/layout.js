@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans, Lora } from "next/font/google";
 import { CartProvider } from "@/context/CartContext";
 import { CurrencyProvider } from "@/context/CurrencyContext";
 import { AuthProvider } from "@/context/AuthContext";
+import { LanguageProvider } from "@/context/LanguageContext";
 
 export const metadata = {
   title: {
@@ -14,7 +15,7 @@ export const metadata = {
     title: "Prolixus - Premium Organic Products",
     description: "Shop nature's finest organic ingredients, curated for your holistic well-being.",
     type: "website",
-    locale: "en_US",
+    locale: "de_GE",
     url: "https://prolixus.vercel.app",
     siteName: "Prolixus",
   },
@@ -43,15 +44,17 @@ export default function RootLayout({ children }) {
       className={`${jakarta.variable} ${lora.variable}`}
     >
       <body>
-        <AuthProvider>
-          <CurrencyProvider>
-            <CartProvider>
-              <main className="min-h-screen">
-                {children}
-              </main>
-            </CartProvider>
-          </CurrencyProvider>
-        </AuthProvider>
+        <LanguageProvider>
+          <AuthProvider>
+            <CurrencyProvider>
+              <CartProvider>
+                <main className="min-h-screen">
+                  {children}
+                </main>
+              </CartProvider>
+            </CurrencyProvider>
+          </AuthProvider>
+        </LanguageProvider>
       </body>
     </html>
   );

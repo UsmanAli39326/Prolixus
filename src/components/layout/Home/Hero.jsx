@@ -126,7 +126,7 @@
 
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import FadeInAnimation from "@/Hooks/FaderInAnimation";
@@ -135,35 +135,18 @@ import RevealInAniation from "@/Hooks/RevealInAnimation";
 import Button from "@/components/ui/Button";
 
 export default function Hero() {
-  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
-
-  useEffect(() => {
-    // Delay video loading to prioritize critical assets
-    const timer = setTimeout(() => {
-      setIsVideoLoaded(true);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, []);
-
   return (
     <section
       className="relative overflow-hidden bg-cover bg-center pt-36 pb-12 sm:pt-40 sm:pb-16 lg:pt-[220px] lg:pb-[110px] bg--secondary-color"
     >
-      {/* Background Video (Delayed) */}
-      {isVideoLoaded && (
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="none"
-          className="absolute inset-0 w-full h-full object-cover z-0 transition-opacity duration-1000"
-        >
-          <source src="/videos/hero-video-compressed.mp4" type="video/mp4" />
-        </video>
-      )}
-
-      {/* Overlay */}
+      {/* Background Image */}
+      <Image
+        src="/images/new/mainSlider.webp"
+        alt="Hero Background"
+        fill
+        className="absolute inset-0 w-full h-full object-cover z-0"
+        priority
+      />
       <div className="absolute inset-0 bg-linear-to-r from-(--primary-color)/85 via-(--primary-color)/60 to-transparent z-1" />
 
       <div className="relative z-2 container mx-auto px-4">
@@ -239,16 +222,6 @@ export default function Hero() {
           {/* Right: Image */}
           <div>
             <div className="hero-image relative mx-auto max-w-[200px] sm:max-w-[300px] lg:max-w-none lg:mx-14">
-              <figure className="block">
-                <Image
-                  src="/images/new/bottle.png"
-                  alt="Prolixus Nahrungsergänzungsmittel"
-                  width={600}
-                  height={800}
-                  className="h-auto w-full object-cover aspect-[1/1.357]"
-                  priority
-                />
-              </figure>
             </div>
           </div>
         </div>

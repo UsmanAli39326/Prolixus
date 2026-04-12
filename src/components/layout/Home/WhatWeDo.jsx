@@ -131,7 +131,7 @@ export default function WhatWeDo() {
                 <div className="what-we-image-1 w-full pr-0 lg:pr-12">
                   <figure className="block rounded-2xl overflow-hidden">
                     <img
-                      src="/images/new/prolixus-usage.jpeg"
+                      src="/images/new/big-product.webp"
                       alt="Prolixus Anwendung"
                       className="w-full object-cover rounded-2xl aspect-[1/0.73]"
                     />
@@ -142,7 +142,7 @@ export default function WhatWeDo() {
                 <div className="what-we-image-2 relative w-full max-w-[280px] sm:max-w-[410px] ml-auto -mt-10 sm:-mt-20 z-1">
                   <figure className="block rounded-2xl overflow-hidden">
                     <img
-                      src="/images/new/prolixus-steps.jpeg"
+                      src="/images/new/small-product-copy.jpg.jpeg"
                       alt="Prolixus Einnahme"
                       className="w-full object-cover rounded-2xl aspect-[1/0.62]"
                     />
@@ -150,13 +150,11 @@ export default function WhatWeDo() {
                 </div>
 
                 {/* Circle */}
-                <div className="what-we-circle absolute left-2 sm:left-[50px] bottom-4 sm:bottom-10 border-4 sm:border-10 border-(--primary-color) rounded-full z-1 bg-accent p-2 sm:p-4 justify-center items-center flex">
+                <div className="what-we-circle absolute left-4 sm:left-[50px] bottom-4 sm:bottom-10 border-4 sm:border-8 border-(--primary-color) rounded-full z-1 bg-accent p-0 justify-center items-center flex overflow-hidden">
                   <img
-                    src="/images/new/Prolixus-Logo-white.png"
+                    src="/images/new/logo-2.gif"
                     alt="Premium Qualität"
-                    width={180}
-                    height={180}
-                    className="w-full max-w-[80px] sm:max-w-[180px] rounded-full animate-spin-slowly"
+                    className="w-[100px] h-[100px] sm:w-[150px] sm:h-[150px] rounded-full object-cover"
                   />
                 </div>
               </div>

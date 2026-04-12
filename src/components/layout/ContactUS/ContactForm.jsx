@@ -1,44 +1,12 @@
 // components/ContactSection.jsx
 "use client";
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState } from "react";
 import FaderInAnimation from "@/Hooks/FaderInAnimation";
-import RevealInAnimation from "@/Hooks/RevealInAnimation";
 import Button from "@/components/ui/Button";
 import { getAboutPayload } from "@/app/api/about/about";
 import { submitContactForm } from "@/app/api/contact/contact";
-import { MdCheckCircle, MdError, MdClose } from "react-icons/md";
+import Toast from "@/components/ui/Toast";
 
-/* ─── Small inline toast component ─── */
-function Toast({ type, message, onClose }) {
-  const isSuccess = type === "success";
-  return (
-    <div
-      role="alert"
-      className={`
-                flex items-start gap-3 px-5 py-4 rounded-xl shadow-lg border fixed top-24 right-4 z-50 min-w-[300px]
-                ${isSuccess
-          ? "bg-green-50 border-green-200 text-green-800"
-          : "bg-red-50 border-red-200 text-red-800"
-        }
-                animate-fade-in
-            `}
-    >
-      {isSuccess
-        ? <MdCheckCircle className="text-xl shrink-0 mt-0.5 text-green-500" />
-        : <MdError className="text-xl shrink-0 mt-0.5 text-red-500" />
-      }
-      <p className="flex-1 text-sm font-medium">{message}</p>
-      <button
-        type="button"
-        onClick={onClose}
-        aria-label="Dismiss"
-        className="shrink-0 opacity-60 hover:opacity-100 transition-opacity"
-      >
-        <MdClose className="text-lg" />
-      </button>
-    </div>
-  );
-}
 
 const INITIAL_FORM = {
   firstName: "",
@@ -52,17 +20,11 @@ export default function ContactSection() {
   const about = getAboutPayload();
   const [formData, setFormData] = useState(INITIAL_FORM);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [toast, setToast] = useState(null); // { type: 'success'|'error', message: string }
-
-  /* ── Dismiss toast helper ── */
-  const dismissToast = useCallback(() => setToast(null), []);
-
-  /* ── Auto-dismiss after 5 s ── */
-  useEffect(() => {
-    if (!toast) return;
-    const t = setTimeout(dismissToast, 5000);
-    return () => clearTimeout(t);
-  }, [toast, dismissToast]);
+  const [toast, setToast] = useState({
+    show: false,
+    message: "",
+    type: "success",
+  });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -72,12 +34,13 @@ export default function ContactSection() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    dismissToast();
+    setToast((prev) => ({ ...prev, show: false }));
 
     try {
       const response = await submitContactForm(formData);
       if (response?.success) {
         setToast({
+          show: true,
           type: "success",
           message: "Thank you for contacting us! We will get back to you soon.",
         });
@@ -87,6 +50,7 @@ export default function ContactSection() {
       }
     } catch (error) {
       setToast({
+        show: true,
         type: "error",
         message: error.message || "An unexpected error occurred. Please try again later.",
       });
@@ -101,13 +65,12 @@ export default function ContactSection() {
   return (
     <section className="py-24 relative">
       {/* Toast notification */}
-      {toast && (
-        <Toast
-          type={toast.type}
-          message={toast.message}
-          onClose={dismissToast}
-        />
-      )}
+      <Toast
+        show={toast.show}
+        type={toast.type}
+        message={toast.message}
+        onClose={() => setToast((prev) => ({ ...prev, show: false }))}
+      />
 
       <div className="mx-auto w-full max-w-full px-4">
         <div className="rounded-3xl border border-divider bg-white overflow-hidden">

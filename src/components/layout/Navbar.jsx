@@ -7,11 +7,14 @@ import Image from "next/image";
 import { FaCartArrowDown, FaCircleUser } from "react-icons/fa6";
 import { useCart } from "@/context/CartContext";
 import Button from "@/components/ui/Button";
+import LanguageSwitcher from "@/components/layout/LanguageSwitcher";
 
 import { useAuth } from "@/context/AuthContext";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function Header({ menus = [] }) {
   const { itemCount } = useCart();
+  const { t } = useLanguage();
   const router = useRouter();
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -23,8 +26,8 @@ export default function Header({ menus = [] }) {
 
   // ✅ Use memoized data to find Shop menu
   const shopButton = useMemo(() => {
-    return menus.find((m) => m.id === 58) || { label: "Shop Now", url: "/products" };
-  }, [menus]);
+    return menus.find((m) => m.id === 58) || { label: t("navbar.shop_now"), url: "/products" };
+  }, [menus, t]);
 
 
   // Exclude Cart from main nav (Cart icon handled separately)
@@ -63,13 +66,17 @@ export default function Header({ menus = [] }) {
 
           <div className="flex items-center gap-6">
             {/* Google Rating Badge */}
-            <div className="flex items-center gap-3">
+            <a
+              href="https://share.google/kgDhjqnMrkgLLtv8m"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+            >
               <Image
                 src="/images/new/Google.svg"
                 alt="Google Rating"
                 width={70}
                 height={30}
-
               />
               <Image
                 src="/images/new/Stars-01.svg"
@@ -78,17 +85,18 @@ export default function Header({ menus = [] }) {
                 height={18}
                 className="h-auto w-auto"
               />
-            </div>
+            </a>
 
             {/* Right Side: Shop Button + Cart + Account */}
             <div className="flex items-center gap-6 pl-6 border-l border-divider">
               <Link href={shopButton?.url || "/products"}>
                 <Button variant="accent" className="rounded-full">
-                  {shopButton?.label || "Shop Now"}
+                  {shopButton?.label || t("navbar.shop_now")}
                 </Button>
               </Link>
 
               <div className="flex items-center gap-3">
+                <LanguageSwitcher />
                 <Link
                   href="/cart"
                   className="relative flex items-center justify-center h-10 w-10 rounded-full border border-white text-white transition hover:bg-white hover:text-accent"
@@ -146,7 +154,12 @@ export default function Header({ menus = [] }) {
               <li className="mt-3 border-t border-white/20 pt-4">
                 <div className="flex items-center justify-between">
                   {/* Google Rating Badge - Mobile */}
-                  <div className="flex items-center gap-3">
+                  <a
+                    href="https://share.google/kgDhjqnMrkgLLtv8m"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3"
+                  >
                     <Image
                       src="/images/new/Google.svg"
                       alt="Google Rating"
@@ -161,15 +174,16 @@ export default function Header({ menus = [] }) {
                       height={10}
                       className="h-auto w-auto"
                     />
-                  </div>
+                  </a>
 
                   <Link href={shopButton?.url || "/products"}>
                     <Button variant="primary" className="rounded-full">
-                      {shopButton?.label || "Shop Now"}
+                      {shopButton?.label || t("navbar.shop_now")}
                     </Button>
                   </Link>
 
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 items-center">
+                    <LanguageSwitcher />
                     <Link
                       href="/cart"
                       className="relative flex items-center justify-center h-9 w-9 border rounded-full border-white text-white hover:bg-white hover:text-accent transition"

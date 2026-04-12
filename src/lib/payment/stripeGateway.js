@@ -4,229 +4,282 @@ import { useEffect, useMemo, useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import {
     Elements,
-    CardNumberElement,
-    CardExpiryElement,
-    CardCvcElement,
+    PaymentElement,
     useStripe,
     useElements,
 } from "@stripe/react-stripe-js";
-import Input from "@/components/ui/Input";
-import StripeInput from "@/components/ui/StripeInput";
 import { apiService } from "@/lib/api";
-import { FaCreditCard, FaQuestionCircle } from "react-icons/fa";
+import { FaCcVisa, FaCcMastercard, FaCcAmex } from "react-icons/fa";
+import { motion, AnimatePresence } from "framer-motion";
 
-// ─── Provider ────────────────────────────────────────────────────────────────
+/**
+ * ─── Provider ────────────────────────────────────────────────────────────────
+ * Updated to fetch clientSecret immediately and pass it to Elements provider.
+ * This is required for automatic payment methods and the Payment Element.
+ */
 function StripeGatewayProvider({ publishableKey, amount, currency, children }) {
+    const [clientSecret, setClientSecret] = useState(null);
+    const [error, setError] = useState(null);
+
     const stripePromise = useMemo(() => {
         if (!publishableKey) return null;
         return loadStripe(publishableKey);
     }, [publishableKey]);
 
     useEffect(() => {
-        // Provider just needs to initialize Stripe.
-        // We defer PaymentIntent creation to the checkout component 
-        // to avoid duplicate API calls and complex prop drilling.
-    }, []);
+        if (!amount || !currency) return;
 
-    if (!stripePromise) {
-        return <p className="text-red-500 text-sm">Stripe not initialized</p>;
+        const fetchIntent = async () => {
+            try {
+                const res = await fetch("/api/stripe/create-payment-intent", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ amount, currency }),
+                });
+
+                const data = await res.json();
+                if (data.clientSecret) {
+                    setClientSecret(data.clientSecret);
+                } else {
+                    setError(data.error || "Failed to initialize payment.");
+                }
+            } catch (err) {
+                console.error("Stripe initialization error:", err);
+                setError("Connection to Stripe failed.");
+            }
+        };
+
+        fetchIntent();
+    }, [amount, currency]);
+
+    if (error) {
+        return <p className="text-red-500 text-sm p-4 bg-red-50 rounded-xl border border-red-100">{error}</p>;
     }
 
+    if (!stripePromise) {
+        return <p className="text-red-500 text-sm">Stripe publishable key missing.</p>;
+    }
+
+    // Show a stunning loader while fetching the clientSecret
+    if (!clientSecret) {
+        return (
+            <div className="bg-white dark:bg-white/5 border border-divider rounded-4xl p-16 mb-8 flex flex-col items-center justify-center space-y-6 relative overflow-hidden">
+                <div className="absolute inset-0 bg-linear-to-br from-blue-500/5 to-transparent animate-pulse" />
+                <div className="relative">
+                    <div className="w-12 h-12 border-4 border-blue-100 rounded-full" />
+                    <div className="w-12 h-12 border-4 border-t-blue-500 rounded-full animate-spin absolute top-0" />
+                </div>
+                <div className="text-center relative">
+                    <p className="text-xl font-black text-primary tracking-tight">Initializing Secure Checkout</p>
+                    <p className="text-sm font-medium text-text/40 mt-1">Establishing encrypted connection to Stripe...</p>
+                </div>
+            </div>
+        );
+    }
+
+    const appearance = {
+        theme: 'stripe',
+        variables: {
+            colorPrimary: '#3b82f6', // matches accent color
+            colorBackground: '#ffffff',
+            colorText: '#2c2c2c',
+            colorDanger: '#ef4444',
+            fontFamily: 'inherit',
+            borderRadius: '12px',
+        },
+        rules: {
+            '.Input': {
+                border: '1px solid #e5e7eb',
+                padding: '14px',
+                boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+            },
+            '.Input:focus': {
+                border: '1px solid #2563eb',
+                boxShadow: '0 0 0 4px rgba(37, 99, 235, 0.1)',
+            },
+            '.Label': {
+                fontWeight: '600',
+                marginBottom: '8px',
+                fontSize: '14px',
+                color: '#1f2937',
+            },
+            '.Tab': {
+                border: '1px solid #e5e7eb',
+                padding: '12px',
+                boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+            },
+            '.Tab:hover': {
+                borderColor: '#3b82f6',
+            },
+            '.Tab--selected': {
+                borderColor: '#3b82f6',
+                borderWidth: '2px',
+            },
+            '.AccordionItem': {
+                border: '1px solid #e5e7eb',
+                marginBottom: '10px',
+                borderRadius: '12px',
+            }
+        }
+    };
+
     return (
-        <Elements stripe={stripePromise}>
+        <Elements stripe={stripePromise} options={{
+            clientSecret,
+            appearance,
+            locale: 'en',
+        }}>
             {children}
         </Elements>
     );
 }
 
-
-// ─── Checkout Form ───────────────────────────────────────────────────────────
 function StripeCheckoutForm({
     formData,
-    setFormData,
     buildGuestOrderPayload,
     cartItems,
     currency,
     onSuccess,
     onError,
-    loading,
     setLoading,
 }) {
     const stripe = useStripe();
     const elements = useElements();
-    const [cardholderName, setCardholderName] = useState("");
-    const [clientSecret, setClientSecret] = useState(null);
-    const stripeStyles = {
-        style: {
-            base: {
-                fontSize: "16px",
-                color: "#2C2C2C", // var(--text-color)
-                fontFamily: "inherit",
-                "::placeholder": {
-                    color: "#9CA3AF", // gray-400
-                },
-            },
-            invalid: {
-                color: "#ef4444", // red-500
-            },
-        },
-    };
-
-    // 🔁 Create PaymentIntent HERE for split elements flow
-    useEffect(() => {
-        if (clientSecret) return;
-
-        const createIntent = async () => {
-            try {
-                const payload = buildGuestOrderPayload(formData, cartItems, currency);
-
-                const res = await fetch("/api/stripe/create-payment-intent", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        amount: payload.grossAmount,
-                        currency: payload.currency || "eur",
-                    }),
-                });
-
-                const data = await res.json();
-
-                if (!data.clientSecret) {
-                    console.error("Stripe error:", data);
-                    return;
-                }
-
-                setClientSecret(data.clientSecret);
-            } catch (err) {
-                console.error(err);
-            }
-        };
-
-        createIntent();
-    }, [clientSecret, formData, cartItems, currency, buildGuestOrderPayload]);
+    const [errorMessage, setErrorMessage] = useState(null);
 
     const handlePayment = async () => {
-        if (!stripe || !elements || !clientSecret) {
-            onError("Stripe not ready");
+        if (!stripe || !elements) {
             return;
         }
 
         setLoading(true);
+        setErrorMessage(null);
+
+        // 1. Build and store payload for redirect return
+        const payload = buildGuestOrderPayload(formData, cartItems, currency);
+        payload.paymentMethod = "Stripe";
+        localStorage.setItem("pendingOrderPayload", JSON.stringify(payload));
 
         try {
-            const cardNumber = elements.getElement(CardNumberElement);
-
-            const result = await stripe.confirmCardPayment(clientSecret, {
-                payment_method: {
-                    card: cardNumber,
-                    billing_details: {
-                        name: cardholderName,   // ✅ use local state
-                        email: formData.email,  // optional
+            const { error, paymentIntent } = await stripe.confirmPayment({
+                elements,
+                confirmParams: {
+                    shipping: {
+                        name: formData.fullName,
+                        address: {
+                            line1: formData.address,
+                            city: formData.city,
+                            postal_code: formData.zip,
+                            country: formData.countryCode || (currency === 'eur' ? 'DE' : 'US'),
+                        },
                     },
+                    payment_method_data: {
+                        billing_details: {
+                            name: formData.fullName,
+                            email: formData.email,
+                            phone: formData.phone,
+                            address: {
+                                line1: formData.address,
+                                city: formData.city,
+                                postal_code: formData.zip,
+                                country: formData.countryCode || (currency === 'eur' ? 'DE' : 'US'),
+                            }
+                        }
+                    },
+                    return_url: `${window.location.origin}/checkout/status`,
                 },
+                redirect: "if_required",
             });
 
-            if (result.error) {
-                onError(result.error.message);
-                setLoading(false);
-                return;
-            }
+            if (error) {
+                setErrorMessage(error.message);
+                onError(error.message);
+            } else if (paymentIntent) {
+                if (paymentIntent.status === "succeeded") {
+                    payload.paymentToken = paymentIntent.id;
+                    const response = await apiService.post("/Checkout/create-order", payload);
 
-            if (result.paymentIntent.status === "succeeded") {
-                const payload = buildGuestOrderPayload(
-                    formData,
-                    cartItems,
-                    currency
-                );
-
-                payload.paymentToken = result.paymentIntent.id;
-                payload.paymentMethod = "Stripe";
-
-                const response = await apiService.post(
-                    "/Checkout/create-order",
-                    payload
-                );
-
-                if (response.success) {
-                    onSuccess(response.data);
-                } else {
-                    onError(response.message);
+                    if (response.success) {
+                        localStorage.removeItem("pendingOrderPayload");
+                        onSuccess(response.data);
+                    } else {
+                        setErrorMessage(response.message);
+                        onError(response.message);
+                    }
+                } else if (paymentIntent.status === "processing") {
+                    // For SEPA/Klarna, it might stay in processing. 
+                    // Redirect to status page so it can monitor the intent.
+                    window.location.href = `${window.location.origin}/checkout/status?payment_intent_client_secret=${paymentIntent.client_secret}`;
                 }
             }
         } catch (err) {
-            console.error(err);
-            onError("Payment failed");
+            console.error("Stripe handlePayment error:", err);
+            setErrorMessage("An unexpected error occurred. Please try again.");
+            onError("An unexpected error occurred.");
+        } finally {
+            setLoading(false);
         }
-
-        setLoading(false);
     };
 
     return {
         handlePayment,
         ui: (
-            <div className="bg-white mt-7 dark:bg-white/5 border border-divider rounded-2xl p-6 mb-8 space-y-5 relative">
-                
-                {/* Loader Overlay */}
-                {!clientSecret && (
-                    <div className="absolute inset-0 z-10 bg-white/50 dark:bg-black/50 backdrop-blur-sm rounded-2xl flex flex-col items-center justify-center">
-                        <div className="flex gap-1.5 items-center justify-center">
-                            <span className="w-2 h-2 rounded-full bg-accent animate-bounce" style={{ animationDelay: "0ms" }} />
-                            <span className="w-2 h-2 rounded-full bg-accent animate-bounce" style={{ animationDelay: "150ms" }} />
-                            <span className="w-2 h-2 rounded-full bg-accent animate-bounce" style={{ animationDelay: "300ms" }} />
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+                className="bg-white mt-8 dark:bg-white/5 border border-divider rounded-4xl p-8 mb-10 shadow-2xl shadow-blue-500/5 relative overflow-hidden group"
+            >
+                {/* Subtle Gradient Background */}
+                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 blur-[100px] -z-10 rounded-full group-hover:bg-blue-500/10 transition-colors" />
+
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+                    <div>
+                        <p className="text-2xl font-black text-primary tracking-tight">Checkout</p>
+                        <p className="text-sm text-text/50 font-medium font-accent">Select your preferred payment method</p>
+                    </div>
+                    <div className="flex items-center gap-3 bg-secondary/50 px-4 py-2 rounded-full border border-divider">
+                        <div className="flex items-center gap-1.5 p-1 bg-white rounded-lg shadow-sm">
+                            <FaCcVisa className="text-[#1A1F71] text-2xl" />
+                            <FaCcMastercard className="text-[#EB001B] text-2xl" />
+                            <FaCcAmex className="text-[#0070d1] text-2xl" />
                         </div>
-                        <p className="text-sm mt-3 font-medium text-text/70">Connecting to secure server...</p>
+                        <span className="text-[10px] font-bold text-text/40 uppercase tracking-widest leading-none">Secure Payments</span>
+                    </div>
+                </div>
+
+                <PaymentElement options={{
+                    layout: {
+                        type: 'tabs',
+                        defaultCollapsed: false,
+                        radios: true,
+                        spacedAccelerator: true,
+                    },
+                    fields: {
+                        billingDetails: {
+                            name: 'auto',
+                        }
+                    }
+                }} />
+
+                {errorMessage && (
+                    <div className="p-4 bg-red-50 border border-red-200 text-red-600 text-sm font-bold rounded-xl">
+                        {errorMessage}
                     </div>
                 )}
 
-                <p className="text-lg font-bold text-primary">Card Payment</p>
-
-                {/* Cardholder Name */}
-                <Input
-                    type="text"
-                    label="Cardholder Name"
-                    placeholder="John Doe"
-                    inputClassName="w-full p-3.5"
-                    className="w-full"
-                    value={cardholderName}
-                    onChange={(e) => setCardholderName(e.target.value)}
-                />
-
-                {/* Card Number */}
-                <StripeInput
-                    label="Card Number"
-                    element={CardNumberElement}
-                    icon={<FaCreditCard size={18} />}
-                    className="w-full mt-1"
-                    inputClassName="w-full p-3.5"
-                    options={stripeStyles}
-                />
-
-                {/* Expiry + CVC */}
-                <div className="flex flex-col sm:flex-row gap-5 mt-1">
-                    <StripeInput
-                        label="Expiry Date"
-                        element={CardExpiryElement}
-                        className="flex-1"
-                        inputClassName="w-full p-3.5"
-                        options={stripeStyles}
-                    />
-
-                    <StripeInput
-                        label="CVC"
-                        element={CardCvcElement}
-                        rightIcon={<FaQuestionCircle size={18} className="text-gray-400" />}
-                        className="flex-1"
-                        inputClassName="w-full p-3.5"
-                        options={stripeStyles}
-                    />
-                </div>
-            </div>
+                <p className="text-[11px] text-text/40 font-medium text-center uppercase tracking-widest">
+                    Encrypted and processed by Stripe
+                </p>
+            </motion.div>
         ),
     };
 }
 
 
-// ─── Wrapper ─────────────────────────────────────────────────────────────────
+/**
+ * ─── Wrapper ─────────────────────────────────────────────────────────────────
+ */
 function StripeCheckoutComponent(props) {
     const { handlePayment, ui } = StripeCheckoutForm(props);
 
@@ -234,13 +287,15 @@ function StripeCheckoutComponent(props) {
         if (props.onReady) {
             props.onReady(handlePayment);
         }
-    }, [handlePayment]);
+    }, [handlePayment, props]);
 
     return ui;
 }
 
 
-// ─── Export Adapter ──────────────────────────────────────────────────────────
+/**
+ * ─── Export Adapter ──────────────────────────────────────────────────────────
+ */
 const stripeGateway = {
     name: "Stripe",
     ProviderComponent: StripeGatewayProvider,

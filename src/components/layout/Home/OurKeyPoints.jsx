@@ -343,9 +343,9 @@ export default function OurKeyPoints() {
             <div className="key-points-image text-center">
               <figure>
                 <img
-                  src="/images/new/bottle.png"
+                  src="/images/new/Our-Key-Point-copy.webp"
                   alt="Prolixus Produkt"
-                  className="mx-auto w-full max-w-[250px] sm:max-w-[350px] lg:max-w-[500px] lg:scale-110"
+                  className="mx-auto w-full max-w-[180px] sm:max-w-[280px] lg:max-w-[420px]"
                 />
               </figure>
             </div>

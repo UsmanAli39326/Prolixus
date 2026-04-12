@@ -23,11 +23,13 @@ export default async function AboutSection() {
             <FaderInAnimation direction="right">
               <div className="relative">
                 {/* Main Image */}
-                <div className="relative z-10 overflow-hidden rounded-[2rem] shadow-2xl transition-transform duration-500 hover:scale-[1.02]">
+                <div className="relative z-10 overflow-hidden rounded-4xl shadow-2xl transition-transform duration-500 hover:scale-[1.02]">
                   <img
-                    src="/images/new/prolixus-lifestyle.jpeg"
+                    src="/images/new/about-us.webp"
                     alt="Prolixus Vitalität"
-                    className="aspect-4/5 w-full object-cover lg:aspect-[1/1.1]"
+                    width="560"
+                    height="602"
+                    className="w-full object-cover"
                   />
                   {/* Subtle overlay gradient */}
                   <div className="absolute inset-0 bg-linear-to-t from-primary/20 via-transparent to-transparent" />

@@ -39,8 +39,9 @@ export async function getAllPosts() {
     const res = await apiService.get(
       "/Configuration/blogs",
       {},
-      { next: { revalidate: 30 } }
+      { next: { revalidate: 1 } }
     );
+
 
     if (res?.success && Array.isArray(res.data)) {
       return res.data.map(mapBlogPost);

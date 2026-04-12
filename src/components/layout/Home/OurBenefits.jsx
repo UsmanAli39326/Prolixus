@@ -236,26 +236,23 @@ export default function OurBenefits() {
       <div className="container mx-auto px-4">
 
         {/* Top row */}
-        <div className="flex flex-col items-center gap-10 lg:flex-row lg:items-center">
+        <div className="flex flex-col items-center gap-10 lg:flex-row lg:items-stretch">
 
           {/* Left: Image */}
           <div className="w-full lg:w-5/12">
-            <div className="benefit-image relative lg:mr-4">
-              <figure>
+            <div className="benefit-image relative lg:mr-4 h-full">
+              <figure className="h-full">
                 <img
-                  src="/images/new/prolixus-benefits.jpeg"
+                  src="/images/new/Benefits-copy.webp"
                   alt="Prolixus Inhaltsstoffe"
-                  className="w-full aspect-[1/1.33] object-cover"
+                  className="w-full h-full object-cover rounded-2xl"
                 />
               </figure>
-
-              <div className="benefit-quality-circle absolute right-0 top-0 z-1 bg-(--accent-color) p-3 rounded-full shadow-lg">
+              <div className="benefit-quality-circle absolute -right-6 -top-6 z-1 bg-(--accent-color) p-0 rounded-full shadow-lg border-4 border-white justify-center items-center flex overflow-hidden">
                 <img
-                  src="/images/new/Prolixus-Logo-white.png"
+                  src="/images/new/logo-2.gif"
                   alt="Prolixus Logo"
-                  width={80}
-                  height={80}
-                  className="w-full max-w-[80px] animate-spin-slowly"
+                  className="w-[80px] h-[80px] sm:w-[110px] sm:h-[110px] rounded-full object-cover"
                 />
               </div>
             </div>
@@ -284,15 +281,15 @@ export default function OurBenefits() {
                 <FaderInAnimation direction="up">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     {/* Calcium */}
-                    <div className="benefit-item p-6 bg-(--white-color) rounded-2xl shadow-sm border border-(--divider-color) transition-all duration-300 hover:shadow-md">
-                      <div className="icon-box mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-(--accent-color)">
+                    <div className="benefit-item p-5 bg-(--white-color) rounded-2xl shadow-sm border border-(--divider-color) transition-all duration-300 hover:shadow-md">
+                      <div className="icon-box mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-(--accent-color)">
                         <img
                           src="/images/icon-benefit-1.svg"
                           alt="Calcium"
                           className="w-full max-w-[32px]"
                         />
                       </div>
-                      <h3 className="text-xl mb-3 font-bold text-(--primary-color) font-default">
+                      <h3 className="text-xl mb-2 font-bold text-(--primary-color) font-default">
                         Calcium
                       </h3>
                       <p className="text-sm sm:text-base text-(--primary-color)/80 leading-relaxed">
@@ -302,15 +299,15 @@ export default function OurBenefits() {
                     </div>
 
                     {/* Magnesium */}
-                    <div className="benefit-item p-6 bg-(--white-color) rounded-2xl shadow-sm border border-(--divider-color) transition-all duration-300 hover:shadow-md">
-                      <div className="icon-box mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-(--accent-color)">
+                    <div className="benefit-item p-5 bg-(--white-color) rounded-2xl shadow-sm border border-(--divider-color) transition-all duration-300 hover:shadow-md">
+                      <div className="icon-box mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-(--accent-color)">
                         <img
                           src="/images/icon-benefit-2.svg"
                           alt="Magnesium"
                           className="w-full max-w-[32px]"
                         />
                       </div>
-                      <h3 className="text-xl mb-3 font-bold text-(--primary-color) font-default">
+                      <h3 className="text-xl mb-2 font-bold text-(--primary-color) font-default">
                         Magnesium
                       </h3>
                       <p className="text-sm sm:text-base text-(--primary-color)/80 leading-relaxed">
@@ -320,15 +317,15 @@ export default function OurBenefits() {
                     </div>
 
                     {/* Eisen */}
-                    <div className="benefit-item p-6 bg-(--white-color) rounded-2xl shadow-sm border border-(--divider-color) transition-all duration-300 hover:shadow-md">
-                      <div className="icon-box mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-(--accent-color)">
+                    <div className="benefit-item p-5 bg-(--white-color) rounded-2xl shadow-sm border border-(--divider-color) transition-all duration-300 hover:shadow-md">
+                      <div className="icon-box mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-(--accent-color)">
                         <img
                           src="/images/icon-benefit-3.svg"
                           alt="Eisen"
                           className="w-full max-w-[32px]"
                         />
                       </div>
-                      <h3 className="text-xl mb-3 font-bold text-(--primary-color) font-default">
+                      <h3 className="text-xl mb-2 font-bold text-(--primary-color) font-default">
                         Eisen
                       </h3>
                       <p className="text-sm sm:text-base text-(--primary-color)/80 leading-relaxed">
@@ -338,15 +335,15 @@ export default function OurBenefits() {
                     </div>
 
                     {/* Vitamin C */}
-                    <div className="benefit-item p-6 bg-(--white-color) rounded-2xl shadow-sm border border-(--divider-color) transition-all duration-300 hover:shadow-md">
-                      <div className="icon-box mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-(--accent-color)">
+                    <div className="benefit-item p-5 bg-(--white-color) rounded-2xl shadow-sm border border-(--divider-color) transition-all duration-300 hover:shadow-md">
+                      <div className="icon-box mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-(--accent-color)">
                         <img
                           src="/images/icon-benefit-4.svg"
                           alt="Vitamin C"
                           className="w-full max-w-[32px]"
                         />
                       </div>
-                      <h3 className="text-xl mb-3 font-bold text-(--primary-color) font-default">
+                      <h3 className="text-xl mb-2 font-bold text-(--primary-color) font-default">
                         Vitamin C
                       </h3>
                       <p className="text-sm sm:text-base text-(--primary-color)/80 leading-relaxed">
@@ -356,15 +353,15 @@ export default function OurBenefits() {
                     </div>
 
                     {/* MSM */}
-                    <div className="benefit-item sm:col-span-2 p-6 bg-(--white-color) rounded-2xl shadow-sm border border-(--divider-color) transition-all duration-300 hover:shadow-md">
-                      <div className="icon-box mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-(--accent-color)">
+                    <div className="benefit-item sm:col-span-2 p-5 bg-(--white-color) rounded-2xl shadow-sm border border-(--divider-color) transition-all duration-300 hover:shadow-md">
+                      <div className="icon-box mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-(--accent-color)">
                         <img
                           src="/images/icon-about-organic.svg"
                           alt="MSM"
                           className="w-full max-w-[32px]"
                         />
                       </div>
-                      <h3 className="text-xl mb-3 font-bold text-(--primary-color) font-default">
+                      <h3 className="text-xl mb-2 font-bold text-(--primary-color) font-default">
                         MSM
                       </h3>
                       <p className="text-sm sm:text-base text-(--primary-color)/80 leading-relaxed">

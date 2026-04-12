@@ -30,6 +30,7 @@ export const CheckoutProvider = ({ children }) => {
         city: "",
         zip: "",
         countryId: 1,
+        countryCode: "",
 
         // Payment & metadata
         paymentMethod: "Stripe", // Default to Stripe as per common usage
@@ -65,6 +66,7 @@ export const CheckoutProvider = ({ children }) => {
                             city: response.data.shippingCity || prev.city,
                             zip: response.data.shippingPostCode || prev.zip,
                             countryId: response.data.shippingCountryId || prev.countryId,
+                            countryCode: response.data.shippingCountryCode || prev.countryCode,
                         }));
                     }
 
@@ -72,7 +74,7 @@ export const CheckoutProvider = ({ children }) => {
                     try {
                         const walletRes = await apiService.get("/Dashboard/customer-wallet");
                         const balance = parseFloat(walletRes?.data?.remainingAffiliateAmount ?? 0);
-                        // const balance = 1000;
+                        // const balance = 50;
                         setWalletBalance(isNaN(balance) ? 0 : balance);
                     } catch {
                         // Wallet fetch is non-critical — silently default to 0

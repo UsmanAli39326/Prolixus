@@ -14,6 +14,7 @@ export async function getCountries() {
         return response.data.map((c) => ({
             id: c.id ?? c.countryId,
             name: c.name ?? c.countryName,
+            code: c.code ?? c.isoCode ?? c.isoCode2 ?? "",
         }));
     } catch (error) {
         console.error("Countries API Error:", error);

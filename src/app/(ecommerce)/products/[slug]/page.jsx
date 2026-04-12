@@ -7,7 +7,6 @@ import {
 } from "@/components/layout/Ecommerce/ProductPage";
 import FaderInAnimation from "@/Hooks/FaderInAnimation";
 
-
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   const product = await getProductById(slug);

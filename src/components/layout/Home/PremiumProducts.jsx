@@ -200,14 +200,12 @@ import RevealInAnimation from "@/Hooks/RevealInAnimation";
 export default function PremiumProducts() {
   return (
     <section
-      className="premium-products bg-(--white-color) bg-no-repeat bg-bottom-left py-24"
-      style={{ backgroundImage: "url(/images/section-bg-shape-1.png)" }}
-    >
+      className="premium-products bg-(--white-color) bg-no-repeat bg-bottom-left py-0 overflow-hidden">
       <div className="container mx-auto px-4">
-        <div className="flex flex-col gap-10 lg:flex-row">
+        <div className="flex flex-col lg:flex-row lg:items-stretch">
 
           {/* LEFT: Content */}
-          <div className="w-full lg:w-7/12">
+          <div className="w-full lg:w-7/12 py-20 lg:py-24">
             <div className="premium-products-content">
 
               {/* Section Title */}
@@ -277,9 +275,9 @@ export default function PremiumProducts() {
                     <div className="premium-products-image relative">
                       <figure className="block overflow-hidden rounded-2xl relative">
                         <img
-                          src="/images/new/prolixus-nutrients.jpeg"
+                          src="/images/new/Purchase-Now-copy.webp"
                           alt="Essenzielle Nährstoffe"
-                          className="w-full aspect-[1/1.01] object-cover"
+                          className="w-full aspect-[1/1.01]"
                         />
                         <span className="absolute inset-0 bg-linear-to-b from-transparent via-transparent to-[rgba(10,44,15,0.9)]" />
                       </figure>
@@ -336,16 +334,15 @@ export default function PremiumProducts() {
           </div>
 
           {/* RIGHT: Video */}
-          <div className="w-full lg:w-5/12">
-            <RevealInAnimation direction="left" duration={1}>
-              <div className="products-intro-video relative mt-8 lg:mt-0 lg:ml-8">
-
-                <div className="products-intro-image relative overflow-hidden rounded-2xl">
-                  <figure className="block relative">
+          <div className="w-full lg:w-5/12 h-full">
+            <RevealInAnimation direction="left" duration={1} className="h-full">
+              <div className="products-intro-video relative h-full">
+                <div className="products-intro-image relative overflow-hidden h-full">
+                  <figure className="block relative h-full">
                     <img
                       src="/images/new/prolixus-steps.jpeg"
                       alt="Prolixus Anwendung"
-                      className="w-full aspect-[1/1.455] object-cover"
+                      className="w-full h-full object-cover"
                     />
                     <span className="absolute inset-0 bg-(--primary-color)/30" />
                   </figure>

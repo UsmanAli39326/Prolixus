@@ -2,6 +2,21 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 // Read the auth token at request-time so the token stored during login is used.
 // Falls back to the build-time env var if localStorage is not available (e.g. SSR).
+function getLanguage() {
+  if (typeof window !== "undefined") {
+    return localStorage.getItem("appLanguage") || "en";
+  }
+    
+  // Server-side: Try to read from cookies
+  try {
+    const { cookies } = require("next/headers");
+    const cookieStore = cookies();
+    return cookieStore.get("appLanguage")?.value || "en";
+  } catch (error) {
+    return "en"; // Fallback
+  }
+}
+
 function getToken() {
   if (typeof window !== "undefined") {
     return localStorage.getItem("authToken") || process.env.NEXT_PUBLIC_API_TOKEN;
@@ -23,6 +38,7 @@ async function request(endpoint, method = 'GET', body = null, headers = {}, isGu
     method,
     headers: {
       'Content-Type': 'application/json',
+      'Accept-Language': getLanguage(),
       Authorization: `Bearer ${token}`,
       ...headers,
     },

@@ -18,7 +18,7 @@ export async function POST(req) {
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(parsedAmount * 100),
       currency: currency || "eur",
-      automatic_payment_methods: { enabled: true },
+      payment_method_types: ["card", "sepa_debit", "paypal"],
       metadata: {
         integration: "nextjs_checkout",
       },

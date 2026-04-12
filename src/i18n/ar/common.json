@@ -1,0 +1,14 @@
+{
+    "navbar": {
+        "shop_now": "تسوق الآن",
+        "home": "الرئيسية",
+        "about_us": "من نحن",
+        "contact_us": "اتصل بنا",
+        "cart": "عربة التسوق"
+    },
+    "about": {
+        "title": "من نحن",
+        "philosophy": "فلسفتنا",
+        "explore_story": "اكتشف قصتنا"
+    }
+}

@@ -385,10 +385,9 @@ export default function OurTestimonials() {
             <FaderInAnimation direction="left" duration={0.6}>
               <div className="overflow-hidden rounded-[28px] bg-white/10">
                 <img
-                  src="/images/new/prolixus-lifestyle.jpeg"
+                  src="/images/new/Testimonials-copy.webp"
                   alt="Happy customers"
-                  className="w-full object-cover "
-                  style={{ aspectRatio: "386 / 430" }}
+                  className="w-full "
                 />
               </div>
             </FaderInAnimation>

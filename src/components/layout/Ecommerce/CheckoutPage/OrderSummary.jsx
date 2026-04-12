@@ -12,7 +12,7 @@ import { buildGuestOrderPayload } from "./CheckoutWizard";
 export default function OrderSummary() {
     const { cartItems } = useCart();
     const { formatPrice } = useCurrency();
-    const { formData, updateFormData, totals } = useCheckout();
+    const { formData, updateFormData, totals, user, isAuthenticated } = useCheckout();
 
     const [inputCode, setInputCode] = useState("");
     const [codeType, setCodeType] = useState("promo");
@@ -41,6 +41,7 @@ export default function OrderSummary() {
                         couponCode: result.data.code || inputCode.trim(),
                         affiliateCustomerCode: "",
                         discountAmount,
+                        discountDisplay: `${result.data.discountPercentage}%`,
                     });
                     setInputCode("");
                 } else {
@@ -54,12 +55,23 @@ export default function OrderSummary() {
 
 
                 if (result?.data?.isValid) {
+                    // Check if this is the user's own affiliate code
+                    if (isAuthenticated && result.data.affiliateCustomerId === user?.id) {
+                        setError("You cannot use your own affiliate code.");
+                        setLoading(false);
+                        return;
+                    }
 
-                    console.log("affiliate result data :", result.data.code)
+                    // Calculate discount amount from affiliate percentage only
+                    const discountAmount = parseFloat(
+                        ((totals.subtotal * (result.data.affiliatePercentage || 0)) / 100).toFixed(2)
+                    );
+
                     updateFormData({
                         couponCode: "",
                         affiliateCustomerCode: result.data.code || inputCode.trim(),
-                        discountAmount: 0,
+                        discountAmount: discountAmount,
+                        discountDisplay: `${result.data.affiliatePercentage}%`,
                     });
                     setInputCode("");
                 } else {
@@ -106,13 +118,15 @@ export default function OrderSummary() {
                         <div className="flex gap-4 mb-4">
                             <button
                                 onClick={() => { setCodeType("promo"); setError(""); setInputCode(""); }}
-                                className={`text-xs font-bold uppercase tracking-wider pb-1 border-b-2 transition-all ${codeType === "promo" ? "border-accent text-primary" : "border-transparent text-gray-400 hover:text-primary"}`}
+                                disabled={hasCodeApplied}
+                                className={`text-xs font-bold uppercase tracking-wider pb-1 border-b-2 transition-all ${hasCodeApplied ? "opacity-50 cursor-not-allowed" : ""} ${codeType === "promo" ? "border-accent text-primary" : "border-transparent text-gray-400 hover:text-primary"}`}
                             >
                                 Promo Code
                             </button>
                             <button
                                 onClick={() => { setCodeType("affiliate"); setError(""); setInputCode(""); }}
-                                className={`text-xs font-bold uppercase tracking-wider pb-1 border-b-2 transition-all ${codeType === "affiliate" ? "border-accent text-primary" : "border-transparent text-gray-400 hover:text-primary"}`}
+                                disabled={hasCodeApplied}
+                                className={`text-xs font-bold uppercase tracking-wider pb-1 border-b-2 transition-all ${hasCodeApplied ? "opacity-50 cursor-not-allowed" : ""} ${codeType === "affiliate" ? "border-accent text-primary" : "border-transparent text-gray-400 hover:text-primary"}`}
                             >
                                 Affiliate Code
                             </button>
@@ -126,18 +140,19 @@ export default function OrderSummary() {
                                         type="text"
                                         placeholder={codeType === "promo" ? "Enter promo code" : "Enter affiliate code"}
                                         value={inputCode}
+                                        disabled={hasCodeApplied}
                                         onChange={(e) => {
                                             const val = e.target.value;
                                             setInputCode(val);
                                             if (val.trim() === "") setError("");
                                         }}
-                                        className="w-full h-11 px-4 bg-white dark:bg-white/5 border border-divider rounded-xl focus:border-accent focus:ring-1 focus:ring-accent outline-none text-sm font-default transition-all"
+                                        className="w-full h-11 px-4 bg-white dark:bg-white/5 disabled:bg-gray-50/50 disabled:cursor-not-allowed border border-divider rounded-xl focus:border-accent focus:ring-1 focus:ring-accent outline-none text-sm font-default transition-all"
                                     />
                                 </div>
                                 <button
                                     onClick={handleApply}
-                                    disabled={!inputCode.trim() || loading}
-                                    className="bg-primary text-white disabled:opacity-50 font-bold text-xs px-5 h-11 rounded-xl transition-all active:scale-95 whitespace-nowrap"
+                                    disabled={!inputCode.trim() || loading || hasCodeApplied}
+                                    className="bg-primary text-white disabled:opacity-50 disabled:cursor-not-allowed font-bold text-xs px-5 h-11 rounded-xl transition-all active:scale-95 whitespace-nowrap"
                                 >
                                     {loading ? "..." : "Apply"}
                                 </button>
@@ -148,10 +163,17 @@ export default function OrderSummary() {
                                 <div className="mt-4 p-3 bg-accent/5 rounded-xl border border-accent/20 flex justify-between items-center animate-in fade-in slide-in-from-top-2">
                                     <div className="text-xs">
                                         <span className="text-gray-400 block uppercase text-[8px] font-bold">Applied {formData.couponCode ? "Promo" : "Affiliate"}</span>
-                                        <span className="text-primary font-bold">{formData.couponCode || formData.affiliateCustomerCode}</span>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-primary font-bold">{formData.couponCode || formData.affiliateCustomerCode}</span>
+                                            {formData.discountDisplay && (
+                                                <span className="text-accent font-bold px-1.5 py-0.5 bg-accent/10 rounded text-[9px] whitespace-nowrap">
+                                                    {formData.discountDisplay} OFF
+                                                </span>
+                                            )}
+                                        </div>
                                     </div>
                                     <button
-                                        onClick={() => updateFormData({ couponCode: "", affiliateCustomerCode: "", discountAmount: 0 })}
+                                        onClick={() => updateFormData({ couponCode: "", affiliateCustomerCode: "", discountAmount: 0, discountDisplay: "" })}
                                         className="text-gray-400 hover:text-red-500 transition-colors"
                                     >
                                         <svg className="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>

@@ -60,7 +60,17 @@ export default function CheckoutForm({ nextStep, goToStep, formData, updateFormD
     // INPUT HANDLERS: Generic change handler that maps directly to the global checkout state.
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
-        updateFormData({ [name]: type === 'checkbox' ? checked : value });
+
+        if (name === "countryId") {
+            const selectedCountry = countries.find(c => String(c.id) === String(value));
+            updateFormData({
+                countryId: value,
+                countryCode: selectedCountry?.code || ""
+            });
+        } else {
+            updateFormData({ [name]: type === 'checkbox' ? checked : value });
+        }
+
         if (errors[name]) {
             setErrors(prev => ({ ...prev, [name]: null }));
         }
@@ -189,6 +199,7 @@ export default function CheckoutForm({ nextStep, goToStep, formData, updateFormD
                                     value={formData.countryId}
                                     onChange={handleChange}
                                 >
+                                    <option value="" disabled>Select your country</option>
                                     {isLoadingCountries ? (
                                         <option disabled>Loading countries...</option>
                                     ) : (

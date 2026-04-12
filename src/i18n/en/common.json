@@ -1,0 +1,14 @@
+{
+    "navbar": {
+        "shop_now": "Shop Now",
+        "home": "Home",
+        "about_us": "About Us",
+        "contact_us": "Contact Us",
+        "cart": "Cart"
+    },
+    "about": {
+        "title": "About Us",
+        "philosophy": "Our Philosophy",
+        "explore_story": "EXPLORE OUR STORY"
+    }
+}
