@@ -99,15 +99,17 @@ export const CheckoutProvider = ({ children }) => {
     // Calculate totals including discount and wallet
     const totals = useMemo(() => {
         const baseTotals = calcCartTotals(cartItems);
-        const discountAmount = formData.discountAmount || 0;
-        const afterDiscount = Math.max(0, baseTotals.total - discountAmount);
-        const walletAmount = formData.useWallet ? Math.min(formData.walletAmount, afterDiscount) : 0;
+        // Truncate to 2 decimal places — never round up
+        const t = (n) => Math.trunc((n ?? 0) * 100) / 100;
+        const discountAmount = t(formData.discountAmount || 0);
+        const afterDiscount = t(Math.max(0, baseTotals.total - discountAmount));
+        const walletAmount = formData.useWallet ? t(Math.min(formData.walletAmount, afterDiscount)) : 0;
 
         return {
             ...baseTotals,
             discountAmount,
             walletAmount,
-            total: Math.max(0, afterDiscount - walletAmount),
+            total: t(Math.max(0, afterDiscount - walletAmount)),
         };
     }, [cartItems, formData.discountAmount, formData.useWallet, formData.walletAmount]);
 

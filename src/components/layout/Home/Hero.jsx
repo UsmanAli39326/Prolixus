@@ -137,14 +137,14 @@ import Button from "@/components/ui/Button";
 export default function Hero() {
   return (
     <section
-      className="relative overflow-hidden bg-cover bg-center pt-36 pb-12 sm:pt-40 sm:pb-16 lg:pt-[220px] lg:pb-[110px] bg--secondary-color"
+      className="relative min-h-screen lg:h-screen flex items-center overflow-hidden bg-cover bg-center pt-24 pb-8 sm:pt-20 sm:pb-0 lg:pt-20 bg--secondary-color"
     >
       {/* Background Image */}
       <Image
         src="/images/new/mainSlider.webp"
         alt="Hero Background"
         fill
-        className="absolute inset-0 w-full h-full object-cover z-0"
+        className="absolute inset-0 w-full h-full bg-fixed object-cover z-0"
         priority
       />
       <div className="absolute inset-0 bg-linear-to-r from-(--primary-color)/85 via-(--primary-color)/60 to-transparent z-1" />
@@ -156,23 +156,25 @@ export default function Hero() {
           <div>
             <div className="hero-content text--white-color">
 
-              <div className="section-title space-y-4">
-                <FadeInAnimation direction="up">
-                  <h3 className="text font-accent italic flex tracking-wide capitalize text-white align-middle items-center gap-2">
-                    <span className="w-2 h-2 rounded-2xl bg-accent"></span>
-                    Nahrungsergänzungsmittel mit hochwertigen Inhaltsstoffen
-                  </h3>
-                </FadeInAnimation>
+              <FadeInAnimation direction="up">
+                <h3 className="text-base sm:text-lg lg:text-xl font-accent italic tracking-wide text-white/90">
+                  Nahrungsergänzungsmittel mit hochwertigen Inhaltsstoffen
+                </h3>
+              </FadeInAnimation>
 
-                <RevealInAniation delay={0.2} coverColor="#000">
-                  <h1 className="text-3xl sm:text-4xl lg:text-5xl font-default font-bold leading-tight text-white drop-shadow-[0_4px_6px_rgba(0,0,0,0.5)]">
-                    Prolixus – Ihr perfekter Start{" "}
-                    <span className="font-light text--accent-color font-accent italic">
-                      in den Tag
-                    </span>
-                  </h1>
-                </RevealInAniation>
-              </div>
+              <RevealInAniation delay={0.2} coverColor="#000">
+                <h1 className="flex flex-col gap-1 sm:gap-2 leading-tight mt-4">
+                  <span className="text-4xl sm:text-5xl lg:text-6xl font-accent italic text-accent drop-shadow-[0_4px_12px_rgba(0,0,0,0.3)]">
+                    Prolixus
+                  </span>
+                  <span className="text-2xl sm:text-4xl lg:text-5xl font-default text-white drop-shadow-md">
+                    Ihr perfekter Start
+                  </span>
+                  <span className="text-2xl sm:text-4xl lg:text-5xl font-accent italic text-accent drop-shadow-md">
+                    in den Tag
+                  </span>
+                </h1>
+              </RevealInAniation>
 
               <FadeInAnimation direction="up">
                 <div className="hero-content-body mt-6 sm:mt-8 space-y-6">
@@ -186,7 +188,7 @@ export default function Hero() {
 
                   {/* CTA row — stacks on mobile, side-by-side on desktop */}
                   <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-8">
-                    <Link href="/contact">
+                    <Link href="/products">
                       <Button
                         variant="accent"
                         size="lg"
@@ -213,15 +215,18 @@ export default function Hero() {
                       </div>
                     </Link>
                   </div>
-
                 </div>
               </FadeInAnimation>
-            </div>
-          </div>
 
-          {/* Right: Image */}
-          <div>
-            <div className="hero-image relative mx-auto max-w-[200px] sm:max-w-[300px] lg:max-w-none lg:mx-14">
+              <FadeInAnimation direction="up" >
+                <div className="">
+                  <Image
+                    src="/images/new/apotheken.webp"
+                    width={200}
+                    height={200}
+                    alt="Apotheken" className="mt-6 sm:mt-8 w-full max-w-[200px] sm:max-w-xs lg:max-w-lg" />
+                </div>
+              </FadeInAnimation>
             </div>
           </div>
         </div>

@@ -232,7 +232,7 @@ import FaderInAnimation from "@/Hooks/FaderInAnimation";
 
 export default function OurBenefits() {
   return (
-    <section className="our-benefits py-24">
+    <section className="our-benefits py-16 sm:py-24 lg:py-32 overflow-hidden">
       <div className="container mx-auto px-4">
 
         {/* Top row */}
@@ -243,12 +243,12 @@ export default function OurBenefits() {
             <div className="benefit-image relative lg:mr-4 h-full">
               <figure className="h-full">
                 <img
-                  src="/images/new/Benefits-copy.webp"
+                  src="/images/new/Benefits copy 2.jpg"
                   alt="Prolixus Inhaltsstoffe"
                   className="w-full h-full object-cover rounded-2xl"
                 />
               </figure>
-              <div className="benefit-quality-circle absolute -right-6 -top-6 z-1 bg-(--accent-color) p-0 rounded-full shadow-lg border-4 border-white justify-center items-center flex overflow-hidden">
+              <div className="benefit-quality-circle absolute -right-2 -top-2 sm:-right-6 sm:-top-6 z-1 bg-(--accent-color) p-0 rounded-full shadow-lg border-4 border-white justify-center items-center flex overflow-hidden">
                 <img
                   src="/images/new/logo-2.gif"
                   alt="Prolixus Logo"
@@ -280,6 +280,24 @@ export default function OurBenefits() {
               <div className="benefit-body">
                 <FaderInAnimation direction="up">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    {/* MSM */}
+                    <div className="benefit-item sm:col-span-2 p-5 bg-(--white-color) rounded-2xl shadow-sm border border-(--divider-color) transition-all duration-300 hover:shadow-md">
+                      <div className="icon-box mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-(--accent-color)">
+                        <img
+                          src="/images/icon-about-organic.svg"
+                          alt="MSM"
+                          className="w-full max-w-[32px]"
+                        />
+                      </div>
+                      <h3 className="text-xl mb-2 font-bold text-(--primary-color) font-default">
+                        MSM
+                      </h3>
+                      <p className="text-sm sm:text-base text-(--primary-color)/80 leading-relaxed">
+                        Schwefel, den Sie über die Nahrung nicht aufnehmen
+                        können – essentiell für viele Körperfunktionen.
+                      </p>
+                    </div>
+
                     {/* Calcium */}
                     <div className="benefit-item p-5 bg-(--white-color) rounded-2xl shadow-sm border border-(--divider-color) transition-all duration-300 hover:shadow-md">
                       <div className="icon-box mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-(--accent-color)">
@@ -351,24 +369,6 @@ export default function OurBenefits() {
                         vor oxidativem Stress.
                       </p>
                     </div>
-
-                    {/* MSM */}
-                    <div className="benefit-item sm:col-span-2 p-5 bg-(--white-color) rounded-2xl shadow-sm border border-(--divider-color) transition-all duration-300 hover:shadow-md">
-                      <div className="icon-box mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-(--accent-color)">
-                        <img
-                          src="/images/icon-about-organic.svg"
-                          alt="MSM"
-                          className="w-full max-w-[32px]"
-                        />
-                      </div>
-                      <h3 className="text-xl mb-2 font-bold text-(--primary-color) font-default">
-                        MSM
-                      </h3>
-                      <p className="text-sm sm:text-base text-(--primary-color)/80 leading-relaxed">
-                        Schwefel, den Sie über die Nahrung nicht aufnehmen
-                        können – essentiell für viele Körperfunktionen.
-                      </p>
-                    </div>
                   </div>
                 </FaderInAnimation>
               </div>
@@ -377,11 +377,11 @@ export default function OurBenefits() {
         </div>
 
         {/* Bottom stats / trust row */}
-        <div className="mt-20">
+        {/* <div className="mt-20">
           <div className="flex flex-wrap gap-y-8 gap-x-24 border-t border-(--divider-color) pt-20">
 
             {/* Item 1 */}
-            <div className="flex items-center w-full md:w-[calc(33.33%-66.66px)]">
+        {/* <div className="flex items-center w-full md:w-[calc(33.33%-66.66px)]">
               <div className="mr-5">
                 <img
                   src="/images/icon-benefit-list-1.svg"
@@ -395,10 +395,10 @@ export default function OurBenefits() {
                   Viele Kundinnen und Kunden vertrauen bereits auf Prolixus.
                 </p>
               </div>
-            </div>
+            </div> */}
 
-            {/* Item 2 */}
-            <div className="flex items-center w-full md:w-[calc(33.33%-66.66px)]">
+        {/* Item 2 */}
+        {/* <div className="flex items-center w-full md:w-[calc(33.33%-66.66px)]">
               <div className="mr-5">
                 <img
                   src="/images/icon-benefit-list-2.svg"
@@ -414,10 +414,10 @@ export default function OurBenefits() {
                   Gelistet unter PZN: 17879717.
                 </p>
               </div>
-            </div>
+            </div> */}
 
-            {/* Item 3 */}
-            <div className="flex items-center w-full md:w-[calc(33.33%-66.66px)]">
+        {/* Item 3 */}
+        {/* <div className="flex items-center w-full md:w-[calc(33.33%-66.66px)]">
               <div className="mr-5">
                 <img
                   src="/images/icon-benefit-list-3.svg"
@@ -434,7 +434,7 @@ export default function OurBenefits() {
             </div>
 
           </div>
-        </div>
+        </div> */}
 
       </div>
     </section>

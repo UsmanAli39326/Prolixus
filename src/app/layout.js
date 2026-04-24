@@ -4,6 +4,8 @@ import { CartProvider } from "@/context/CartContext";
 import { CurrencyProvider } from "@/context/CurrencyContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { LanguageProvider } from "@/context/LanguageContext";
+import Navbar from "@/components/layout/NavbarWrapper";
+
 
 export const metadata = {
   title: {
@@ -48,6 +50,7 @@ export default function RootLayout({ children }) {
           <AuthProvider>
             <CurrencyProvider>
               <CartProvider>
+                <Navbar />
                 <main className="min-h-screen">
                   {children}
                 </main>

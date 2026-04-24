@@ -25,9 +25,10 @@ export default async function BlogDetailPage({ params }) {
 
     return (
         <>
-            <PageHeader 
-                title={post.category || "Blog"} 
-                subtitle="Artikel" 
+            <PageHeader
+                title={post.category || "Blog"}
+                subtitle="Artikel"
+                bgImage={"/images/new/blog detail page banner.webp"}
                 breadcrumbs={[
                     { label: "Home", href: "/" },
                     { label: "Blog", href: "/blog" },

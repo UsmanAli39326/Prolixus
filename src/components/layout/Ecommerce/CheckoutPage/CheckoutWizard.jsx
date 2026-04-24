@@ -22,7 +22,8 @@ export function buildGuestOrderPayload(formData, cartItems, currency = "EURO", t
 
     console.log("payload")
     // Helper: round a number to 2 decimal places
-    const r = (n) => parseFloat((n ?? 0).toFixed(2));
+    // Truncate to 2 decimal places — never round up
+    const r = (n) => Math.trunc((n ?? 0) * 100) / 100;
 
     // ── orderDetails ────────────────────────────────────────────────────────
     const vatPercentage = totals.vatPercentage || 0;
@@ -60,7 +61,7 @@ export function buildGuestOrderPayload(formData, cartItems, currency = "EURO", t
         paymentToken: formData.paymentToken ?? null,
         grossAmount: totals.total,
         totalNetAmount: totals.subtotal,
-        discountAmount: totals.discountAmount || 0,
+        discountAmount: r(totals.discountAmount || 0),
         totalVatAmount: totals.vatAmount,
         vatPercentage,
         shippingChargesAmount: totals.shipping,

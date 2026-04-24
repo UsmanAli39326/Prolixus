@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function ShopTopBar({ total = 0, showing = 0, onOpenFilters }) {
+export default function ShopTopBar({ total = 0, showing = 0, onOpenFilters, filtersOpen }) {
   return (
     <div className="mb-6 flex items-center justify-between">
       <span className="text-sm text-(--text-color)/70">
@@ -10,11 +10,16 @@ export default function ShopTopBar({ total = 0, showing = 0, onOpenFilters }) {
       <button
         type="button"
         onClick={onOpenFilters}
-        className="lg:hidden inline-flex items-center gap-2 rounded-full border border-(--divider-color) bg-white/60 px-4 py-2 text-sm font-semibold text-(--primary-color) hover:text-(--accent-color) transition-colors"
+        className={`lg:hidden inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-colors
+          ${filtersOpen
+            ? "border-(--accent-color) bg-(--accent-color)/10 text-(--accent-color)"
+            : "border-(--divider-color) bg-white/60 text-(--primary-color) hover:text-(--accent-color)"
+          }`}
       >
-        <span className="text-[16px]"></span>
-        Filters
+        <span className="text-[16px]">{filtersOpen ? "✕" : "☰"}</span>
+        {filtersOpen ? "Close Filters" : "Filters"}
       </button>
     </div>
   );
 }
+

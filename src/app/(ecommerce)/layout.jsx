@@ -1,6 +1,7 @@
 import MainFooter from '@/components/layout/Footer';
+import CartFAB from '@/components/layout/CartFAB';
 import React from 'react';
-import Navbar from "@/components/layout/NavbarWrapper";
+
 
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
@@ -13,11 +14,12 @@ export const metadata = {
 export default function EcommerceLayout({ children }) {
     return (
         <>
-            <Navbar />
+
             <main className="ecommerce-container pt-[80px]">
                 {children}
             </main>
             <MainFooter />
+            <CartFAB />
         </>
     );
 }

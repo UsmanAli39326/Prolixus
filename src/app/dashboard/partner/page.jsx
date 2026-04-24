@@ -19,6 +19,7 @@ import RevealInAnimation from "@/Hooks/RevealInAnimation";
 import FaderInAnimation from "@/Hooks/FaderInAnimation";
 import { getWalletData } from "@/lib/PartnerService";
 import { MdRefresh, MdErrorOutline } from "react-icons/md";
+import { useCurrency } from "@/context/CurrencyContext";
 
 // // const mockCommissions = [
 // //     {
@@ -77,6 +78,7 @@ export default function PartnerProgramPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [copied, setCopied] = useState(false);
+    const { formatPrice } = useCurrency();
 
     const fetchData = async () => {
         setIsLoading(true);
@@ -119,7 +121,32 @@ export default function PartnerProgramPage() {
             cellClassName: "text-text/60 dark:text-white/60 font-mono text-xs"
         },
         {
-            header: "Status",
+            header: "Customer",
+            accessor: "customer",
+            cellClassName: "text-text/80 dark:text-white/80 font-medium"
+        },
+        {
+            header: "Rate",
+            accessor: "rate",
+            className: "text-center",
+            cellClassName: "text-center text-text/60 dark:text-white/60"
+        },
+        {
+            header: "Order Status",
+            cell: (row) => (
+                row.orderStatus !== "-" ? (
+                    <Badge variant={
+                        row.orderStatus === "Completed" ? "success" :
+                            row.orderStatus === "Pending" ? "warning" :
+                                row.orderStatus === "Canceled" ? "error" : "info"
+                    }>
+                        {row.orderStatus}
+                    </Badge>
+                ) : <span className="text-text/20">-</span>
+            )
+        },
+        {
+            header: "Transaction",
             cell: (row) => (
                 <Badge variant={row.variant}>
                     {row.status}
@@ -127,7 +154,7 @@ export default function PartnerProgramPage() {
             )
         },
         {
-            header: "Earnings",
+            header: "Amount",
             className: "text-right",
             cellClassName: "text-right font-bold text-text dark:text-white",
             cell: (row) => (
@@ -195,21 +222,21 @@ export default function PartnerProgramPage() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <StatsCard
                         title="Total Affiliate Amount"
-                        value={`${walletData?.totalAffiliateAmount?.toFixed(2) || "0.00"}`}
+                        value={formatPrice(walletData?.totalAffiliateAmount || 0)}
                         // trend="+0%"
                         // detail="Lifetime earnings"
                         icon={FaWallet}
                     />
                     <StatsCard
                         title="Amount Used"
-                        value={`${walletData?.totalAffiliateAmountUsedInOrders?.toFixed(2) || "0.00"}`}
+                        value={formatPrice(walletData?.totalAffiliateAmountUsedInOrders || 0)}
                         // trend="0"
                         // detail="Used in orders"
                         icon={FaUsers}
                     />
                     <StatsCard
                         title="Wallet Balance"
-                        value={`${walletData?.remainingAffiliateAmount?.toFixed(2) || "0.00"}`}
+                        value={formatPrice(walletData?.remainingAffiliateAmount || 0)}
                         // trend="Live"
                         // detail="Available for use"
                         icon={FaChartLine}
@@ -262,10 +289,13 @@ export default function PartnerProgramPage() {
                                 const totalAmount = (entry.totalAffiliateAmount ?? (entry.affiliatePercentageAmount + (entry.affiliateAbsoluteAmount || 0))) || 0;
 
                                 return {
-                                    id: entry.invoiceNumber ? `#${entry.invoiceNumber}` : (entry.orderId ? `#ORD-${entry.orderId}` : (entry.id ? `#TRX-${entry.id}` : "N/A")),
+                                    id: entry.orderInvoiceNumber ? `#${entry.orderInvoiceNumber}` : (entry.invoiceNumber ? `#${entry.invoiceNumber}` : (entry.orderId ? `#ORD-${entry.orderId}` : (entry.id ? `#TRX-${entry.id}` : "N/A"))),
                                     date: new Date(entry.createdDateTime || entry.transactionDate).toLocaleDateString(),
+                                    customer: entry.customerName || "-",
+                                    rate: entry.affiliatePercentage > 0 ? `${entry.affiliatePercentage}%` : (entry.affiliateAbsoluteAmount > 0 ? formatPrice(entry.affiliateAbsoluteAmount) : "-"),
+                                    orderStatus: entry.orderStatus || "-",
                                     status: isEarnings ? "Earnings" : "Used",
-                                    earnings: `${totalAmount.toFixed(2)}`,
+                                    earnings: formatPrice(totalAmount),
                                     variant: isEarnings ? "success" : "info",
                                     canceled: entry.orderStatus === "Canceled",
                                 };

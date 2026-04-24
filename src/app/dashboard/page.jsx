@@ -9,16 +9,42 @@ import DashboardHeader from "@/components/layout/Dashboard/DashboardHeader";
 import { getProfile } from "@/lib/ProfileService";
 import { getCustomerOrders } from "@/lib/OrderService";
 import { getWalletData } from "@/lib/PartnerService";
+import Button from "@/components/ui/Button";
+import { FaCopy, FaCheckCircle, FaLink, FaWallet, FaShoppingBag, FaChartBar } from "react-icons/fa";
+import { useCurrency } from "@/context/CurrencyContext";
+
+const StatCard = ({ title, value, icon: Icon, color = "accent" }) => (
+    <div className="bg-white dark:bg-background-dark/30 rounded-2xl p-6 shadow-sm border border-divider flex items-center gap-5 transition-all hover:shadow-md group">
+        <div className={`p-4 rounded-xl bg-${color}/10 text-${color} group-hover:bg-${color} group-hover:text-white transition-colors duration-300`}>
+            <Icon className="text-2xl" />
+        </div>
+        <div>
+            <p className="text-sm text-text/60 font-medium uppercase tracking-wider mb-1">{title}</p>
+            <h4 className="text-2xl font-bold text-primary">{value}</h4>
+        </div>
+    </div>
+);
 
 export default function DashboardOverviewPage() {
+    const { formatPrice } = useCurrency();
     const [user, setUser] = useState({ name: "" });
     const [stats, setStats] = useState({
         totalOrders: 0,
         walletBalance: 0,
         totalEarnings: 0,
     });
+    const [walletData, setWalletData] = useState(null);
     const [recentOrder, setRecentOrder] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [copied, setCopied] = useState(false);
+
+    const handleCopy = () => {
+        if (walletData?.affiliateCode) {
+            navigator.clipboard.writeText(walletData.affiliateCode);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        }
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -46,6 +72,7 @@ export default function DashboardOverviewPage() {
                 }
 
                 if (walletRes.status === 'fulfilled' && walletRes.value?.data) {
+                    setWalletData(walletRes.value.data);
                     newStats.walletBalance = walletRes.value.data.remainingAffiliateAmount || 0;
                     newStats.totalEarnings = walletRes.value.data.totalAffiliateAmount || 0;
                 }
@@ -64,21 +91,94 @@ export default function DashboardOverviewPage() {
     }, []);
 
     return (
-        <div className="flex flex-col gap-6 sm:gap-8 md:gap-10">
+        <div className="flex flex-col gap-8 md:gap-10">
             <RevealInAnimation direction="up">
                 <DashboardHeader
                     title={`Welcome back, ${user.name}`}
-                    subtitle="Here's what's happening with your organic lifestyle today."
+                    subtitle="Here's a summary of your activity and rewards."
                 />
             </RevealInAnimation>
 
-            <FaderInAnimation direction="up" delay={0.2}>
-                <RecentOrderSection order={recentOrder} loading={loading} />
+            {/* Stats Grid */}
+            <FaderInAnimation direction="up" delay={0.1}>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <StatCard 
+                        title="Total Orders" 
+                        value={loading ? "..." : stats.totalOrders} 
+                        icon={FaShoppingBag} 
+                        color="primary"
+                    />
+                    <StatCard 
+                        title="Wallet Balance" 
+                        value={loading ? "..." : formatPrice(stats.walletBalance)} 
+                        icon={FaWallet} 
+                        color="accent"
+                    />
+                    <StatCard 
+                        title="Total Earnings" 
+                        value={loading ? "..." : formatPrice(stats.totalEarnings)} 
+                        icon={FaChartBar} 
+                        color="primary"
+                    />
+                </div>
             </FaderInAnimation>
 
-            <FaderInAnimation direction="up" delay={0.4}>
-                <QuickActionsSection stats={stats} loading={loading} />
-            </FaderInAnimation>
+            <div className="flex flex-col gap-8">
+                <FaderInAnimation direction="up" delay={0.2}>
+                    <RecentOrderSection order={recentOrder} loading={loading} />
+                </FaderInAnimation>
+
+                {/* Referral Program Bar */}
+                <FaderInAnimation direction="up" delay={0.3}>
+                    <section>
+                        <h2 className="text-xl font-accent text-primary mb-4">Referral Rewards</h2>
+                        <div className="bg-white dark:bg-background-dark/30 rounded-2xl p-6 shadow-sm border border-divider flex flex-col xl:flex-row gap-6 xl:items-center justify-between group hover:shadow-md transition-all">
+                            <div className="flex flex-col md:flex-row items-start md:items-center gap-6 flex-1">
+                                <div className="p-4 bg-accent/10 rounded-xl text-accent">
+                                    <FaLink className="text-2xl" />
+                                </div>
+                                <div className="flex-1">
+                                    <h3 className="text-lg font-bold text-primary font-default block leading-none mb-1">
+                                        Referral Program
+                                    </h3>
+                                    <p className="text-text/60 text-sm font-default">
+                                        Earn rewards by sharing your code with friends.
+                                    </p>
+                                </div>
+                                <div className="relative w-full md:w-64">
+                                    <input
+                                        className="w-full rounded-xl border border-divider bg-secondary/30 dark:bg-white/5 py-2.5 pl-4 pr-10 text-sm font-bold text-primary focus:border-accent outline-none transition-all"
+                                        readOnly
+                                        type="text"
+                                        value={loading ? "..." : (walletData?.affiliateCode || "No code")}
+                                    />
+                                    <button 
+                                        onClick={handleCopy}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-text/40 hover:text-accent transition-colors"
+                                    >
+                                        {copied ? <FaCheckCircle className="text-green-500" /> : <FaCopy />}
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="flex gap-3">
+                                <Button 
+                                    variant="primary" 
+                                    size="sm"
+                                    className="px-8 rounded-xl"
+                                    href="/dashboard/partner"
+                                >
+                                    Manage Referrals
+                                </Button>
+                            </div>
+                        </div>
+                    </section>
+                </FaderInAnimation>
+
+                <FaderInAnimation direction="up" delay={0.4}>
+                    <QuickActionsSection stats={stats} loading={loading} />
+                </FaderInAnimation>
+            </div>
         </div>
     );
 }

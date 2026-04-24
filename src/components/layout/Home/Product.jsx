@@ -103,7 +103,7 @@ import RevealInAnimation from "@/Hooks/RevealInAnimation";
 
 export default function ProductsSection({ products = [] }) {
   return (
-    <section className="our-products py-16">
+    <section className="our-products py-16 lg:py-20">
       <div className="container mx-auto px-4">
 
         {/* Header Row */}

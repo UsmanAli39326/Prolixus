@@ -25,16 +25,16 @@ export default function CartPage() {
             <div className="mb-8 md:mb-12">
               <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-divider">
                 <div>
-                  <h1 className="font-accent italic text-5xl font-light leading-[1.05] tracking-[-0.02em] text-primary lg:text-6xl">
+                  <h1 className="font-accent italic text-3xl sm:text-5xl font-light leading-[1.05] tracking-[-0.02em] text-primary lg:text-6xl">
                     Shopping Cart
                   </h1>
-                  <p className="max-w-[620px] font-default text-base leading-relaxed text-text mt-2 lg:text-lg">
+                  <p className="max-w-[620px] font-default text-sm sm:text-base leading-relaxed text-text mt-2 lg:text-lg">
                     {cartItems.length} {cartItems.length === 1 ? "item" : "items"} in your cart
                   </p>
                 </div>
                 <Link href="/products" className="group inline-flex items-center gap-2 text-primary hover:text-accent transition-colors duration-300">
                   <FiArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-300" />
-                  <span className="font-medium">Continue Shopping</span>
+                  <span className="font-medium text-sm sm:text-base">Continue Shopping</span>
                 </Link>
               </div>
             </div>
@@ -80,11 +80,11 @@ export default function CartPage() {
                   {cartItems.map((item, index) => (
                     <FaderInAnimation key={item.id} direction="left" delay={0.2 + index * 0.1}>
                       <div className="group bg-white rounded-2xl p-4 md:p-6 shadow-sm border border-divider hover:shadow-md transition-shadow duration-300">
-                        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 items-center">
+                        {/* Desktop layout: 12-col grid */}
+                        <div className="hidden md:grid md:grid-cols-12 gap-6 items-center">
                           {/* Product Info */}
                           <div className="col-span-6 flex gap-4 items-center">
-                            {/* Product Image */}
-                            <div className="relative w-20 h-20 md:w-24 md:h-24 rounded-xl overflow-hidden bg-surface-2 shrink-0">
+                            <div className="relative w-24 h-24 rounded-xl overflow-hidden bg-surface-2 shrink-0">
                               <div
                                 className="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
                                 style={{
@@ -93,21 +93,16 @@ export default function CartPage() {
                                 }}
                               />
                             </div>
-                            {/* Product Details */}
                             <div className="flex flex-col gap-1">
-                              <h3 className="font-accent text-base md:text-lg font-medium text-primary leading-tight">
+                              <h3 className="font-accent text-lg font-medium text-primary leading-tight">
                                 {item.name}
                               </h3>
                               <p className="text-sm text-text line-clamp-1">{stripHtmlTags(item.description)}</p>
-                              {/* Mobile Price */}
-                              <p className="text-accent font-semibold md:hidden">
-                                {formatPrice(item.price)}
-                              </p>
                             </div>
                           </div>
 
                           {/* Quantity Controls */}
-                          <div className="col-span-2 flex justify-start md:justify-center">
+                          <div className="col-span-2 flex justify-center">
                             <div className="flex items-center gap-1 bg-secondary rounded-full p-1 border border-divider">
                               <button
                                 onClick={() => updateQuantity(item.id, item.quantity - 1)}
@@ -128,13 +123,13 @@ export default function CartPage() {
                             </div>
                           </div>
 
-                          {/* Unit Price - Desktop Only */}
-                          <div className="hidden md:block col-span-2 text-center font-medium text-text">
+                          {/* Unit Price */}
+                          <div className="col-span-2 text-center font-medium text-text">
                             {formatPrice(item.price)}
                           </div>
 
                           {/* Line Total & Delete */}
-                          <div className="col-span-2 flex items-center justify-between md:justify-end gap-4">
+                          <div className="col-span-2 flex items-center justify-end gap-4">
                             <span className="font-semibold text-primary text-lg">
                               {formatPrice(item.price * item.quantity)}
                             </span>
@@ -145,6 +140,67 @@ export default function CartPage() {
                             >
                               <FiTrash2 className="w-5 h-5" />
                             </button>
+                          </div>
+                        </div>
+
+                        {/* Mobile layout: stacked */}
+                        <div className="flex flex-col gap-3 md:hidden">
+                          {/* Top row: image + product details */}
+                          <div className="flex gap-3 items-center">
+                            <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-surface-2 shrink-0">
+                              <div
+                                className="w-full h-full bg-cover bg-center"
+                                style={{
+                                  backgroundImage: `url('${item.image}')`,
+                                  backgroundColor: "var(--surface-2-color)",
+                                }}
+                              />
+                            </div>
+                            <div className="flex flex-col gap-0.5 min-w-0 flex-1">
+                              <h3 className="font-accent text-sm font-medium text-primary leading-tight line-clamp-2">
+                                {item.name}
+                              </h3>
+                              <p className="text-accent font-semibold text-sm">
+                                {formatPrice(item.price)}
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* Bottom row: quantity | total | delete */}
+                          <div className="flex items-center justify-between pt-2 border-t border-divider/50">
+                            {/* Quantity Controls */}
+                            <div className="flex items-center gap-1 bg-secondary rounded-full p-0.5 border border-divider">
+                              <button
+                                onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                disabled={item.quantity <= 1}
+                                className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-white text-primary transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
+                                <FiMinus className="w-3.5 h-3.5" />
+                              </button>
+                              <span className="w-6 text-center text-sm font-medium text-primary">
+                                {item.quantity}
+                              </span>
+                              <button
+                                onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-white text-primary transition-colors duration-200"
+                              >
+                                <FiPlus className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+
+                            {/* Line Total + Delete */}
+                            <div className="flex items-center gap-3">
+                              <span className="font-semibold text-primary text-base">
+                                {formatPrice(item.price * item.quantity)}
+                              </span>
+                              <button
+                                onClick={() => removeFromCart(item.id)}
+                                className="p-1.5 rounded-full text-text/60 hover:text-error hover:bg-error/10 transition-all duration-200"
+                                title="Remove item"
+                              >
+                                <FiTrash2 className="w-4 h-4" />
+                              </button>
+                            </div>
                           </div>
                         </div>
                       </div>

@@ -147,33 +147,34 @@ export default function PaymentForm({
                     </div>
                 </FaderInAnimation>
 
-                {/* Wallet Balance (only for authenticated users with a balance) */}
-                {isAuthenticated && walletBalance > 0 && (
+                {/* Wallet Balance (for all authenticated users) */}
+                {isAuthenticated && (
                     <FaderInAnimation direction="up" delay={0.15}>
-                        <div className="bg-accent/5 border border-accent/20 rounded-2xl p-6 mb-2">
-                            <label className="flex items-center gap-4 cursor-pointer group">
+                        <div className={`border rounded-2xl p-6 mb-2 transition-all ${walletBalance > 0 ? 'bg-accent/5 border-accent/20' : 'bg-gray-50 dark:bg-white/[0.02] border-divider opacity-60'}`}>
+                            <label className={`flex items-center gap-4 group ${walletBalance > 0 ? 'cursor-pointer' : 'cursor-not-allowed'}`}>
                                 <input
                                     type="checkbox"
                                     checked={formData.useWallet}
                                     onChange={(e) => handleWalletToggle(e.target.checked)}
-                                    className="size-6 rounded-lg border-2 border-divider accent-accent cursor-pointer transition-all"
+                                    disabled={walletBalance <= 0}
+                                    className={`size-6 rounded-lg border-2 border-divider accent-accent transition-all ${walletBalance > 0 ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}`}
                                 />
                                 <div className="flex-1 flex items-center justify-between">
                                     <div className="flex items-center gap-3">
-                                        <div className="size-10 rounded-full bg-accent/10 flex items-center justify-center text-accent">
+                                        <div className={`size-10 rounded-full flex items-center justify-center ${walletBalance > 0 ? 'bg-accent/10 text-accent' : 'bg-gray-200 dark:bg-white/10 text-gray-400 dark:text-gray-500'}`}>
                                             <HiCreditCard className="text-xl" />
                                         </div>
                                         <div>
-                                            <span className="block font-bold text-primary text-lg group-hover:text-accent transition-colors">
+                                            <span className={`block font-bold text-lg transition-colors ${walletBalance > 0 ? 'text-primary group-hover:text-accent' : 'text-gray-400 dark:text-gray-500'}`}>
                                                 Use Wallet Balance
                                             </span>
                                             <span className="text-xs text-text/50 font-accent">
-                                                Apply your available funds to this order
+                                                {walletBalance > 0 ? 'Apply your available funds to this order' : 'No funds available in your wallet'}
                                             </span>
                                         </div>
                                     </div>
                                     <div className="text-right">
-                                        <span className="block text-xl font-black text-accent">
+                                        <span className={`block text-xl font-black ${walletBalance > 0 ? 'text-accent' : 'text-gray-400 dark:text-gray-500'}`}>
                                             {formatPrice(walletBalance)}
                                         </span>
                                         <span className="text-[10px] uppercase tracking-widest font-bold text-text/30">Available</span>

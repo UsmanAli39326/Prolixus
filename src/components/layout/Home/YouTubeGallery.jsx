@@ -1,27 +1,57 @@
 import FaderInAnimation from "@/Hooks/FaderInAnimation";
 import Link from "next/link";
 
-const videos = [
-    {
-        id: "1",
-        url: "https://www.youtube.com/embed/3UeF0W_I8KY?si=gc80rrY73uxHK8ev", // Placeholder, replace with actual videos if known
-        title: "Our Process",
-    },
-    {
-        id: "2",
-        url: "https://www.youtube.com/embed/GLdSWMsJNOw?si=qocD4NdQbNKRsd-B",
-        title: "Quality Standards",
-    },
-    {
-        id: "3",
-        url: "https://www.youtube.com/embed/1r8qIrBDsXw?si=HW6CJdGwQ-b9vhKH",
-        title: "Success Stories",
-    },
+const videoUrls = [
+    "https://www.youtube.com/embed/3UeF0W_I8KY?si=gc80rrY73uxHK8ev",
+    "https://www.youtube.com/embed/GLdSWMsJNOw?si=qocD4NdQbNKRsd-B",
+    "https://www.youtube.com/embed/1r8qIrBDsXw?si=HW6CJdGwQ-b9vhKH",
 ];
 
-export default function YouTubeGallery() {
+/**
+ * Extract the video ID from a YouTube embed URL.
+ */
+function extractVideoId(embedUrl) {
+    const match = embedUrl.match(/\/embed\/([^?/]+)/);
+    return match ? match[1] : null;
+}
+
+/**
+ * Fetch the actual video title from YouTube using the free oEmbed endpoint.
+ * Falls back to a generic title if the request fails.
+ */
+async function fetchVideoTitle(videoId) {
+    try {
+        const watchUrl = `https://www.youtube.com/watch?v=${videoId}`;
+        const res = await fetch(
+            `https://www.youtube.com/oembed?url=${encodeURIComponent(watchUrl)}&format=json`,
+            { next: { revalidate: 86400 } } // cache for 24 hours
+        );
+        if (!res.ok) return null;
+        const data = await res.json();
+        return data.title || null;
+    } catch {
+        return null;
+    }
+}
+
+export default async function YouTubeGallery() {
+    // Fetch all titles in parallel
+    const videos = await Promise.all(
+        videoUrls.map(async (url, idx) => {
+            const videoId = extractVideoId(url);
+            const title = videoId
+                ? await fetchVideoTitle(videoId)
+                : null;
+            return {
+                id: String(idx + 1),
+                url,
+                title: title || `Video ${idx + 1}`,
+            };
+        })
+    );
+
     return (
-        <section className="youtube-gallery py-12 lg:py-20 bg-gray-50">
+        <section className="youtube-gallery py-16 lg:py-20 bg-gray-50">
             <div className="container mx-auto px-4">
                 {/* Section Title */}
                 <div className="text-center mb-12">

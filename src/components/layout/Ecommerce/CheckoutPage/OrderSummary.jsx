@@ -33,9 +33,9 @@ export default function OrderSummary() {
 
                 if (result?.data?.isValid) {
                     // Discount is a percentage — calculate the amount from subtotal
-                    const discountAmount = parseFloat(
-                        ((totals.subtotal * (result.data.discountPercentage || 0)) / 100).toFixed(2)
-                    );
+                    const discountAmount = Math.trunc(
+                        ((totals.subtotal * (result.data.discountPercentage || 0)) / 100) * 100
+                    ) / 100;
 
                     updateFormData({
                         couponCode: result.data.code || inputCode.trim(),
@@ -63,9 +63,9 @@ export default function OrderSummary() {
                     }
 
                     // Calculate discount amount from affiliate percentage only
-                    const discountAmount = parseFloat(
-                        ((totals.subtotal * (result.data.affiliatePercentage || 0)) / 100).toFixed(2)
-                    );
+                    const discountAmount = Math.trunc(
+                        ((totals.subtotal * (result.data.affiliatePercentage || 0)) / 100) * 100
+                    ) / 100;
 
                     updateFormData({
                         couponCode: "",

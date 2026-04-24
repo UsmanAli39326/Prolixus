@@ -33,10 +33,16 @@ export const CurrencyProvider = ({ children }) => {
      * Format a numeric amount using the fetched currency symbol.
      * e.g. formatPrice(29.9) → "€29.90"
      */
+    /**
+     * Truncate a number to 2 decimal places WITHOUT rounding.
+     * e.g. 29.999 → "29.99", not "30.00"
+     */
+    const truncate2 = (n) => (Math.trunc(n * 100) / 100).toFixed(2);
+
     const formatPrice = (amount) => {
         if (amount === null || amount === undefined) return `${currencySymbol}0.00`;
         const num = typeof amount === "number" ? amount : Number(amount);
-        return `${currencySymbol}${num.toFixed(2)}`;
+        return `${currencySymbol}${truncate2(num)}`;
     };
 
     return (

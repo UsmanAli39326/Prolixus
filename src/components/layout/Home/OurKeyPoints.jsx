@@ -233,7 +233,7 @@ import RevealInAnimation from "@/Hooks/RevealInAnimation";
 
 export default function OurKeyPoints() {
   return (
-    <section className="our-key-points py-24">
+    <section className="our-key-points py-10 sm:py-16 overflow-hidden">
       <div className="container mx-auto px-4">
 
         {/* Top heading row */}
@@ -275,8 +275,8 @@ export default function OurKeyPoints() {
               <div className="key-points-item-box-1 space-y-6 sm:space-y-0">
 
                 {/* Item 1 */}
-                <div className="key-points-item flex items-center mb-6 sm:mb-14 flex-row-reverse lg:flex-row">
-                  <div className="key-points-item-content w-[calc(100%-70px)] sm:w-[calc(100%-100px)] text-left lg:text-right">
+                <div className="key-points-item flex items-center mb-6 sm:mb-14 flex-row-reverse lg:flex-row w-full">
+                  <div className="key-points-item-content flex-1 text-left lg:text-right">
                     <h3 className="text-base sm:text-lg font-semibold mb-1 sm:mb-2 text-(--primary-color)">
                       Unterstützt den Energiestoffwechsel
                     </h3>
@@ -295,8 +295,8 @@ export default function OurKeyPoints() {
                 </div>
 
                 {/* Item 2 */}
-                <div className="key-points-item flex items-center mb-6 sm:mb-14 flex-row-reverse lg:flex-row">
-                  <div className="key-points-item-content w-[calc(100%-70px)] sm:w-[calc(100%-100px)] text-left lg:text-right">
+                <div className="key-points-item flex items-center mb-6 sm:mb-14 flex-row-reverse lg:flex-row w-full">
+                  <div className="key-points-item-content flex-1 text-left lg:text-right">
                     <h3 className="text-base sm:text-lg font-semibold mb-1 sm:mb-2 text-(--primary-color)">
                       Hohe Bioverfügbarkeit
                     </h3>
@@ -315,8 +315,8 @@ export default function OurKeyPoints() {
                 </div>
 
                 {/* Item 3 */}
-                <div className="key-points-item flex items-center mb-0 flex-row-reverse lg:flex-row">
-                  <div className="key-points-item-content w-[calc(100%-70px)] sm:w-[calc(100%-100px)] text-left lg:text-right">
+                <div className="key-points-item flex items-center mb-0 flex-row-reverse lg:flex-row w-full">
+                  <div className="key-points-item-content flex-1 text-left lg:text-right">
                     <h3 className="text-base sm:text-lg font-semibold mb-1 sm:mb-2 text-(--primary-color)">
                       Geprüfte Qualität
                     </h3>
@@ -345,7 +345,7 @@ export default function OurKeyPoints() {
                 <img
                   src="/images/new/Our-Key-Point-copy.webp"
                   alt="Prolixus Produkt"
-                  className="mx-auto w-full max-w-[180px] sm:max-w-[280px] lg:max-w-[420px]"
+                  className="mx-auto w-full max-w-[250px] sm:max-w-[280px] lg:max-w-[420px]"
                 />
               </figure>
             </div>
@@ -357,7 +357,7 @@ export default function OurKeyPoints() {
               <div className="key-points-item-box-2 space-y-6 sm:space-y-0">
 
                 {/* Item 4 */}
-                <div className="key-points-item flex items-center mb-6 sm:mb-14">
+                <div className="key-points-item flex items-center mb-6 sm:mb-14 w-full">
                   <div className="icon-box flex h-14 w-14 sm:h-20 sm:w-20 shrink-0 items-center justify-center rounded-full bg-(--accent-color) mr-4 sm:mr-5">
                     <img
                       src="/images/icon-key-points-4.svg"
@@ -365,7 +365,7 @@ export default function OurKeyPoints() {
                       className="max-w-[30px] sm:max-w-[45px]"
                     />
                   </div>
-                  <div className="key-points-item-content w-[calc(100%-70px)] sm:w-[calc(100%-100px)]">
+                  <div className="key-points-item-content flex-1">
                     <h3 className="text-base sm:text-lg font-semibold mb-1 sm:mb-2 text-(--primary-color)">
                       Vegan & Glutenfrei
                     </h3>
@@ -376,7 +376,7 @@ export default function OurKeyPoints() {
                 </div>
 
                 {/* Item 5 */}
-                <div className="key-points-item flex items-center mb-6 sm:mb-14">
+                <div className="key-points-item flex items-center mb-6 sm:mb-14 w-full">
                   <div className="icon-box flex h-14 w-14 sm:h-20 sm:w-20 shrink-0 items-center justify-center rounded-full bg-(--accent-color) mr-4 sm:mr-5">
                     <img
                       src="/images/icon-key-points-5.svg"
@@ -384,7 +384,7 @@ export default function OurKeyPoints() {
                       className="max-w-[30px] sm:max-w-[45px]"
                     />
                   </div>
-                  <div className="key-points-item-content w-[calc(100%-70px)] sm:w-[calc(100%-100px)]">
+                  <div className="key-points-item-content flex-1">
                     <h3 className="text-base sm:text-lg font-semibold mb-1 sm:mb-2 text-(--primary-color)">
                       Für jedes Alter geeignet
                     </h3>
@@ -395,7 +395,7 @@ export default function OurKeyPoints() {
                 </div>
 
                 {/* Item 6 */}
-                <div className="key-points-item flex items-center mb-0">
+                <div className="key-points-item flex items-center mb-0 w-full">
                   <div className="icon-box flex h-14 w-14 sm:h-20 sm:w-20 shrink-0 items-center justify-center rounded-full bg-(--accent-color) mr-4 sm:mr-5">
                     <img
                       src="/images/icon-key-points-6.svg"
@@ -403,7 +403,7 @@ export default function OurKeyPoints() {
                       className="max-w-[30px] sm:max-w-[45px]"
                     />
                   </div>
-                  <div className="key-points-item-content w-[calc(100%-70px)] sm:w-[calc(100%-100px)]">
+                  <div className="key-points-item-content flex-1">
                     <h3 className="text-base sm:text-lg font-semibold mb-1 sm:mb-2 text-(--primary-color)">
                       Transparente Rezeptur
                     </h3>

@@ -31,11 +31,11 @@ export default function RouteGuard({ children }) {
                     <div className="absolute inset-0 rounded-full border-4 border-transparent border-r-white border-l-white animate-spin" />
                     <div className="absolute inset-0 flex items-center justify-center">
                         <Image
-                            src="/images/new/Prolixus-Logo-white.webp"
-                            alt="Loading"
-                            width={100}
-                            height={100}
-                            className="object-contain"
+                            src="/images/new/logo-full.gif"
+                            alt="Loading..."
+                            width={180}
+                            height={50}
+                            className="h-12 w-auto object-contain"
                         />
                     </div>
                 </div>

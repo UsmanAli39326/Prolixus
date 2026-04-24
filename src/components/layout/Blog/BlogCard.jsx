@@ -5,7 +5,7 @@ import Link from "next/link";
 export default function BlogCard({ post, index }) {
     return (
         <FaderInAnimation direction="up" delay={`${index * 0.1}s`}>
-            <article className="post-item h-full overflow-hidden rounded-2xl border border-(--divider-color) bg-(--white-color) shadow-[0_0_30px_0_rgba(0,0,0,0.05)] hover:shadow-[0_8px_40px_0_rgba(0,0,0,0.12)] transition-shadow duration-300">
+            <article className="post-item flex flex-col h-full overflow-hidden rounded-2xl border border-(--divider-color) bg-(--white-color) shadow-[0_0_30px_0_rgba(0,0,0,0.05)] hover:shadow-[0_8px_40px_0_rgba(0,0,0,0.12)] transition-shadow duration-300">
                 {/* Featured Image */}
                 <div className="post-featured-image">
                     <Link
@@ -13,12 +13,12 @@ export default function BlogCard({ post, index }) {
                         data-cursor-text="View"
                         className="block overflow-hidden"
                     >
-                        <figure className="relative aspect-[1/0.673] overflow-hidden">
+                        <figure className="relative aspect-[4/3] overflow-hidden bg-gray-100">
                             <img
                                 src={post.thumbnailImg}
                                 alt={post.title}
                                 // fill
-                                className="object-cover transition-transform duration-500 hover:scale-105"
+                                className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                                 sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                             />
                         </figure>
@@ -26,7 +26,7 @@ export default function BlogCard({ post, index }) {
                 </div>
 
                 {/* Body */}
-                <div className="post-item-body p-6">
+                <div className="post-item-body flex flex-col flex-grow p-6">
                     {/* Category Badge */}
                     {post.category && (
                         <span className="inline-block mb-3 px-3 py-1 text-xs font-semibold uppercase tracking-widest rounded-full bg-(--accent-color)/10 text-(--accent-color)">
@@ -35,7 +35,7 @@ export default function BlogCard({ post, index }) {
                     )}
 
                     {/* Content */}
-                    <div className="post-item-content border-b border-(--divider-color) pb-6 mb-6">
+                    <div className="post-item-content flex-grow border-b border-(--divider-color) pb-6 mb-6">
                         <h2 className="text-[20px] leading-snug font-default font-semibold text-(--primary-color)">
                             <Link href={post.href} className="hover:text-(--accent-color) transition-colors duration-200">
                                 {post.title}

@@ -163,7 +163,7 @@ import RevealInAnimation from "@/Hooks/RevealInAnimation";
 export default function WhyChooseUs() {
   return (
     <section
-      className="why-choose-us bg-(--white-color) bg-no-repeat bg-bottom-left"
+      className="why-choose-us bg-(--white-color) bg-no-repeat bg-bottom-left overflow-hidden"
       style={{ backgroundImage: "url(/images/section-bg-shape-1.png)" }}
     >
       <div className="container-fluid px-0">

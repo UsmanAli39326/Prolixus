@@ -257,9 +257,15 @@ export default function AuthPage() {
                   {/* Brand (for mobile) */}
                   <div className="lg:hidden mb-8">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-2xl border-2 border-dashed border-primary/35 flex items-center justify-center bg-primary/5">
-                        <span className="text-xs text-primary/65">Logo</span>
-                      </div>
+                      <Link href="/" className="shrink-0">
+                        <Image
+                          src="/images/new/logo-full.gif"
+                          alt="Prolixus Logo"
+                          width={160}
+                          height={45}
+                          className="h-12 w-auto object-contain"
+                        />
+                      </Link>
                       <div>
                         <div className="font-accent text-2xl text-primary">Prolixus</div>
                         <div className="text-sm text-text">Secure access portal</div>
@@ -405,9 +411,15 @@ export default function AuthPage() {
                   {/* Brand (for mobile) */}
                   <div className="lg:hidden mb-8">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-2xl border-2 border-dashed border-primary/35 flex items-center justify-center bg-primary/5">
-                        <span className="text-xs text-primary/65">Logo</span>
-                      </div>
+                      <Link href="/" className="flex-shrink-0">
+                        <Image
+                          src="/images/new/logo-full.gif"
+                          alt="Prolixus Logo"
+                          width={160}
+                          height={45}
+                          className="h-12 w-auto object-contain"
+                        />
+                      </Link>
                       <div>
                         <div className="font-accent text-2xl text-primary">Prolixus</div>
                         <div className="text-sm text-text">Secure access portal</div>
@@ -600,7 +612,7 @@ export default function AuthPage() {
             >
               <div
                 className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-                style={{ backgroundImage: "url('/images/new/Deep navy paper texture close-up.png')" }}
+                style={{ backgroundImage: "url('/images/new/login page copy.webp')" }}
               />
 
               {/* Overlay */}
@@ -615,7 +627,9 @@ export default function AuthPage() {
                 `}
               >
                 <div className={`flex items-center gap-3 ${!isLogin ? "flex-row-reverse" : ""}`}>
-                  <Image src="/images/new/Prolixus-Logo-white.png" alt="Logo" width={40} height={40} />
+                  <Link href="/">
+                    <Image src="/images/new/logo-full.gif" alt="Logo" width={200} height={56} className="h-14 w-auto object-contain" />
+                  </Link>
                   <div className={`leading-tight ${!isLogin ? "text-right" : ""}`}>
                     <div className="text-white font-semibold tracking-wide">Prolixus</div>
                     <div className="text-white/70 text-xs">Secure access portal</div>

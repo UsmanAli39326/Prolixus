@@ -42,7 +42,7 @@ export default function Home() {
   return (
     <>
       <Hero />
-      <AboutSection />
+      <AboutSection variant="short" />
       <Suspense fallback={<ProductsLoading />}>
         <DynamicProductsSection />
       </Suspense>

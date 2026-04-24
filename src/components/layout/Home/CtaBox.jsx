@@ -85,7 +85,7 @@ import Button from "@/components/ui/Button";
 
 export default function CtaBox() {
   return (
-    <section className="cta-box dark-section relative py-24 bg-(--primary-color)">
+    <section className="cta-box dark-section relative bg-(--primary-color) py-12 sm:py-16 lg:py-20">
       <div className="container mx-auto px-4 relative z-1">
         <div className="flex flex-col items-center gap-10 lg:flex-row">
 
@@ -136,9 +136,9 @@ export default function CtaBox() {
           <div className="w-full lg:w-1/2">
             <div className="cta-image h-full text-center">
               <img
-                src="/images/new/prolixus-nutrients.jpeg"
+                src="/images/new/Purchase-Now.webp"
                 alt="Prolixus Produkt"
-                className="mx-auto w-full object-cover aspect-[1/0.955] -mb-24 rounded-2xl"
+                className="mx-auto w-full object-cover aspect-[1/0.955]  rounded-2xl"
               />
             </div>
           </div>

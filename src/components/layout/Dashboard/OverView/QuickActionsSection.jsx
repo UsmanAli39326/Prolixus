@@ -1,8 +1,9 @@
-import { FaArrowRight, FaHandshake, FaIdBadge } from "react-icons/fa";
-import { FaLocationDot } from "react-icons/fa6";
+import { FaArrowRight, FaHandshake, FaIdBadge, FaHeadset } from "react-icons/fa";
 import ActionCard from "./ActionCard";
+import { useCurrency } from "@/context/CurrencyContext";
 
 export default function QuickActionsSection({ stats, loading }) {
+    const { formatPrice } = useCurrency();
     return (
         <section>
             <h2 className="text-xl font-accent text-primary mb-4">
@@ -20,18 +21,18 @@ export default function QuickActionsSection({ stats, loading }) {
                 />
 
                 <ActionCard
-                    icon={<FaLocationDot />}
-                    title="Saved Addresses"
-                    description="Manage shipping destinations"
-                    actionLabel="Manage Addresses"
-                    href="/dashboard/profile"
+                    icon={<FaHeadset />}
+                    title="Contact Support"
+                    description="Get help with your orders"
+                    actionLabel="Get Support"
+                    href="/contact"
                 />
 
                 <ActionCard
                     icon={<FaHandshake />}
                     title="Partner Program"
                     description="Affiliate Summary"
-                    value={loading ? "..." : `$${(stats.walletBalance || 0).toFixed(2)}`}
+                    value={loading ? "..." : formatPrice(stats.walletBalance || 0)}
                     actionLabel="Partner Dashboard"
                     href="/dashboard/partner"
                 />
@@ -39,4 +40,4 @@ export default function QuickActionsSection({ stats, loading }) {
             </div>
         </section>
     );
-}
+}

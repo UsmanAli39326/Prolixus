@@ -1,13 +1,15 @@
-import Navbar from "@/components/layout/NavbarWrapper";
+
 import MainFooter from "@/components/layout/Footer";
+import CartFAB from "@/components/layout/CartFAB";
+
 export default function PublicPageLayout({ children }) {
   return (
     <>
-      <Navbar />
-      <section className="company-pages-wrapper">
+      <section className="company-pages-wrapper lg:pt-20 pt-18">
         {children}
       </section>
       <MainFooter />
+      <CartFAB />
     </>
   )
 }

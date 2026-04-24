@@ -118,7 +118,7 @@ import RevealInAnimation from "@/Hooks/RevealInAnimation";
 
 export default function WhatWeDo() {
   return (
-    <section className="what-we-do py-14 sm:py-20 lg:py-24 relative bg-(--primary-color)">
+    <section className="what-we-do py-12 sm:py-16 lg:py-20 relative bg-(--primary-color) overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6 relative z-1">
         <div className="grid items-center gap-8 sm:gap-10 lg:grid-cols-2">
 

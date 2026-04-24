@@ -22,6 +22,7 @@ export default function ProductsFilterManager({ categoryList, filters, initialPa
   const [products, setProducts] = useState([]);
   const [pagination, setPagination] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showFilters, setShowFilters] = useState(false);
 
   const updateFilters = useCallback((newFilters) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -133,6 +134,7 @@ export default function ProductsFilterManager({ categoryList, filters, initialPa
 
   return (
     <ShopLayout
+      showFilters={showFilters}
       sidebar={
         <FiltersSidebar
           categories={categoryList}
@@ -169,6 +171,8 @@ export default function ProductsFilterManager({ categoryList, filters, initialPa
               <ShopTopBar
                 total={pagination?.totalCount}
                 showing={filteredAndSortedProducts.length}
+                onOpenFilters={() => setShowFilters(prev => !prev)}
+                filtersOpen={showFilters}
               />
               <ProductGrid products={filteredAndSortedProducts} />
             </>

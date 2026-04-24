@@ -10,9 +10,10 @@ export const metadata = {
 export default function BlogPage() {
     return (
         <>
-            <PageHeader 
-                title="Unser" 
-                subtitle="Blog" 
+            <PageHeader
+                title="Unser"
+                subtitle="Blog"
+                mobileBgImage="/images/new/blog mobile view.webp"
                 breadcrumbs={[
                     { label: "Home", href: "/" },
                     { label: "Blog", href: null }

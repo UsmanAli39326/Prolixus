@@ -7,6 +7,7 @@ import Input from "@/components/ui/Input";
 import FaderInAnimation from "@/Hooks/FaderInAnimation";
 import { apiService } from "@/lib/api";
 import Toast from "@/components/ui/Toast";
+import Image from "next/image";
 
 export default function ResetPasswordPage() {
     const router = useRouter();
@@ -93,7 +94,7 @@ export default function ResetPasswordPage() {
 
     return (
         <FaderInAnimation direction="up">
-            <div className="flex items-center justify-center p-4 bg-secondary -mt-24 h-screen">
+            <div className="flex items-center justify-center p-4 bg-secondary mt-10 h-screen">
                 {/* Outer frame */}
                 <div className="w-full max-w-6xl bg-white rounded-2xl shadow-xl overflow-hidden animate-fade-up">
                     <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[640px]">
@@ -102,7 +103,7 @@ export default function ResetPasswordPage() {
                         <div className="relative hidden lg:block">
                             <div
                                 className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-                                style={{ backgroundImage: "url('/images/bg.jpg')" }}
+                                style={{ backgroundImage: "url('/images/new/forget page copy.webp')" }}
                             />
 
                             {/* Overlay */}
@@ -111,9 +112,15 @@ export default function ResetPasswordPage() {
                             {/* Top brand */}
                             <div className="absolute top-6 left-6 right-6 flex items-center justify-between">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-xl border-2 border-dashed border-white/60 flex items-center justify-center bg-white/10">
-                                        <span className="text-xs text-white/70">Logo</span>
-                                    </div>
+                                    <Link href="/" className="flex-shrink-0">
+                                        <Image
+                                            src="/images/new/logo-full.gif"
+                                            alt="Prolixus Logo"
+                                            width={200}
+                                            height={56}
+                                            className="h-14 w-auto object-contain"
+                                        />
+                                    </Link>
                                     <div className="leading-tight">
                                         <div className="text-white font-semibold tracking-wide">Prolixus</div>
                                         <div className="text-white/70 text-xs">Secure access portal</div>
@@ -139,9 +146,15 @@ export default function ResetPasswordPage() {
                                 {/* Brand (for mobile) */}
                                 <div className="lg:hidden mb-8">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-12 h-12 rounded-2xl border-2 border-dashed border-primary/35 flex items-center justify-center bg-primary/5">
-                                            <span className="text-xs text-primary/65">Logo</span>
-                                        </div>
+                                        <Link href="/" className="flex-shrink-0">
+                                            <Image
+                                                src="/images/new/logo-full.gif"
+                                                alt="Prolixus Logo"
+                                                width={160}
+                                                height={45}
+                                                className="h-12 w-auto object-contain"
+                                            />
+                                        </Link>
                                         <div>
                                             <div className="font-accent text-2xl text-primary">Prolixus</div>
                                             <div className="text-sm text-text">Secure access portal</div>

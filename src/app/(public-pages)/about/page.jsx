@@ -18,7 +18,7 @@ export default function AboutPage() {
     <>
       <AboutPageHeader title="About" subtitle="us" />
       <About />
-      <WhyChooseUs/>
+      {/* <WhyChooseUs /> */}
       {/* <OurApproach /> */}
       {/* <OurKeyPoints /> */}
       {/* <OurBenefits /> */}

@@ -26,7 +26,8 @@ function normalizeVatRate(raw) {
 }
 
 export function calcCartTotals(cartItems = []) {
-    const r = (n) => parseFloat((n ?? 0).toFixed(2));
+    // Truncate to 2 decimal places — never round up
+    const r = (n) => Math.trunc((n ?? 0) * 100) / 100;
 
     const subtotal = r(cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0));
 
@@ -35,7 +36,7 @@ export function calcCartTotals(cartItems = []) {
         const rate = normalizeVatRate(item.vatPercentage);
         const percentage = r(rate * 100);
         const amount = item.price * item.quantity * rate;
-        
+
         if (!acc[percentage]) {
             acc[percentage] = 0;
         }
@@ -68,7 +69,7 @@ export function calcCartTotals(cartItems = []) {
         subtotal,
         vatAmount,
         shipping,
-        total,
+        total: r(subtotal + shipping),
         vatPercentage,
         allVatPercentages,
         combinedVatPercentage,

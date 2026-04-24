@@ -6,8 +6,10 @@ import { HiChevronLeft } from "react-icons/hi";
 import Button from "@/components/ui/Button";
 import FaderInAnimation from "@/Hooks/FaderInAnimation";
 import RevealInAnimation from "@/Hooks/RevealInAnimation";
+import { useCurrency } from "@/context/CurrencyContext";
 
 export default function ShippingForm({ nextStep, prevStep, goToStep, formData }) {
+    const { formatPrice } = useCurrency();
     const [selectedMethod, setSelectedMethod] = useState("standard");
 
     // SIMPLIFIED SHIPPING: Selectable methods are currently hidden/commented below to focus on a single "Standard Shipping" (free) logic.
@@ -95,7 +97,7 @@ export default function ShippingForm({ nextStep, prevStep, goToStep, formData })
                                         </div>
                                     </div>
                                     <div className="text-base font-bold text-primary">
-                                        {method.price === 0 ? 'Free' : `$${method.price.toFixed(2)}`}
+                                        {method.price === 0 ? 'Free' : formatPrice(method.price)}
                                     </div>
                                 </label>
                             ))}

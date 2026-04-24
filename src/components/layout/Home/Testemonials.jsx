@@ -341,7 +341,7 @@ export default function OurTestimonials() {
   const prev = () => setIndex((i) => (i - 1 + total) % total);
 
   return (
-    <section className="relative w-full overflow-hidden bg-(--primary-color) py-20 sm:py-24">
+    <section className="relative w-full overflow-hidden bg-(--primary-color) py-16 sm:py-20">
       {/* dotted background */}
       <div
         className="pointer-events-none absolute inset-0 opacity-30"
@@ -361,7 +361,7 @@ export default function OurTestimonials() {
               <p className="font-serif text-sm italic text-(--white-color)/90">Kundenstimmen</p>
             </div>
             <RevealInAnimation >
-              <h2 className="text-4xl font-semibold leading-tight tracking-tight text-(--white-color) sm:text-5xl font-default">
+              <h2 className="text-3xl font-semibold leading-tight tracking-tight text-(--white-color) sm:text-4xl lg:text-5xl font-default">
                 Echte Bewertungen,{" "}
                 <span className="block font-accent font-light italic">zufriedene Kunden</span>
               </h2>

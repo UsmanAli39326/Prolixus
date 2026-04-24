@@ -15,20 +15,31 @@ export default async function MainFooter() {
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8 pb-20 border-b border-white/10">
 
           {/* Column 1: Logo & Description */}
-          <div className="space-y-8">
+          <div className="space-y-8 -mt-4">
             <div className="logo">
               <Image
-                src="/images/new/Prolixus-Logo-white.webp"
+                src="/images/new/logo-full.gif"
                 alt="Prolixus Logo"
-                width={140}
-                height={40}
-                className="h-10 w-auto"
-                priority
+                width={180}
+                height={50}
+                className="h-12 w-auto object-contain"
               />
             </div>
-            <p className="text-(--white-color)/60 font-default text-[15px] leading-[1.6] max-w-sm">
-              {about?.shortDescription || "Crafting exceptional experiences with a focus on innovation and sustainable growth."}
-            </p>
+            <div className="text-(--white-color)/60 font-default text-[15px] leading-[1.6] max-w-sm text-justify">
+              {(() => {
+                const desc = about?.shortDescription || "Crafting exceptional experiences with a focus on innovation and sustainable growth.";
+                const limit = 1000;
+                if (desc.length <= limit) return desc;
+                return (
+                  <>
+                    {desc.substring(0, limit)}...{" "}
+                    <Link href="/about" className="text-(--accent-color) hover:underline font-semibold">
+                      learn more
+                    </Link>
+                  </>
+                );
+              })()}
+            </div>
           </div>
 
           {/* Column 2: Quick Links */}
@@ -96,7 +107,7 @@ export default async function MainFooter() {
           <div>
             <h3 className="text-(--white-color) font-accent font-bold text-xl mb-8">Stay Updated</h3>
             <div className="space-y-6">
-              <p className="text-(--white-color)/60 font-default text-[15px] leading-relaxed">
+              <p className="text-(--white-color)/60 font-default text-[15px] leading-relaxed text-justify">
                 Join our newsletter to receive the latest updates and health insights.
               </p>
 
