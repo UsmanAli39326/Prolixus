@@ -221,7 +221,7 @@ export default function Hero() {
               <FadeInAnimation direction="up" >
                 <div className="">
                   <Image
-                    src="/images/new/apotheken.webp"
+                    src="/images/new/Apotheken.webp"
                     width={200}
                     height={200}
                     alt="Apotheken" className="mt-6 sm:mt-8 w-full max-w-[200px] sm:max-w-xs lg:max-w-lg" />
