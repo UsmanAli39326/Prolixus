@@ -273,9 +273,7 @@ export default function AuthPage() {
                     </div>
                   </div>
 
-                  <Link href="/" className="flex justify-end w-full">
-                    <Button variant="ghost">Back To Shop</Button>
-                  </Link>
+
 
                   <h1 className="text-3xl font-bold font-accent text-center text-primary">
                     Welcome back to <span className="text-accent">Prolixus</span>
@@ -427,9 +425,7 @@ export default function AuthPage() {
                     </div>
                   </div>
 
-                  <Link href="/" className="flex justify-end w-full">
-                    <Button variant="ghost">Back To Shop</Button>
-                  </Link>
+
 
                   <h1 className="text-3xl font-bold font-accent text-center text-primary">
                     Create your <span className="text-accent">Prolixus</span> account

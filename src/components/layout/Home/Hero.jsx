@@ -137,7 +137,7 @@ import Button from "@/components/ui/Button";
 export default function Hero() {
   return (
     <section
-      className="relative min-h-screen lg:h-screen flex items-center overflow-hidden bg-cover bg-center pt-24 pb-8 sm:pt-20 sm:pb-0 lg:pt-20 bg--secondary-color"
+      className="relative min-h-screen lg:h-screen flex items-center overflow-hidden bg-cover bg-center pt-28 pb-8 sm:pt-20 sm:pb-0 lg:pt-20 bg--secondary-color  lg:pb-10"
     >
       {/* Background Image */}
       <Image
@@ -221,10 +221,12 @@ export default function Hero() {
               <FadeInAnimation direction="up" >
                 <div className="">
                   <Image
-                    src="/images/new/apotheken.webp"
+                    src="/images/new/Apotheken.webp"
                     width={200}
-                    height={200}
-                    alt="Apotheken" className="mt-6 sm:mt-8 w-full max-w-[200px] sm:max-w-xs lg:max-w-lg" />
+                    height={100}
+                    alt="Apotheken"
+                    className="lg:mt-6 sm:mt-10 w-auto h-20 sm:h-28 lg:h-36 object-contain lg:mb-2"
+                  />
                 </div>
               </FadeInAnimation>
             </div>

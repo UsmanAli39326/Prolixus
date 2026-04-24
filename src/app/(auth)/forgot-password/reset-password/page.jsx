@@ -162,9 +162,7 @@ export default function ResetPasswordPage() {
                                     </div>
                                 </div>
 
-                                <Link href="/login" className="flex justify-end w-full">
-                                    <Button variant="ghost">Back To Login</Button>
-                                </Link>
+
 
                                 <h1 className="text-3xl font-bold font-accent text-center text-primary">
                                     Set <span className="text-accent">New Password</span>

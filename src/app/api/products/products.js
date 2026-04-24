@@ -88,9 +88,6 @@ export async function getAllProducts(page = 1, size = 20) {
       {
         cache: "no-store",
       },
-      {
-        cache: "no-store",
-      },
       {}
     );
 

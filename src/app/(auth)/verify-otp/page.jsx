@@ -213,9 +213,7 @@ export default function VerifyOTPPage() {
                                     </div>
                                 </div>
 
-                                <Link href="/login" className="flex justify-end w-full">
-                                    <Button variant="ghost">Back to Login</Button>
-                                </Link>
+
 
                                 <h1 className="text-3xl font-bold font-accent text-center text-primary">
                                     Verify <span className="text-accent">OTP</span>

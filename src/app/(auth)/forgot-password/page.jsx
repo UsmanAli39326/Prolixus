@@ -108,9 +108,7 @@ export default function ForgotPasswordPage() {
                                     </div>
                                 </div>
 
-                                <Link href="/login" className="flex justify-end w-full">
-                                    <Button variant="ghost">Back To Login</Button>
-                                </Link>
+
 
                                 <h1 className="text-3xl font-bold font-accent text-center text-primary">
                                     Forgot <span className="text-accent">Password?</span>
