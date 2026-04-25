@@ -11,13 +11,14 @@ import Badge from "@/components/ui/Badge";
 import DataTable from "@/components/ui/DataTable";
 import RevealInAnimation from "@/Hooks/RevealInAnimation";
 import FaderInAnimation from "@/Hooks/FaderInAnimation";
-import { getCustomerOrders } from "@/lib/OrderService";
+import { getCustomerOrders, getOrderStatuses } from "@/lib/OrderService";
 import { useCurrency } from "@/context/CurrencyContext";
 
 const statusConfig = {
     "Shipped": { variant: "success" },
     "Delivered": { variant: "info" },
     "Processing": { variant: "warning", animate: true, icon: MdLoop },
+    "Inprogress": { variant: "warning", animate: true, icon: MdLoop },
     "Cancelled": { variant: "error", icon: IoClose },
     "Pending": { variant: "warning" },
 };
@@ -29,19 +30,25 @@ export default function OrderHistoryPage() {
     const [error, setError] = useState(null);
     const { formatPrice } = useCurrency();
     const [filterStatus, setFilterStatus] = useState("All");
-
-    const statuses = ["All", ...Object.keys(statusConfig)];
+    const [statuses, setStatuses] = useState(["All"]);
 
     useEffect(() => {
         let isMounted = true;
-        const fetchOrders = async () => {
+        const fetchData = async () => {
             try {
                 setIsLoading(true);
-                const response = await getCustomerOrders();
-                const ordersData = response.data || response || [];
+                const [ordersResponse, statusesResponse] = await Promise.all([
+                    getCustomerOrders(),
+                    getOrderStatuses()
+                ]);
+
+                const ordersData = ordersResponse.data || ordersResponse || [];
+                const statusesData = statusesResponse.data || statusesResponse || [];
 
                 if (isMounted) {
-                    const mappedOrders = ordersData.map(order => {
+                    const mappedOrders = ordersData.map(entry => {
+                        const order = entry.order || entry;
+                        const summary = entry.orderHeadSummary;
                         const config = statusConfig[order.orderStatus] || { variant: "secondary" };
                         return {
                             id: order.id,
@@ -51,26 +58,28 @@ export default function OrderHistoryPage() {
                                 day: '2-digit',
                                 year: 'numeric'
                             }),
-                            status: order.orderStatus || "Processing",
+                            status: summary?.orderStatus || order.orderStatus || "Processing",
                             isPaid: order.isPaid,
-                            total: formatPrice(order.totalNetAmount || 0),
+                            total: formatPrice(summary?.paidAmount ?? order.totalNetAmount ?? 0),
+                            paymentType: summary?.paymentType || order.paymentType,
                             ...config
                         };
                     });
                     setOrders(mappedOrders);
                     setFilteredOrders(mappedOrders);
+                    setStatuses(["All", ...statusesData]);
                 }
             } catch (err) {
                 if (isMounted) {
-                    setError(err.message || "Failed to fetch orders");
-                    console.error("Order fetch error:", err);
+                    setError(err.message || "Failed to fetch dashboard data");
+                    console.error("Dashboard fetch error:", err);
                 }
             } finally {
                 if (isMounted) setIsLoading(false);
             }
         };
 
-        fetchOrders();
+        fetchData();
         return () => { isMounted = false; };
     }, []);
 

@@ -62,16 +62,16 @@ export default function OrderSummary() {
                         return;
                     }
 
-                    // Calculate discount amount from affiliate percentage only
+                    // Calculate discount amount from userUsedAffiliatePercentage
                     const discountAmount = Math.trunc(
-                        ((totals.subtotal * (result.data.affiliatePercentage || 0)) / 100) * 100
+                        ((totals.subtotal * (result.data.userUsedAffiliatePercentage || 0)) / 100) * 100
                     ) / 100;
 
                     updateFormData({
                         couponCode: "",
                         affiliateCustomerCode: result.data.code || inputCode.trim(),
                         discountAmount: discountAmount,
-                        discountDisplay: `${result.data.affiliatePercentage}%`,
+                        discountDisplay: `${result.data.userUsedAffiliatePercentage}%`,
                     });
                     setInputCode("");
                 } else {

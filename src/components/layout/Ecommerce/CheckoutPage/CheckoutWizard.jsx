@@ -213,6 +213,8 @@ export default function CheckoutWizard() {
                 orderData={orderData}
                 formatPrice={formatPrice}
                 isLoggedIn={isAuthenticated}
+                formData={formData}
+                totals={totals}
             />
         );
     }

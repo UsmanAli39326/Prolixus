@@ -67,7 +67,8 @@ export default function DashboardOverviewPage() {
                 if (ordersRes.status === 'fulfilled' && ordersRes.value?.data && Array.isArray(ordersRes.value.data)) {
                     newStats.totalOrders = ordersRes.value.data.length;
                     if (ordersRes.value.data.length > 0) {
-                        newRecentOrder = ordersRes.value.data[0];
+                        const firstEntry = ordersRes.value.data[0];
+                        newRecentOrder = firstEntry.order || firstEntry;
                     }
                 }
 

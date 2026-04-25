@@ -5,8 +5,14 @@ import { HiCheckCircle } from "react-icons/hi";
 import Button from "@/components/ui/Button";
 import FaderInAnimation from "@/Hooks/FaderInAnimation";
 
-export default function OrderConfirmation({ orderData, formatPrice, isLoggedIn }) {
+export default function OrderConfirmation({ orderData, formatPrice, isLoggedIn, formData, totals }) {
     if (!orderData) return null;
+
+    const discountLabel = formData?.couponCode 
+        ? `Promo Code (${formData.couponCode})` 
+        : formData?.affiliateCustomerCode 
+            ? `Affiliate Code (${formData.affiliateCustomerCode})` 
+            : "Discount";
 
     return (
         <FaderInAnimation direction="up">
@@ -34,7 +40,17 @@ export default function OrderConfirmation({ orderData, formatPrice, isLoggedIn }
                         </div>
                         <div className="flex justify-between items-center py-3 border-b border-divider">
                             <span className="text-sm text-text/60 font-accent">Total Amount</span>
-                            <span className="text-sm font-bold text-accent">{formatPrice(orderData?.totalNetAmount || orderData?.grossAmount)}</span>
+                            <span className="text-sm font-bold text-text">{formatPrice(orderData?.actualTotalAmount || orderData?.totalNetAmount || orderData?.grossAmount)}</span>
+                        </div>
+                        {totals?.discountAmount > 0 && (
+                            <div className="flex justify-between items-center py-3 border-b border-divider">
+                                <span className="text-sm text-text/60 font-accent">{discountLabel}</span>
+                                <span className="text-sm font-bold text-accent">-{formatPrice(totals.discountAmount)}</span>
+                            </div>
+                        )}
+                        <div className="flex justify-between items-center py-3 border-b border-divider">
+                            <span className="text-sm text-text/60 font-accent">Amount Paid</span>
+                            <span className="text-sm font-bold text-accent">{formatPrice(orderData?.paidAmount || totals?.total || 0)}</span>
                         </div>
                         <div className="flex justify-between items-center py-3">
                             <span className="text-sm text-text/60 font-accent">Payment Status</span>

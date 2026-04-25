@@ -17,3 +17,10 @@ export async function getCustomerOrders() {
 export async function getOrderDetails(orderId) {
     return apiService.get(`/Dashboard/order/${orderId}`);
 }
+/**
+ * Fetch order statuses.
+ * GET /api/Configuration/order-status
+ */
+export async function getOrderStatuses() {
+    return apiService.get("/Configuration/order-status");
+}
